@@ -1,6 +1,7 @@
 import { 打开任务控制对话框 } from '../../dialog/tasks.js';
 import { 递归扫描文件夹并执行任务 } from '../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js';
 import { 全量计算文件MD5,宽松计算文件MD5 } from '../../../../../src/toolBox/useAge/forFileManage/forHash/useSimpleMd5.js';
+import { clientApi } from '../../../../asyncModules.js';
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -205,6 +206,14 @@ export const 执行扫描重复文件 = async (localPath, useLooseHash = false) 
     
     const taskController = await 打开任务控制对话框('扫描重复文件', '正在扫描重复文件...');
     
+    // 添加检查：如果 taskController 为 null，则说明对话框创建失败，直接返回
+    if (!taskController) {
+        console.error('无法创建任务对话框，扫描重复文件操作已中止。');
+        // 可以考虑给用户一个提示
+        clientApi?.showMessage('无法启动扫描任务，请检查控制台日志。', 'error');
+        return; 
+    }
+    
     const 文件处理函数 = async (filePath, fileName, controller, 添加任务) => {
         await 添加任务(async () => {
             return await withFileProcessing(
@@ -221,7 +230,6 @@ export const 执行扫描重复文件 = async (localPath, useLooseHash = false) 
     
     try {
         await 递归扫描文件夹并执行任务(localPath, taskController, 文件处理函数);
-        taskController.start();
         
         taskController.on('allTasksCompleted', async () => {
             const resultContent = forResultGeneration(duplicates, skippedFiles);

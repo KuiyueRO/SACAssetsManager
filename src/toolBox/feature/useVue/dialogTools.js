@@ -158,18 +158,21 @@ export async function openTaskDialog(
     height = 'auto'
 ) {
     try {
+        // 将 taskTitle, taskDescription, taskController 通过 mixinOptions 传递
+        const componentData = {
+            taskTitle,
+            taskDescription,
+            taskController
+        };
+        
         const { app, dialog } = await openVueDialog(
             clientApi,
             taskVueComponentPath,
-            'TaskDialog',
-            {},
-            null,
-            {
-                taskTitle,
-                taskDescription,
-                taskController
-            },
-            taskTitle,
+            'TaskDialog', // 组件名通常固定，除非加载器需要
+            componentData, // <--- 通过 mixinOptions 传递数据
+            null,          // onDialogCreated 回调
+            {},            // dialogOptions (用于对话框样式，这里用默认)
+            taskTitle,     // 对话框标题
             width,
             height
         );
@@ -177,14 +180,19 @@ export async function openTaskDialog(
         // 设置destroyCallback
         if (dialog) {
             dialog.destroyCallback = () => {
-                taskController.destroy();
+                // 确保 taskController 存在且有 destroy 方法
+                if (taskController && typeof taskController.destroy === 'function') {
+                     taskController.destroy();
+                }
             };
         }
         
+        // 返回值保持不变，包含 app, dialog, taskController
         return { app, dialog, taskController };
     } catch (error) {
         console.error('打开任务对话框失败:', error);
-        throw error;
+        // 向上抛出错误，让 useTaskQueue 能捕获到
+        throw error; 
     }
 }
 

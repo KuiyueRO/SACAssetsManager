@@ -113,7 +113,6 @@ export const 执行复制文档树结构 = async (localPath, sortBy = 'name', so
             (fullPath, dirName, controller, 添加任务) => 处理条目(fullPath, dirName, controller, 添加任务, 获取文件属性, fileList)
         );
 
-        taskController.start();
         taskController.on('allTasksCompleted', async () => {
             const treeStructure = 构建树结构(fileList, localPath, sortBy, sortOrder);
             

@@ -15,6 +15,13 @@ export const 执行扫描空文件夹 = async (localPath, $delete) => {
     return new Promise(async(resolve, reject) => {
         const emptyFolders = [];
         const taskController = await 打开任务控制对话框('扫描空文件夹', '正在扫描空文件夹...');
+
+        if (!taskController) {
+            console.error('无法创建任务对话框，扫描空文件夹操作已中止。');
+            clientApi?.showMessage('无法启动扫描任务，请检查控制台日志。', 'error');
+            return resolve('false');
+        }
+
         const 文件夹处理函数 = async (fullPath, dirName,controller, 添加任务) => {
             await 添加任务(async () => {
                 if (await 是否为空文件夹(fullPath)) {
@@ -39,7 +46,6 @@ export const 执行扫描空文件夹 = async (localPath, $delete) => {
         };
         try {
             await 递归扫描文件夹并执行任务(localPath, taskController, null, 文件夹处理函数);
-            taskController.start();
             taskController.on('allTasksCompleted', async () => {
                 const resultContent = 生成空文件夹结果内容(emptyFolders);
                 await 保存结果到文件(localPath, resultContent);

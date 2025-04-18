@@ -1,5 +1,6 @@
 import { 打开任务控制对话框 } from "../../dialog/tasks.js";
 import { 递归扫描文件夹并执行任务 } from "../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js";
+import { clientApi } from "../../../../asyncModules.js";
 const fs=require('fs').promises
 
 /**
@@ -21,7 +22,6 @@ export const 执行删除所有ThumbsDB = async (localPath) => {
     
     try {
         await 递归扫描文件夹并执行任务(localPath, taskController, 文件处理函数);
-        taskController.start();
         taskController.on('allTasksCompleted', () => {
             console.log('任务完成');
         });

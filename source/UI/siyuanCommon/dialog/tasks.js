@@ -26,7 +26,12 @@ export const useTaskQueue = async (options = {}) => {
         try {
             await uiRenderer(taskController, uiOptions);
         } catch (error) {
-            console.error('UI渲染失败:', error);
+            console.error('UI渲染失败，任务控制器将不会返回:', error);
+            // 销毁已创建的 taskController，避免内存泄漏
+            taskController.destroy(); 
+            // 返回 null 或抛出错误，明确表示失败
+            return null; 
+            // 或者: throw new Error('UI 渲染失败导致任务无法启动');
         }
     }
     

@@ -29,10 +29,10 @@ const progress = ref(0)
 const completedTasks = ref(0)
 const totalTasks = ref(0)
 const currentMessage = ref('')
-const isCompleted = computed(() => completedTasks.value === totalTasks.value && totalTasks.value > 0)
+const isCompleted = computed(() => totalTasks.value > 0 && completedTasks.value === totalTasks.value)
 
 const updateProgress = () => {
-  progress.value = taskController.getProgress()
+  progress.value = totalTasks.value > 0 ? (completedTasks.value / totalTasks.value) * 100 : 0;
 }
 
 const onTaskAdded = ({ totalTasks: newTotal }) => {
@@ -69,32 +69,35 @@ const onTaskCompleted = ({ completedTasks: completed, totalTasks: total, result 
 
 const onAllTasksCompleted = () => {
   updateProgress()
+  currentMessage.value = '所有任务已完成！';
 }
 
 
 onMounted(() => {
+  console.log('[Task.vue] onMounted: Attaching event listeners...');
   taskController.on('taskAdded', onTaskAdded)
   taskController.on('taskCompleted', onTaskCompleted)
   taskController.on('allTasksCompleted', onAllTasksCompleted)
   taskController.on('paused', () => isPaused.value = true)
   taskController.on('resumed', () => isPaused.value = false)
+  
+  taskController.on('destroy', () => {
+      console.log('[Task.vue] TaskController destroyed, closing dialog.');
+      appData.$dialog.destroy();
+  });
 
-  taskController.on('destoy', appData.$dialog.destroy
-  )
-
-  // 初始化进度
-  totalTasks.value = taskController.totalTasks
-  completedTasks.value = taskController.completedTasks
-  updateProgress()
+  console.log('[Task.vue] onMounted: Event listeners attached.');
 })
 
 onUnmounted(() => {
+  console.log('[Task.vue] onUnmounted: Removing event listeners...');
   taskController.off('taskAdded', onTaskAdded)
   taskController.off('taskCompleted', onTaskCompleted)
   taskController.off('allTasksCompleted', onAllTasksCompleted)
   taskController.off('paused')
   taskController.off('resumed')
-
+  taskController.off('destroy')
+  console.log('[Task.vue] onUnmounted: Event listeners removed.');
 })
 
 defineExpose({
@@ -107,5 +110,16 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+}
+.progress-bar {
+  width: 100%;
+  background-color: #eee;
+  height: 10px;
+  margin-bottom: 10px;
+}
+.progress {
+  height: 100%;
+  background-color: #4caf50; /* Green */
+  transition: width 0.2s ease-in-out;
 }
 </style>
