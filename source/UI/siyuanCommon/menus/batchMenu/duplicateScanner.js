@@ -1,5 +1,5 @@
 import { 打开任务控制对话框 } from '../../dialog/tasks.js';
-import { 递归扫描文件夹并执行任务 } from '../../../../../src/utils/fs/batch.js';
+import { 递归扫描文件夹并执行任务 } from '../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js';
 import { 全量计算文件MD5,宽松计算文件MD5 } from '../../../../../src/toolBox/useAge/forFileManage/forHash/useSimpleMd5.js';
 const fs = require('fs').promises;
 const path = require('path');

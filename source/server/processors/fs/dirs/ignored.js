@@ -1,3 +1,3 @@
-import { ignoreDir } from "../../../../../src/utils/fs/windowsSystemDirs.js";
+import { ignoreDir } from "../../../../src/toolBox/feature/forFileSystem/forPathFilter.js";
 
 export {ignoreDir as ignoreDir}

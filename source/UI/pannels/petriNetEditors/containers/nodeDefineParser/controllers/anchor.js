@@ -1,7 +1,9 @@
 import { addMethods } from "../../../../../../../src/utils/object/addMethod.js";
 import { AnchorTypes, Sides } from "../types.js";
-import { addEvents } from "../../../../../../../src/utils/events/addEvents.js";
+import { addEvents } from "../../../../../../../src/toolBox/base/forEvent/useEventMixin.js";
 import { getAnchorConfig } from "./anchorConfig.js";
+import { BaseController } from "./baseController.js";
+import { ControllerFactory } from "./factory.js";
 
 /**
  * 创建锚点控制器
@@ -198,6 +200,10 @@ export const 根据连接表查找锚点是否有连接 =(连接表,卡片ID,锚
         (连接ID组.from.cardId === 卡片ID && 连接ID组.from.anchorId === 锚点ID) ||
         (连接ID组.to.cardId === 卡片ID && 连接ID组.to.anchorId === 锚点ID)
       )
+}
+
+export class AnchorController extends BaseController {
+    // ... existing code ...
 }
 
 

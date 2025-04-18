@@ -1,11 +1,10 @@
 import { fromURL } from "../../../../src/utils/fromDeps/sharpInterface/useSharp/toSharp.js"
 import { loadImageFromUrl as loadImage } from "../../../../src/utils/image/loader/fromURL.js"
 import { 获取事件canvas坐标 } from "../../../../src/utils/canvas/events.js"
-import { 当前设备支持压感 } from "../../../../src/utils/system/surport/pressure.js"
 import { 尖头马克笔, 宽头马克笔, 水彩笔, 铅笔, 钢笔, 鸭嘴笔 } from "../../../../src/utils/canvas/draw/brushes.js"
 import { brushImageProcessor } from '../../../../src/utils/canvas/draw/brushes.js'
 import { 按距离采样点序列 } from "../../math/geometry/geom2d.js"
-import { 获取事件压力值 } from "../../events/getPressure.js"
+import { 获取事件压力值 } from "../../../../src/toolBox/base/forEvent/usePointerEventUtils.js"
 import { $canvas混合模式 } from "../../constants/browser.js"
 import { brushConfigs } from "./brushes/configs.js"
 export class DrawingTools {
@@ -35,22 +34,20 @@ export class DrawingTools {
         this.currentBlendMode = 'source-over'; // 添加当前混合模式属性
         this.lastPoint = null;  // 添加最后一个点的记录
         this.blendModes =Object.values($canvas混合模式)
-        if (当前设备支持压感) {
-            this.canvas.style.touchAction = 'none';
-            this.canvas.style.userSelect = 'none';
-            this.canvas.style.webkitUserSelect = 'none';
-            this.canvas.style.webkitTouchCallout = 'none';
-            this.canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('touchend', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('mousedown', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('mousemove', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('mouseup', e => e.preventDefault(), { passive: false });
-            this.canvas.addEventListener('pointerdown', this.handlePointerDown.bind(this), { passive: true });
-            this.canvas.addEventListener('pointermove', this.handlePointerMove.bind(this), { passive: true });
-            this.canvas.addEventListener('pointerup', this.handlePointerUp.bind(this), { passive: true });
-            this.canvas.addEventListener('pointerout', this.handlePointerUp.bind(this), { passive: true });
-        }
+        this.canvas.style.touchAction = 'none'; // 阻止默认触摸行为（如滚动）
+        this.canvas.style.userSelect = 'none';
+        this.canvas.style.webkitUserSelect = 'none';
+        this.canvas.style.webkitTouchCallout = 'none';
+        this.canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('touchend', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('mousedown', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('mousemove', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('mouseup', e => e.preventDefault(), { passive: false });
+        this.canvas.addEventListener('pointerdown', this.handlePointerDown.bind(this), { passive: true });
+        this.canvas.addEventListener('pointermove', this.handlePointerMove.bind(this), { passive: true });
+        this.canvas.addEventListener('pointerup', this.handlePointerUp.bind(this), { passive: true });
+        this.canvas.addEventListener('pointerout', this.handlePointerUp.bind(this), { passive: true });
         this.loadBrushes().then(() => {
             this.initRenderLoop()
             console.log('笔刷加载完成，初始化渲染循环')

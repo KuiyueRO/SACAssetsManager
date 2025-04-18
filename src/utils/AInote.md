@@ -39,7 +39,7 @@
 | 目录/文件 | 目标位置 | 状态 | 负责人 | 备注 |
 |----------|---------|------|-------|------|
 | base/ | src/toolBox/base | ✅ 完成 | AI助手 | 目录已移除 |
-| events/ | src/toolBox/base/forEvent | 待处理 | - | 事件处理工具 |
+| events/ | src/toolBox/base/forEvent | ✅ 完成 | AI助手 | 子模块已迁移/移除 |
 | fs/ | src/toolBox/feature/forFileSystem | 待处理 | - | 文件系统工具 |
 | functions/ | src/toolBox/base/useEcma/forFunctions | 待处理 | - | 函数式工具 |
 | math/ | src/toolBox/base/useEcma/forMath | 待处理 | - | 数学计算工具 |
@@ -85,6 +85,41 @@
   3. 删除 `src/utils/events/emitter.js`。
   4. (未来可考虑逐步替换 `IEventEmitterSimple` 为 `createEventBus`)
 - **状态**: ✅ 完成 (类已迁移至 `toolBox`, 旧文件已删除)
+
+### `events/getPressure.js` & `system/surport/pressure.js` 处理说明
+
+- **分析**: `getPressure.js` 导出 `获取事件压力值`，依赖 `system/surport/pressure.js` 的 `当前设备支持压感`。
+  - 这两个函数均被 `src/utils/canvas/draw/index.js` 引用。
+  - `src/toolBox` 中无直接替代功能。
+- **计划**:
+  1. 将 `当前设备支持压感` 的逻辑合并入 `获取事件压力值`。
+  2. 将合并后的函数迁移至 `src/toolBox/base/forEvent/usePointerEventUtils.js`。
+  3. 更新 `src/utils/canvas/draw/index.js` 的导入和使用。
+  4. 删除旧文件 `src/utils/events/getPressure.js` 和 `src/utils/system/surport/pressure.js`。
+- **状态**: ✅ 完成 (功能已合并迁移至 `toolBox`, 旧文件已删除)
+
+### `events/pointer.js` 处理说明
+
+- **分析**: 该文件包含 `优化高速移动事件` 函数，用于处理事件合并与预测。
+  - 经检查，该函数未在项目其他地方被使用。
+- **状态**: ✅ 完成 (未使用，文件已删除)
+
+### `events/addEvents.js` & `object/addMethod.js` 处理说明
+
+- **分析**: `addEvents.js` 提供混入式事件功能，依赖 `object/addMethod.js` 添加方法。
+  - `addEvents` 被 `source/UI/.../anchor.js` 引用。
+  - `src/toolBox` 中无直接替代功能。
+- **计划**:
+  1. 将 `object/addMethod.js` 迁移至 `src/toolBox/base/useEcma/useObject/forMethodInjection.js`。
+  2. 将 `events/addEvents.js` 迁移至 `src/toolBox/base/forEvent/useEventMixin.js`，更新内部导入路径。
+  3. 更新 `anchor.js` 的导入路径。
+  4. 删除旧文件 `src/utils/events/addEvents.js` 和 `src/utils/object/addMethod.js`。
+- **状态**: ✅ 完成 (功能已迁移至 `toolBox`, 旧文件已删除)
+
+### `events/siyuan/broadcast.js` 处理说明
+
+- **分析**: 该文件为空。
+- **状态**: ✅ 完成 (空文件及目录已删除)
 
 ## 优先级设定
 
