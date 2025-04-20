@@ -1,7 +1,7 @@
 import { requirePluginDeps } from "../../module/requireDeps.js"
 const sharp = requirePluginDeps('sharp')
-import { hexToRgb, rgbToHex, rgbToHsl, hslToRgb } from "../../color/convert.js"
-import { 基于色相的颜料混色 } from "../../color/mix.js"
+import { fromHexToRgb, fromRgbToHex, fromRgbToHsl, fromHslToRgb } from "../../../toolBox/base/forColor/colorSpace.js"
+import { computeMixedPigmentsRgb } from "../../../toolBox/base/forColor/mixColor.js"
 import { fromURL } from "../../fromDeps/sharpInterface/useSharp/toSharp.js"
 import { 添加水彩效果, 创建纯色图片 } from "../../fromDeps/sharpInterface/useSharp/effect.js"
 import { GPU图像平均颜色分析器 } from "../../image/analyze/calculateAverage.js"
@@ -73,7 +73,7 @@ const brushImageProcessor = {
                     this.sharpCache.set(brushImagePath, sharpObj.clone()) // 存储一个克隆副本
                 }
 
-                const rgb = hexToRgb(color)
+                const rgb = fromHexToRgb(color)
                 if (!rgb) throw new Error('无效的颜色值')
 
                 // 确保有有效的尺寸
@@ -248,13 +248,8 @@ const brushImageProcessor = {
             this.pickupHistory.length = Math.min(this.pickupHistory.length, 10) // 减少历史记录长度
             return averageAlpha > 0.3
                 ? Promise.all([
-                    this.processPickupEffects(),
-                    this.addFlowEffect(
-                        position,
-                        color,
-                        pressure * averageAlpha * 0.7,
-                        { type: 'watercolor', context: ctx }
-                    )
+                    Promise.resolve({ hexColor: fromRgbToHex(color), alpha: averageAlpha }),
+                    this.processPickupEffects()
                 ]).then(() => true)
                 : this.processPickupEffects().then(() => true)
         } catch (error) {
@@ -303,7 +298,7 @@ const brushImageProcessor = {
         for (let i = 1; i < recentHistory.length; i++) {
             const record = recentHistory[i];
             const ratio = record.alpha * 0.3; // 稍微降低混合强度
-            mixedColor = 基于色相的颜料混色(mixedColor, record.color, ratio);
+            mixedColor = computeMixedPigmentsRgb(mixedColor, record.color, ratio);
             currentAlpha = Math.min(0.8, currentAlpha + (record.alpha * 0.2)); // 降低最大不透明度
         }
         await this.updateBrushVariants({
@@ -329,7 +324,7 @@ const brushImageProcessor = {
             color.b = color.b < 0 ? 0 : (color.b > 255 ? 255 : color.b)
             const { brushImagePath, opacity, options, cacheKey } = this.currentBrush
             const newOpacity = opacity * 0.8 > 0.6 ? 0.6 : opacity * 0.8
-            const hexColor = rgbToHex(color)
+            const hexColor = fromRgbToHex(color)
             const brushOptions = Object.assign({}, options, { type: 'watercolor' })
             const newVariants = await this.processColoredBrush(
                 brushImagePath,
@@ -343,7 +338,7 @@ const brushImageProcessor = {
             }
             return newVariants
         } catch (error) {
-            console.error('更新笔刷变体失��:', error)
+            console.error('更新笔刷变体失败:', error)
             return this.currentBrush.variants
         }
     },
@@ -372,7 +367,7 @@ const brushImageProcessor = {
         if (!effectColor && this.currentBrush) {
             const hexColor = this.currentBrush.cacheKey.split('-')[1]
             if (hexColor) {
-                effectColor = hexToRgb(hexColor)
+                effectColor = fromHexToRgb(hexColor)
             }
         }
 

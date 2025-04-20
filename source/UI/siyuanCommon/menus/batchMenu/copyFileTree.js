@@ -1,6 +1,6 @@
 import { 递归扫描文件夹并执行任务 } from "../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js";
 import { 打开任务控制对话框 } from "../../dialog/tasks.js";
-import { confirmAsPromise } from "../../../../../src/utils/siyuanUI/confirm.js";
+import { confirmAsPromise } from "../../../../../src/toolBox/base/useEnv/siyuanDialog.js";
 const path = require('path');
 const fs = require('fs').promises;
 const { clipboard } = require('electron');

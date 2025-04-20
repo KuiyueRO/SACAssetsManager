@@ -8,7 +8,7 @@ import { 自动曝光 } from '../../../../../src/utils/image/adjust/exposure.js'
 import { 生成法线图 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/Generator/normalMap.js';
 import { 去雾滤镜 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/adjust/dehazing.js';
 import * as kernels from '../../../../../src/utils/fromDeps/sharpInterface/kernels.js';
-import { getValueType } from '../../../../../src/utils/object/type.js';
+import { getValueType } from '../../../../../src/toolBox/base/useEcma/forType/getValueType.js';
 import { 显式类型转换 } from '../../../../../src/utils/converters/index.js';
 /**
  * 创建类型安全的参数更新函数

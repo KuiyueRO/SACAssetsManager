@@ -1,7 +1,7 @@
 import { px, per, em } from "../../../../src/utils/css/unitedStrings.js"
 import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/utils/css/inherentValues.js"
 import { cssVarProxy } from "../../../../src/utils/css/cssVarGenerator.js"
-import { chainable } from "../../../../src/utils/object/chainable.js"
+import { createChainableProxy } from "../../../../src/toolBox/base/useEcma/forObject/createChainableProxy.js"
 import { 表格视图阈值 } from "../../utils/threhold.js"
 import { 根据阈值计算最大宽度 } from "../../utils/threhold.js"
 import { LAYOUT_COLUMN } from "../../utils/threhold.js"
@@ -46,7 +46,7 @@ export const 计算素材详情容器样式 = (size, cardData) => {
     return style
 }
 export const 计算素材颜色按钮样式 = (color) => {
-    return chainable({})
+    return createChainableProxy({})
         .backgroundColor(`rgb(${color[0]},${color[1]},${color[2]})`)
         .height(em(0.8))
         .width(em(0.8))
@@ -58,7 +58,7 @@ export const 计算素材颜色按钮样式 = (color) => {
 
 export const 计算文件格式标签样式 = (size, cardData) => {
     if (!cardData) return {};
-    return chainable({})
+    return createChainableProxy({})
         .position(size > 表格视图阈值 ? position.absolute : position.relative)
         .top(px(cardData.width / 24))
         .left(px(cardData.width / 24))
@@ -76,7 +76,7 @@ export const 计算文件格式标签样式 = (size, cardData) => {
 export const 计算卡片内容主体样式 = (cardData, size, firstColorString, cardHeight) => {
     if (!cardData) return {};
 
-    return chainable({})
+    return createChainableProxy({})
         .width(per(表格视图阈值))
         .border('none')
         .borderRadius(px(cardData.width / 24))

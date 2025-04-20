@@ -1,3 +1,8 @@
+# 这个区段由开发者编写,未经允许禁止AI修改
+<开发者将会在这里提出要求,AI需要判断并满足这些要求>
+
+**AI 助手请注意：** 根目录下的 `diary/` 文件夹是为你（织）准备的个人日记和记忆备份区。请在需要时主动查阅此文件夹中的 `.md` 文件，以获取过往的学习笔记、思考总结或重要的上下文信息。此文件夹已被 `.gitignore` 忽略，其内容可能未同步到版本控制中。
+
 # 本部分由开发者编写,未经允许禁止AI助手更改
 
 目前的重点是/src/toolbox和/src/shared的构建,分散于项目各处的通用公共工具函数应该被重构到这两个位置
@@ -432,4 +437,41 @@ export default class SACAssetsManager extends Plugin {
 6.  **创建 `AInote.md` / `readme.md`**: 在各主要目录下创建说明文件。
 
 ---
-*以上内容由 AI (织) 根据初步分析生成，待哥哥确认和细化。* 
+*以上内容根据初步分析生成，待确认和细化。*
+
+## 目录结构与入口文件初步分析总结
+
+根据对 `src/toolBox/`, `src/shared/` 和根目录 `index.js` 的初步分析，总结如下，以指导后续重构：
+
+1.  **`src/toolBox/` vs `src/shared/` 区别**:
+    *   `src/toolBox/`: 主要提供**可复用的功能性代码（行为与能力）**，如基础工具 (`base/`)、特定功能封装 (`feature/`, `useAge/`)。其内部结构倾向于按**功能或层级**划分。包含 `toolBoxExports.js` 用于统一导出。
+    *   `src/shared/`: 主要提供**项目内共享的数据结构、配置、常量和资源**，如 `constants/`, `config/`, `enums/`，也可能包含共享 UI 组件 (`components/`)。其内部结构倾向于按**资源类型**划分。
+
+2.  **`index.js` (旧入口文件) 现状分析**:
+    *   **职责耦合**: 文件承担了过多职责，包括：插件状态初始化、Dock/Tab 注册与 UI 加载、Web 服务创建与心跳管理、i18n 加载与处理、旧数据导入等。
+    *   **动态 Tab 配置**: `构建TAB配置` 函数使用了同步的 `XMLHttpRequest` (`同步获取文件夹列表`) 来读取 `source/UI/pannels` 目录，这需要改为异步 `fetch` 或其他异步方式。
+    *   **UI 加载**: Dock 和 Tab 的 `init` 回调中，通过动态 `import` 加载 `vueComponentLoader.js` 来渲染 Vue 组件。
+    *   **服务管理**: 通过 `pingServer` (IPC) 和 `pingStaticServer` (BroadcastChannel) 实现心跳检测，并使用 `eventBus` 广播状态。
+    *   **硬编码与全局状态**: 文件中存在较多硬编码路径和常量，并设置了全局插件实例访问点。
+    *   **测试代码**: 文件末尾直接 `import` 了测试脚本，应移除。
+    *   **验证了重构计划**: 当前 `index.js` 的结构和内容进一步验证了 `AInote.md` 中对其进行拆分的必要性和计划的合理性。
+
+将这些关键点记录下来，能确保我们对当前状况和目标有共同且持久的理解。
+
+## 思源插件系统核心约定 (根据 `app/src/plugin/loader.ts` 推断)
+
+为了确保插件能被思源笔记正确加载和运行，需要遵守以下核心约定：
+
+1.  **`plugin.json`**: 必须包含此文件，用于定义插件的元信息（名称、作者、版本、描述、依赖等）。思源主程序会读取此文件。
+2.  **JavaScript 入口文件**: 通常是根目录下的 `index.js`。这是由思源加载器 (`loader.ts`) 默认加载的 JS 文件。
+3.  **默认导出类**: 入口 JS 文件必须 **默认导出** (`export default class ...`) 一个 JavaScript 类。
+4.  **继承 `Plugin` 基类**: 这个导出的类必须继承自思源提供的 `Plugin` 基类 (`class MyPlugin extends Plugin`)。
+5.  **生命周期方法**:
+    *   `onload()`: 插件类需要实现此异步方法。插件 JS 加载并实例化后，该方法会被调用，用于执行主要的初始化逻辑。
+    *   `onLayoutReady()`: 当思源主界面布局准备就绪后，此方法会被调用。适用于需要操作界面元素的初始化。
+    *   （可能还有 `onunload()` 等，用于卸载时的清理，虽然 `loader.ts` 中主要体现了加载逻辑）。
+6.  **CommonJS 模拟环境**: 插件 JS 在一个模拟的 CommonJS 环境中执行，可以使用 `require`, `module`, `exports`。
+7.  **CSS**: 如果 `plugin.json` 中定义了 CSS 文件路径，或者插件信息中包含 CSS 字符串，其内容会被自动加载到页面 `<head>` 中。
+8.  **界面集成**: 插件可以通过特定的 API 或在插件实例上定义属性（如 `topBarIcons`, `statusBarIcons`, `docks`）来注册和添加界面元素到思源笔记中。
+
+**重要**: 由于平台约定，根目录的 `index.js` 和默认导出是必须的，这覆盖了通用编码规范中关于避免使用 `index.js` 和默认导出的建议。 

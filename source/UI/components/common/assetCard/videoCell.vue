@@ -15,7 +15,7 @@ import { computed, toRef, defineEmits, ref, onMounted } from 'vue';
 import { 计算素材缩略图样式, 计算扩展名标签样式 } from '../assetStyles.js';
 import { LAYOUT_COLUMN } from '../../../utils/threhold.js';
 import { getAssetItemColor } from '../../../../data/attributies/getAsyncAttributes.js';
-import { rgb数组转字符串 } from '../../../../../src/utils/color/convert.js';
+import { fromRgbArrayToString } from '../../../../../src/toolBox/base/forColor/formatColor.js';
 import { 获取素材属性值, 计算素材类型角标 } from '../../../../data/attributies/parseAttributies.js';
 
 const props = defineProps(['cardData', 'displayMode', 'attributeName', 'showVideo', 'showIframe', 'size', 'cellReady']);
@@ -51,7 +51,7 @@ const placeholderStyle = computed(() => ({
     minHeight: size.value + 'px', // 设置占位框的高度
     maxWidth: size.value + 'px', // 设置占位框的宽度
     maxHeight: size.value + 'px', // 设置占位框的高度
-    backgroundColor: !videoPallet.value[0] ? "" : rgb数组转字符串(videoPallet.value[0].color), // 设置占位框的背景色
+    backgroundColor: !videoPallet.value[0] ? "" : fromRgbArrayToString(videoPallet.value[0].color), // 设置占位框的背景色
 }));
 
 const $计算素材缩略图样式 = computed(() => 计算素材缩略图样式(size.value, cardData));

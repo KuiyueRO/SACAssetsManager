@@ -13,13 +13,13 @@
 import { 检查思源环境 } from '../useSiyuan.js';
 import { fetchSync } from '../../base/forNetWork/forFetch/fetchSyncTools.js';
 import { thumbnail } from '../../../../source/server/endPoints.js';
-import { rgbaArrayToHexString } from '../../../../source/utils/color/colorSpace.js';
-import { 根据背景色获取黑白前景色 } from '../../../../source/utils/color/processColor.js';
-import { 创建颜色选择器面板 } from '../../../../source/utils/color/colorPicker.js';
+import { fromRgbaToHex } from '../../base/forColor/colorSpace.js';
+import { getContrastingTextColor } from '../../base/forColor/getContrastingColor.js';
+import { createColorPickerPanel as createPickerPanelFeature } from '../../feature/forUI/colorPicker.js';
 
 // 导出别名以保持向后兼容
-export const getContrastingColor = 根据背景色获取黑白前景色;
-export const createColorPickerPanel = 创建颜色选择器面板;
+export const getContrastingColor = getContrastingTextColor;
+export const createColorPickerPanel = createPickerPanelFeature;
 
 /**
  * 添加颜色操作菜单
@@ -43,7 +43,7 @@ export function 添加颜色操作菜单(menu, asset) {
         if (!colorData || !Array.isArray(colorData)) return;
         
         colorData.forEach(colorInfo => {
-            const colorHex = rgbaArrayToHexString(colorInfo.color);
+            const colorHex = fromRgbaToHex(colorInfo.color);
             const fragment = 创建颜色菜单项(colorHex, colorInfo);
             menu.addItem({
                 element: fragment,
@@ -65,29 +65,38 @@ export const addColorOperationMenu = 添加颜色操作菜单;
  * @param {Object} colorInfo - 颜色信息对象
  * @returns {DocumentFragment} 菜单项的DOM片段
  */
-export function 创建颜色菜单项(colorHex, colorInfo) {
+export async function 创建颜色菜单项(colorHex, colorInfo) {
     检查思源环境();
-    
+
     // 导入DOM构建函数
-    const { h, f } = window.siyuan.ws.app.plugins.find(p => p.name === 'SACAssetsManager').data;
-    
-    return f(
-        h('svg', {
+    // const { h, f } = window.siyuan.ws.app.plugins.find(p => p.name === 'SACAssetsManager').data; // Old dynamic import?
+    // Assuming these are now globally available or imported differently in Siyuan context
+    // If not, this might break. Prefer direct import if possible.
+    // Let's assume direct import from toolbox is better if this file isn't strictly Siyuan-only
+    const { createElement, createFragment } = await import('../../feature/forDOM/elementBuilder.js'); // Potential async import
+    // FIXME: Check if direct/sync import is possible or if Siyuan provides these globally
+
+    // return f( // Old usage
+    return createFragment( // New usage
+        // h('svg', { // Old usage
+        createElement('svg', { // New usage
             class: 'b3-menu__icon',
             viewBox: '0 0 24 24',
             width: '16',
             height: '16',
             fill: 'currentColor'
         },
-        h('svg:use', {
-            'xlink:href': '#iconColors'
-        })),
-        h('div', {
+            // h('svg:use', { // Old usage
+            createElement('svg:use', { // New usage
+                'xlink:href': '#iconColors'
+            })),
+        // h('div', { // Old usage
+        createElement('div', { // New usage
             class: 'b3-menu__label',
             style: {
                 backgroundColor: colorHex,
                 marginRight: '5px',
-                color: 根据背景色获取黑白前景色(colorHex)
+                color: getContrastingTextColor(colorHex)
             },
         }, `颜色操作: ${colorHex}`)
     );

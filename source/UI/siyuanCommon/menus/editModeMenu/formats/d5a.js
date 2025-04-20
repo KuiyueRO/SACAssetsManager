@@ -1,4 +1,4 @@
-import { confirmAsPromise } from '../../../../../../src/utils/siyuanUI/confirm.js'
+import { confirmAsPromise } from '../../../../../../src/toolBox/base/useEnv/siyuanDialog.js'
 import { kernelApi, plugin } from '../../../../../asyncModules.js'
 import {
   处理单个D5A文件缩略图,

@@ -1,8 +1,8 @@
 import { kernelApi, clientApi, plugin } from "../../../../asyncModules.js"
 import { metaRecords, thumbnail } from "../../../../server/endPoints.js";
 import { isImagePath } from "../../../../../src/toolBox/feature/forFileSystem/forPathType.js";
-import { processFilesFrontEnd } from "../../../../../src/utils/fs/processFrontEnd.js";
-import { confirmAsPromise } from '../../../../../src/utils/siyuanUI/confirm.js'
+import { processFilesFrontEnd } from "../../../../../src/toolBox/feature/forElectronFrontend/forFileSystemOperations.js";
+import { confirmAsPromise } from '../../../../../src/toolBox/base/useEnv/siyuanDialog.js'
 import { showInputDialog, showInputDialogPromise } from "../../dialog/inputDialog.js";
 export const 以file链接形式添加到最近笔记本日记 = (assets) => {
     return {

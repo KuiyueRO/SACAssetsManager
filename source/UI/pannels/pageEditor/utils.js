@@ -1,4 +1,5 @@
-import { 对象转键值对字符串 } from "../../../../src/utils/object/toString.js";
+import { formatObjectAsKeyValueString } from "../../../../../src/toolBox/base/useEcma/forObject/formatObjectAsString.js";
+
 export {
-    对象转键值对字符串
+    formatObjectAsKeyValueString as 对象转键值对字符串
 }

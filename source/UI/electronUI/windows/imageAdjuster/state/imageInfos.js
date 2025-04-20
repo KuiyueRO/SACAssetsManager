@@ -1,6 +1,6 @@
 import { computed, ref } from "../../../../../../static/vue.esm-browser.js"
 import { fromFilePath } from "../../../../../../src/utils/fromDeps/sharpInterface/useSharp/toSharp.js"
-import { genRatioWh } from "../../../../../../src/utils/math/geometry/geom2d.js"
+import { computeAspectRatio } from "../../../../../../src/toolBox/base/forMath/forGeometry/computeGeometry.js"
 export const originalImageInfo = ref({
 
 })
@@ -25,7 +25,7 @@ export const 原始图是否超大图片 = computed(
 export const 原始图比例 = computed(
     ()=>{
         const imageInfo = originalImageInfo.value
-        const ratio = genRatioWh(imageInfo)
+        const ratio = computeAspectRatio(imageInfo)
         return ratio
     }
 )

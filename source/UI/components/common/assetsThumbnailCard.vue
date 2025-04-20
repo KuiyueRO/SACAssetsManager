@@ -31,7 +31,7 @@
 <script setup lang="jsx">
 import { ref, computed, toRef, onMounted, onBeforeUnmount, defineEmits, nextTick, watch } from 'vue';
 import { thumbnail } from '../../../server/endPoints.js';
-import { rgb数组转字符串 } from '../../../../src/utils/color/convert.js';
+import { fromRgbArrayToString } from '../../../../src/toolBox/base/forColor/formatColor.js';
 import { LAYOUT_COLUMN, LAYOUT_ROW } from '../../utils/threhold.js';
 import { 获取素材属性值, UNDEFINED_MARKER, 解析文件内部属性显示, 解析文件属性名标签 } from '../../../data/attributies/parseAttributies.js';
 import { findTagsByFilePath } from '../../../data/tags.js';
@@ -130,7 +130,7 @@ let fn = async () => {
         data => {
             if (!data.error) {
                 pallet.value = data.sort((a, b) => b.count - a.count)
-                firstColorString.value = rgb数组转字符串(pallet.value[0].color)
+                firstColorString.value = fromRgbArrayToString(pallet.value[0].color)
                 emit('palletAdded', pallet.value)
             }
         }
@@ -193,5 +193,11 @@ const $计算卡片属性单元格样式 = computed(
                     `
     }
 )
+
+watch(pallet, (newVal) => {
+    if (newVal && newVal[0]) {
+        firstColorString.value = fromRgbArrayToString(newVal[0].color);
+    }
+}, { immediate: true });
 </script>
 <style scoped></style>

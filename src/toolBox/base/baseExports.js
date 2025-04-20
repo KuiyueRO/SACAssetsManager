@@ -11,6 +11,8 @@ export * from './forCore/index.js';
 // forEvent 事件相关工具
 export * from './forEvent/eventExports.js';
 export { createEventBus } from './forEvent/eventBusTools.js';
+export * from './forEvent/continuousEvents.js';
+export * from './forEvent/keyStateEvents.js';
 
 // forMime MIME相关工具
 export * from './forMime/mimeExports.js';
@@ -28,6 +30,9 @@ export * from './forUI/index.js';
 
 // useEcma ECMA标准相关工具
 export * from './useEcma/textTools.js';
+export * from './useEcma/forType/getValueType.js';
+export * from './useEcma/forObject/formatObjectAsString.js';
+export * from './useEcma/forObject/createChainableProxy.js';
 export * from './useEcma/forString/forSearch.js';
 export * from './useEcma/forString/forTransform.js';
 export * from './useEcma/forString/forHtmlProcessing.js';
@@ -43,6 +48,9 @@ export * from './useEcma/forCrypto/forCache/useCacheProvider.js';
 // useBrowser 浏览器相关工具
 export * from './useBrowser/forIdle/idleQueueTools.js';
 export * from './useBrowser/useCanvas/index.js';
+export * from './useBrowser/useClipBoard.js';
+export * from './useBrowser/forDOM/elementBuilder.js';
+export * from './useBrowser/useDOM/forFocus.js';
 
 // useElectron Electron相关工具
 export * from './useElectron/useHeartBeat.js';
@@ -79,5 +87,29 @@ export * from './usePolyfills/uaAnalysis.js';
 export * from './useDeps/licensesTools.js';
 export * from './useDeps/pinyinTools.js';
 
+// usePath 路径处理工具
+export * from './usePath/forFix.js';
+export * from './usePath/forCheck.js';
+export * from './usePath/forResolve.js';
+
 // useUtils 通用工具
-export * from './useUtils/index.js'; 
+export * from './useUtils/index.js';
+
+// forColor 颜色处理工具 (新增)
+export * from './forColor/computeColorLuminance.js';
+export * from './forColor/formatColor.js';
+export * from './forColor/colorSpace.js';
+export * from './forColor/mixColor.js';
+export * from './forColor/getContrastingColor.js';
+
+// useTime 时间处理工具
+export * from './useTime/forFormat.js';
+
+// useData 数据处理工具
+export * from './useData/forBuffer.js';
+
+// useLayout 布局相关工具
+export * from './useLayout/computeFitScale.js';
+
+// useDOM DOM操作工具
+export * from './useDOM/index.js';

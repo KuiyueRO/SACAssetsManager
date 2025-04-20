@@ -1,15 +1,4 @@
-/**
- * 获取值的类型
- * @param {Object} options - 选项对象
- * @param {*} options.value - 需要检查类型的值
- * @returns {string} 类型名称
- */
-function getValueType({ value }) {
-    if (value === null) return 'null';
-    if (value === undefined) return 'undefined';
-    if (Array.isArray(value)) return 'array';
-    return typeof value;
-}
+import { getValueType } from '../forType/getValueType.js';
 
 /**
  * 检查路径是否在忽略列表中
@@ -114,7 +103,7 @@ function compareDeepValues({ source, target, path, sourceLabel, targetLabel, opt
     
     // 检查是否应该忽略此路径
     if (shouldIgnorePath({ path, ignorePaths })) {
-        return { isIdentical: true, status: 'identical', type: getValueType({ value: source }) };
+        return { isIdentical: true, status: 'identical', type: getValueType(source) };
     }
     
     // 如果提供了自定义比较函数，则使用它
@@ -122,13 +111,13 @@ function compareDeepValues({ source, target, path, sourceLabel, targetLabel, opt
         const isEqual = customCompare(source, target);
         if (isEqual) {
             summary.identical++;
-            return { isIdentical: true, status: 'identical', type: getValueType({ value: source }) };
+            return { isIdentical: true, status: 'identical', type: getValueType(source) };
         }
     }
     
     // 获取类型
-    const sourceType = getValueType({ value: source });
-    const targetType = getValueType({ value: target });
+    const sourceType = getValueType(source);
+    const targetType = getValueType(target);
     
     // 类型不同，直接返回不相等
     if (sourceType !== targetType) {
@@ -250,46 +239,26 @@ function compareObjects({ source, target, path, sourceLabel, targetLabel, option
         if (!sourceKeys.includes(key)) {
             isObjectIdentical = false;
             summary.added++;
-            objectDiff[key] = {
-                isIdentical: false,
-                status: 'added',
-                type: getValueType({ value: target[key] }),
-                valuePair: {
-                    [sourceLabel]: undefined,
-                    [targetLabel]: target[key]
-                }
-            };
-            continue;
-        }
-        
-        if (!targetKeys.includes(key)) {
+            objectDiff[key] = { status: 'added', type: getValueType(target[key]), value: target[key] };
+        } else if (!targetKeys.includes(key)) {
             isObjectIdentical = false;
             summary.removed++;
-            objectDiff[key] = {
-                isIdentical: false,
-                status: 'removed',
-                type: getValueType({ value: source[key] }),
-                valuePair: {
-                    [sourceLabel]: source[key],
-                    [targetLabel]: undefined
-                }
-            };
-            continue;
-        }
-        
-        // 递归比较子属性
-        const comparison = compareDeepValues({
-            source: source[key], 
-            target: target[key], 
-            path: keyPath, 
-            sourceLabel, 
-            targetLabel, 
-            options, 
-            summary
-        });
-        if (!comparison.isIdentical) {
-            isObjectIdentical = false;
-            objectDiff[key] = comparison;
+            objectDiff[key] = { status: 'removed', type: getValueType(source[key]), value: source[key] };
+        } else {
+            // 递归比较子属性
+            const comparison = compareDeepValues({
+                source: source[key], 
+                target: target[key], 
+                path: keyPath, 
+                sourceLabel, 
+                targetLabel, 
+                options, 
+                summary
+            });
+            if (!comparison.isIdentical) {
+                isObjectIdentical = false;
+                objectDiff[key] = comparison;
+            }
         }
     }
     

@@ -1,4 +1,4 @@
-import { addScriptSync } from "../../DOM/addScript.js";
+import { addScriptSync } from "../../../toolBox/base/useBrowser/useDOM/useScripts.js";
 import { _load_ } from "../../module/wgslModule.js";
 addScriptSync(import.meta.resolve('../../../../static/tf.min.js'))
 

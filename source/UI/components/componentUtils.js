@@ -5,7 +5,7 @@
  */
 
 import { debounce } from '../../../src/toolBox/base/useEcma/forFunctions/forDebounce.js';
-import { rgba数组转字符串, rgb数组转字符串 } from '../../../src/utils/color/convert.js';
+import { fromRgbaArrayToString, fromRgbArrayToString } from '../../../src/toolBox/base/forColor/formatColor.js';
 import { 获取素材属性值, 计算素材类型角标 } from '../../data/attributies/parseAttributies.js';
 import { 格式化文件大小 as 格式化大小 } from '../../../src/toolBox/base/useEcma/forFile/forFileSize.js';
 import { readFileInChunks } from '../../../src/toolBox/base/useEcma/forFile/forFileRead.js';
@@ -14,7 +14,10 @@ import { 空图片base64 } from '../../../src/toolBox/base/forMime/forImage.js';
 import { 计算标签文件数量 } from '../../../src/toolBox/feature/forAssets/forTags.js';
 
 const 函数工具 = { debounce }
-const 色彩工具 = {rgba数组转字符串,rgb数组转字符串}
+const 色彩工具 = {
+    rgba数组转字符串: fromRgbaArrayToString,
+    rgb数组转字符串: fromRgbArrayToString
+}
 const 素材条目管理工具 ={
     获取素材属性值,
     计算素材类型角标

@@ -80,8 +80,8 @@ const runtime = {
       const processedImageData = await getImageData(runtime.processedImage.value);
       console.log(runtime)
 
-      const originalHash = 计算图像感知哈希(originalImageData, runtime.thumbnailSize.value);
-      const processedHash = 计算图像感知哈希(processedImageData, runtime.thumbnailSize.value);
+      const originalHash = computeImagePHash(originalImageData, runtime.thumbnailSize.value);
+      const processedHash = computeImagePHash(processedImageData, runtime.thumbnailSize.value);
 
       const hammingDistance = originalHash.split('').reduce((acc, bit, index) => {
         return acc + (bit !== processedHash[index] ? 1 : 0);
@@ -91,7 +91,7 @@ const runtime = {
       const imagesAreSimilar = hammingDistance <= similarityThreshold;
 
       // 计算相似度
-      const similarityScore = 计算图像相似度(originalHash, processedHash);
+      const similarityScore = computeHashSimilarity(originalHash, processedHash);
 
       // 更新运行时状态
       runtime.imagesAreSimilar.value = imagesAreSimilar;
@@ -117,6 +117,8 @@ const runtime = {
 
 <script setup>
 import {  onMounted, onUnmounted, watch, computed } from 'vue';
+import { computeImagePHash, computeHashSimilarity } from '../../../../src/toolBox/feature/featureExports.js';
+
 const props = defineProps(['originalImage','processedImage']);
 
 

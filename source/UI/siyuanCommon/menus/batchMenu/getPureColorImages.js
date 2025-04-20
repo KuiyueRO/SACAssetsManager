@@ -1,7 +1,10 @@
 import { 打开任务控制对话框 } from '../../dialog/tasks.js';
-import { isImage } from '../../../../../src/utils/image/isImage.js';
-import { isPureColor } from '../../../../../src/utils/image/pureColor.js';
-import { confirmAsPromise } from '../../../../../src/utils/siyuanUI/confirm.js';
+import { isImagePathByExtension } from '../../../../../src/toolBox/base/usePath/forCheck.js';
+import { showMessage } from 'siyuan';
+import { confirmAsPromise } from '../../../../../src/toolBox/base/useEnv/siyuanDialog.js';
+import { 递归扫描文件夹并执行任务 } from '../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js';
+import { checkImagePurityBySampling } from '../../../../../src/toolBox/feature/featureExports.js';
+import { computeFileMD5 } from '../../../../../src/toolBox/feature/useFile/computeFileMD5.js';
 const path = require('path')
 const fs = require('fs').promises
 
@@ -12,10 +15,11 @@ export const 执行归集纯色图片 = async(localPath)=>{
     const taskController = await 打开任务控制对话框('整理纯色图片', '正在处理图片...');
 
     const 处理图片 = async (fullPath, fileName, controller, 添加任务) => {
-        if (isImage(fileName)) {
+        if (isImagePathByExtension(fileName)) {
             await 添加任务(async () => {
                 try {
-                    if (await isPureColor(fullPath)) {
+                    const isPure = await checkImagePurityBySampling(fullPath);
+                    if (isPure) {
                         if (!require('fs').existsSync(targetFolder)) {
                             await fs.mkdir(targetFolder, { recursive: true });
                         }

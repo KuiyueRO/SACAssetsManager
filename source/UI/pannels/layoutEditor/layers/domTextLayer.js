@@ -1,7 +1,7 @@
 import Konva from '../../../../../static/konva.js'
 import { getSysFonts } from '../../../../fromThirdParty/siyuanKernel/system.js'
-import { addScript } from '../../../../../src/utils/DOM/addScript.js'
-import { convertDOMToImage } from '../../../../../src/utils/DOM/domToImage.js'
+// import { addScript } from '../../../../../src/utils/DOM/addScript.js' // Unused import
+import { createImageFromDom } from '../../../../../src/toolBox/feature/useBrowser/domToImage.js'
 import { domTextPresets } from './presets/domTextPresets.js'
 
 // 添加缓存存储
@@ -69,7 +69,7 @@ const createDOMTextLayer = async () => {
         let dataUrl = contentCache.get(cacheKey)
         if (!dataUrl) {
           console.log(`⚡ 生成新内容: ${layerId}`)
-          dataUrl = await convertDOMToImage(processedText, config)
+          dataUrl = await createImageFromDom(processedText, config)
           
           // 更新缓存
           if (dataUrl) {

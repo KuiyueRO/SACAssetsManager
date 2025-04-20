@@ -1,3 +1,18 @@
+# 这个区段由开发者编写,未经允许禁止AI修改
+
+- [ ] 重构此文件夹
+
+# AI 笔记
+
+**注意：此目录下的所有功能已被重构并迁移至 `src/toolBox/` 下的相应模块。**
+
+原计划将此目录重构为前端（渲染进程）专用的文件操作工具集，但相关功能已被迁移到以下位置：
+
+- `src/toolBox/feature/forFileSystem/`: 存放通用的文件系统操作函数。
+- `src/toolBox/feature/forElectronFrontend/`: 存放依赖 Electron API 或需要前端 UI 交互的文件系统操作函数。
+
+此目录可以被删除。
+
 # 工具函数库重构笔记
 
 ## 重构状态

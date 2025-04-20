@@ -21,7 +21,7 @@
 import { computed, toRef, ref, onMounted, watch } from 'vue';
 import { 计算素材缩略图样式, 计算扩展名标签样式 } from '../assetStyles.js';
 import { LAYOUT_COLUMN } from '../../../utils/threhold.js';
-import { rgb数组转字符串 } from '../../../../../src/utils/color/convert.js';
+import { fromRgbArrayToString } from '../../../../../src/toolBox/base/forColor/formatColor.js';
 import { 获取素材属性值, 计算素材类型角标 } from '../../../../data/attributies/parseAttributies.js';
 import ImageComparison from '../../../../../src/shared/components/withNodeDefine/ImageComparison.vue';
 import { processImageWithLUTFile } from '../../../../../src/utils/Lut/lutProcessor.js';
@@ -100,7 +100,7 @@ const placeholderStyle = computed(() => ({
     minHeight: size.value + 'px',
     maxWidth: size.value + 'px',
     maxHeight: size.value + 'px',
-    backgroundColor: !imagePallet.value[0] ? "" : rgb数组转字符串(imagePallet.value[0].color),
+    backgroundColor: !imagePallet.value[0] ? "" : fromRgbArrayToString(imagePallet.value[0].color),
 }));
 
 const $计算素材缩略图样式 = computed(() => 计算素材缩略图样式(size.value, cardData));

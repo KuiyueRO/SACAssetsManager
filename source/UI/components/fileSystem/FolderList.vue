@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import { buildMultiClickListener } from '../../../../src/utils/DOM/continuousEvent.js';
+import { createMultiClickListener } from '../../../../src/toolBox/base/forEvent/continuousEvents.js';
 import { 打开文件夹图标菜单 } from '../../siyuanCommon/menus/folderItem.js';
 
 const props = defineProps({
@@ -64,7 +64,7 @@ const props = defineProps({
 })
 
 const callbacks = (folder) => {
-    folder.callbacks = folder.callbacks || buildMultiClickListener(300, [
+    folder.callbacks = folder.callbacks || createMultiClickListener(300, [
         (event) => {
             props.toggleSUbFolders(folder.path)
         },

@@ -1,5 +1,5 @@
-import { addEchartsSync } from '../../../../src/utils/DOM/addScript.js'
+import { loadEchartsSync } from '../../../../src/toolBox/feature/forLibs/echartsLoader.js'
 
-addEchartsSync()
+loadEchartsSync()
 
 await import("./echarts-wordcloud.min.js")

@@ -10,13 +10,13 @@ import { 模式切换菜单项 } from "./modeMenu/modeSwitch.js";
 import { 计算主标签 } from "./common/menuHead.js";
 import { 添加插件菜单内容 } from "./pluginMenu/pluginMenu.js";
 import { 打开本地资源视图 } from "../tabs/assetsTab.js";
-import { isImage } from "../../../../src/utils/image/isImage.js";
-import { 根据背景色获取黑白前景色 } from "../../../../src/utils/color/processColor.js";
+import { isImagePathByExtension } from "../../../../src/toolBox/base/usePath/forCheck.js";
+import { getContrastingTextColor } from "../../../../src/toolBox/base/forColor/getContrastingColor.js";
 import { fetchSync } from "../../../../src/toolBox/base/forNetWork/forFetch/fetchSyncTools.js";
 import { 向菜单批量添加项目 } from "../../../../src/utils/siyuanUI/menu.js";
 import { checkClipboardForFilePath } from "../../../../src/toolBox/base/useBrowser/useClipBoard.js";
-import { rgbaArrayToHexString } from "../../../../src/utils/color/colorSpace.js";
-import { h, f } from "../../../../src/utils/DOM/builder.js";
+import { fromRgbaToHex } from "../../../../src/toolBox/base/forColor/colorSpace.js";
+import { createElement, createFragment } from "../../../../src/toolBox/base/useBrowser/forDOM/elementBuilder.js";
 import { 创建链式思源菜单 } from "../../../../src/toolBox/useAge/forSiyuan/useSiyuanMenu.js";
 const { eventBus } = plugin
 
@@ -35,7 +35,7 @@ const 颜色操作 = {
       if (!colorData || !Array.isArray(colorData)) return;
       
       colorData.forEach(colorInfo => {
-        const colorHex = rgbaArrayToHexString(colorInfo.color);
+        const colorHex = fromRgbaToHex(colorInfo.color);
         const fragment = this.创建颜色菜单项(colorHex, colorInfo);
         menu.addItem({
           element: fragment,
@@ -48,24 +48,24 @@ const 颜色操作 = {
   },
 
   创建颜色菜单项(colorHex, colorInfo) {
-    return f(
-      h('svg', {
+    return createFragment(
+      createElement('svg', {
         class: 'b3-menu__icon',
         viewBox: '0 0 24 24',
         width: '16',
         height: '16',
         fill: 'currentColor'
       },
-        h('svg:use', {
+        createElement('svg:use', {
           'xlink:href': '#iconColors'
         })
       ),
-      h('div', {
+      createElement('div', {
         class: 'b3-menu__label',
         style: {
           backgroundColor: colorHex,
           marginRight: '5px',
-          color: 根据背景色获取黑白前景色(colorHex)
+          color: getContrastingTextColor(colorHex)
         },
       }, `颜色操作: ${colorHex}`)
     );
@@ -230,7 +230,7 @@ const 菜单构建 = {
   },
 
   添加图片预览器菜单项(menu, assets) {
-    if (assets.find(item => isImage(item.path))) {
+    if (assets.some(item => item && isImagePathByExtension(item.path))) {
       menu.addItem({
         label: "在预览器中打开",
         click: () => {
@@ -326,7 +326,7 @@ function 添加编辑模式菜单(menu, assets) {
   }
   
   // 图片相关菜单
-  if (assets.find(item => item && isImage(item.path))) {
+  if (assets.some(item => item && isImagePathByExtension(item.path))) {
     menu.addItem(元数据编辑菜单组.打开图片编辑器对话框(assets));
     menu.addItem(元数据编辑菜单组.打开简版图片编辑器(assets));
   }

@@ -1,7 +1,8 @@
 //颜色数组距离计算
 //使用CIEDE2000算法计算颜色之间的距离
 // 将RGBA颜色转换为LAB颜色
-import { RGBA2LAB } from "./colorSpace.js";
+// import { RGBA2LAB } from "./colorSpace.js"; // Old import
+import { fromRgbToLab } from '../toolBox/base/forColor/colorSpace.js'; // New import
 export {CIEDE2000} from '../../../src/toolBox/feature/forColors/useSimilarityExports.js'
 export function CIE76(color1,color2){
     // 将颜色值转换为整数
@@ -34,8 +35,20 @@ export function CIEDE2000RGBA(pix1, pix2) {
     if (cache.has(cacheKey)) {
         return cache.get(cacheKey);
     }
-    const lab1 = RGBA2LAB(pix1[0], pix1[1], pix1[2], pix1[3] || 0);
-    const lab2 = RGBA2LAB(pix2[0], pix2[1], pix2[2], pix2[3] || 0);
+    // Construct RGB objects, ignoring alpha for LAB conversion
+    const rgb1 = { r: pix1[0], g: pix1[1], b: pix1[2] };
+    const rgb2 = { r: pix2[0], g: pix2[1], b: pix2[2] };
+
+    // const lab1 = RGBA2LAB(pix1[0], pix1[1], pix1[2], pix1[3] || 0); // Old usage
+    // const lab2 = RGBA2LAB(pix2[0], pix2[1], pix2[2], pix2[3] || 0); // Old usage
+    const lab1 = fromRgbToLab(rgb1); // New usage
+    const lab2 = fromRgbToLab(rgb2); // New usage
+
+    if (!lab1 || !lab2) {
+        console.warn("Failed to convert RGB to LAB in CIEDE2000RGBA", {rgb1, rgb2, lab1, lab2});
+        return 100; // Return max difference on error
+    }
+
     const result = CIEDE2000(lab1, lab2);
     cache.set(cacheKey, result);
     return result;

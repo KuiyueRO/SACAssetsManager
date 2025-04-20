@@ -1,4 +1,4 @@
-import { rgbToHsl, hslToRgb } from './colorSpace';
+import { fromRgbToHsl, fromHslToRgb } from '../toolBox/base/forColor/colorSpace.js';
 
 /**
  * 生成互补色
@@ -7,13 +7,13 @@ import { rgbToHsl, hslToRgb } from './colorSpace';
  */
 export function getComplementaryColor(rgb) {
     // 转换为HSL
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const hsl = fromRgbToHsl(rgb);
     
     // 计算互补色的色相 (在色环上旋转180度)
     const complementaryHue = (hsl.h + 0.5) % 1;
     
     // 转换回RGB
-    return hslToRgb(complementaryHue, hsl.s, hsl.l);
+    return fromHslToRgb({ h: complementaryHue, s: hsl.s, l: hsl.l });
 }
 
 /**
@@ -23,7 +23,7 @@ export function getComplementaryColor(rgb) {
  * @returns {Array<{r: number, g: number, b: number}>} 包含三个颜色的数组：原色和两个分裂互补色
  */
 export function getSplitComplementaryColors(rgb, angle = 30) {
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const hsl = fromRgbToHsl(rgb);
     const complementaryHue = (hsl.h + 0.5) % 1;
     
     // 计算两个分裂互补色的色相
@@ -33,8 +33,8 @@ export function getSplitComplementaryColors(rgb, angle = 30) {
     
     return [
         rgb,
-        hslToRgb(split1, hsl.s, hsl.l),
-        hslToRgb(split2, hsl.s, hsl.l)
+        fromHslToRgb({ h: split1, s: hsl.s, l: hsl.l }),
+        fromHslToRgb({ h: split2, s: hsl.s, l: hsl.l })
     ];
 }
 
@@ -44,7 +44,7 @@ export function getSplitComplementaryColors(rgb, angle = 30) {
  * @returns {Array<{r: number, g: number, b: number}>} 包含三个颜色的数组
  */
 export function getTriadicColors(rgb) {
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const hsl = fromRgbToHsl(rgb);
     
     // 在色环上相隔120度
     const triad1 = (hsl.h + 1/3) % 1;
@@ -52,8 +52,8 @@ export function getTriadicColors(rgb) {
     
     return [
         rgb,
-        hslToRgb(triad1, hsl.s, hsl.l),
-        hslToRgb(triad2, hsl.s, hsl.l)
+        fromHslToRgb({ h: triad1, s: hsl.s, l: hsl.l }),
+        fromHslToRgb({ h: triad2, s: hsl.s, l: hsl.l })
     ];
 }
 
@@ -63,7 +63,7 @@ export function getTriadicColors(rgb) {
  * @returns {Array<{r: number, g: number, b: number}>} 包含四个颜色的数组
  */
 export function getTetradicColors(rgb) {
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const hsl = fromRgbToHsl(rgb);
     
     // 在色环上相隔90度
     const tetrad1 = (hsl.h + 0.25) % 1;
@@ -72,9 +72,9 @@ export function getTetradicColors(rgb) {
     
     return [
         rgb,
-        hslToRgb(tetrad1, hsl.s, hsl.l),
-        hslToRgb(tetrad2, hsl.s, hsl.l),
-        hslToRgb(tetrad3, hsl.s, hsl.l)
+        fromHslToRgb({ h: tetrad1, s: hsl.s, l: hsl.l }),
+        fromHslToRgb({ h: tetrad2, s: hsl.s, l: hsl.l }),
+        fromHslToRgb({ h: tetrad3, s: hsl.s, l: hsl.l })
     ];
 }
 
@@ -85,7 +85,7 @@ export function getTetradicColors(rgb) {
  * @returns {Array<{r: number, g: number, b: number}>} 包含三个颜色的数组
  */
 export function getAnalogousColors(rgb, angle = 30) {
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+    const hsl = fromRgbToHsl(rgb);
     const angleInHue = angle / 360;
     
     // 计算相邻的两个色相
@@ -94,7 +94,7 @@ export function getAnalogousColors(rgb, angle = 30) {
     
     return [
         rgb,
-        hslToRgb(analogous1, hsl.s, hsl.l),
-        hslToRgb(analogous2, hsl.s, hsl.l)
+        fromHslToRgb({ h: analogous1, s: hsl.s, l: hsl.l }),
+        fromHslToRgb({ h: analogous2, s: hsl.s, l: hsl.l })
     ];
 } 

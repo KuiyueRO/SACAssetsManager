@@ -145,8 +145,9 @@ async function 获取图片文件列表(dir) {
 }
 
 
-import { 计算图像感知哈希 } from '../../../../../src/utils/image/pHash.js';
-import { 计算灰度图像数据哈希 } from '../../../../../src/utils/image/greyScaleHash.js';
+import { isImagePathByExtension } from '../../../../../src/toolBox/base/usePath/forCheck.js';
+import { 打开任务控制对话框 } from '../../dialog/tasks.js';
+import { computeImagePHash, computeImageDataHash } from '../../../../../src/toolBox/feature/featureExports.js';
 import { filePickPromise } from '../../dialog/fileDiffAndPick.js';
 async function 计算图片哈希(filePath, mode = 'simple') {
     try {
@@ -163,9 +164,9 @@ async function 计算图片哈希(filePath, mode = 'simple') {
                 const imageData = ctx.getImageData(0, 0, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
                 let hash;
                 if (mode === 'simple') {
-                    hash = 计算灰度图像数据哈希(imageData.data);
+                    hash = computeImageDataHash(imageData.data);
                 } else if (mode === 'feature') {
-                    hash = 计算图像感知哈希(imageData.data, THUMBNAIL_SIZE);
+                    hash = computeImagePHash(imageData.data, THUMBNAIL_SIZE);
                 } else {
                     throw new Error('不支持的哈希计算模式');
                 }

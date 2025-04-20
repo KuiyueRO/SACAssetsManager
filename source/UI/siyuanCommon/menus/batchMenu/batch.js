@@ -1,11 +1,13 @@
-import { plugin } from '../../../../pluginSymbolRegistry.js'
+import { plugin } from '../../../../asyncModules.js'
 import { 打开任务控制对话框 } from '../../dialog/tasks.js'
-import { confirmAsPromise } from '../../../../../src/utils/siyuanUI/confirm.js'
+import { confirmAsPromise } from '../../../../../src/toolBox/base/useEnv/siyuanDialog.js'
 import { showInputDialogPromise } from '../../dialog/inputDialog.js'
 import { 执行删除所有ThumbsDB } from './removeThumbsDb.js'
 import { 执行按扩展名分组 as 执行展平并按扩展名分组 } from './flatWithExtend.js'
 import { 以artTemplate渲染模板 as 渲染模板 } from '../../../../../src/toolBox/useAge/forText/useArtTemplate.js'
 import { 执行还原重复文件 } from './restoreDuplicates.js'
+import { isImagePathByExtension } from '../../../../src/toolBox/base/usePath/forCheck.js'
+
 const 构建UI执行函数 = (options={执行函数:null,用户确认提示:null}) => {
     const {执行函数,用户确认提示} = options
     return async (options = { path: null }) => {
@@ -309,34 +311,28 @@ export const 基于pHash的图片去重 = (options, 扫描完成后选择) => {
 };
 
 export const 归集图片文件 = (options) => {
+    const localPath = options.data.localPath;
+    const includeSubfolders = options.data.includeSubfolders || false;
+
     return {
-        label: '归集图片文件',
+        label: includeSubfolders ? plugin.翻译`归集图片文件(包含子文件夹)` : plugin.翻译`归集图片文件(仅当前文件夹)`,
         click: async () => {
-            const localPath = options.data.localPath;
             if (!localPath) {
                 console.error('无法获取本地路径');
                 return;
             }
-
-            const confirm = await confirmAsPromise(
-                '归集图片文件',
-                '是否包括子文件夹中的图片?',
-            );
-
-            if (confirm === null) return; // 用户取消操作
-
-            const includeSubfolders = confirm;
-
+            let confirm = await confirmAsPromise(
+                `确认开始归集图片文件?`,
+                `开始后， ${localPath} ${includeSubfolders ? '及子文件夹中' : '中'} 的图片文件将会被移动到 "归集的图片" 文件夹。`
+            )
+            if (!confirm) {
+                return;
+            }
             const taskController = await 打开任务控制对话框('归集图片文件', '正在归集图片文件...');
 
             try {
                 const fs = require('fs').promises;
                 const path = require('path');
-
-                const isImage = (file) => {
-                    const ext = path.extname(file).toLowerCase();
-                    return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'].includes(ext);
-                };
 
                 const targetFolder = path.join(localPath, '归集的图片');
                 await fs.mkdir(targetFolder, { recursive: true });
@@ -348,15 +344,23 @@ export const 归集图片文件 = (options) => {
                     for (const entry of entries) {
                         const fullPath = path.join(dir, entry.name);
                         if (entry.isDirectory() && includeSubfolders) {
+                            if (fullPath === targetFolder) continue;
                             await taskController.addTask(async () => {
                                 await collectImages(fullPath)
                             }, 0)
-                        } else if (entry.isFile() && isImage(entry.name)) {
+                        } else if (entry.isFile() && isImagePathByExtension(entry.name)) {
                             await taskController.addTask(async () => {
-                                const newPath = path.join(targetFolder, entry.name);
-                                await fs.rename(fullPath, newPath);
-                                processedFiles++;
-                                return { message: `已移动: ${entry.name}` };
+                                try {
+                                    const newPath = path.join(targetFolder, entry.name);
+                                    if (path.dirname(fullPath) !== targetFolder) {
+                                        await fs.rename(fullPath, newPath);
+                                        processedFiles++;
+                                        return { message: `已移动: ${entry.name}` };
+                                    }
+                                } catch (renameError) {
+                                     console.error(`移动文件 ${entry.name} 失败:`, renameError);
+                                     return { message: `移动失败: ${entry.name}`, error: true };
+                                }
                             }, 1);
                         }
                     }

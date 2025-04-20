@@ -37,6 +37,10 @@ export * from './useDataStruct/index.js';
 
 // useImage 图像处理工具
 export * from './useImage/imageToolBox.js';
+export * from './useImage/forColorAnalysis.js';
+export * from './useImage/computePerceptualHash.js';
+export * from './useImage/computeSimpleHash.js';
+export * from './useImage/forImageManipulation.js';
 
 // useKonva Konva绘图工具
 export * from './useKonva/index.js';
@@ -55,6 +59,19 @@ export * from './useSyncedstore/index.js';
 
 // useUI UI工具
 export * from './useUI/index.js';
+export * from './forUI/colorPicker.js';
+
+// useBrowser (Assuming this category is suitable, or create a new one)
+export * from './useBrowser/domToImage.js';
+
+// forLibs (New category for library-specific helpers)
+export * from './forLibs/echartsLoader.js';
+
+// forCodeHighlighting (New category)
+export * from './forCodeHighlighting/writeHighlightedCodeToIframe.js';
+
+// useDOMEvents (New category for complex DOM event handling)
+export * from './useDOMEvents/combinedContinuousEvents.js';
 
 // useVue Vue框架工具
 export * from './useVue/vueExports.js';

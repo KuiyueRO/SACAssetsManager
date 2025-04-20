@@ -1,5 +1,5 @@
-import { addEcharts } from '../../DOM/addScript.js';
-await addEcharts()
+import { loadEchartsAsync } from '../../../toolBox/feature/forLibs/echartsLoader.js';
+await loadEchartsAsync();
 
 export function 创建柱状图像直方图配置(histogram) {
     // 找到数据中的最大值
