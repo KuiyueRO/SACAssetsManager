@@ -1,1 +1,0 @@
-export {绘制贝塞尔曲线,从点集创建贝塞尔曲线绘制函数} from '../../../../src/toolBox/feature/useKonva/forShapes.js'

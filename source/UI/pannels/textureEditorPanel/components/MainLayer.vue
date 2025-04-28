@@ -309,7 +309,7 @@ const handleElementClick = (element) => {
 
 // 获取Konva层的方法
 const getLayer = () => {
-  return mainLayer.value ? mainLayer.value.getNode() : null;
+  return mainLayer.value;
 };
 
 // 公开方法和属性

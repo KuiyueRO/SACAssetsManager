@@ -1,10 +1,8 @@
 import { 打开任务控制对话框 } from '../../dialog/tasks.js';
 import { isImagePathByExtension } from '../../../../../src/toolBox/base/usePath/forCheck.js';
-import { showMessage } from 'siyuan';
 import { confirmAsPromise } from '../../../../../src/toolBox/base/useEnv/siyuanDialog.js';
-import { 递归扫描文件夹并执行任务 } from '../../../../../src/toolBox/feature/forFileSystem/forBatchOperation.js';
-import { checkImagePurityBySampling } from '../../../../../src/toolBox/feature/featureExports.js';
-import { computeFileMD5 } from '../../../../../src/toolBox/feature/useFile/computeFileMD5.js';
+import { checkImagePurityBySampling } from '../../../../../src/toolBox/feature/useImage/forColorAnalysis.js';
+
 const path = require('path')
 const fs = require('fs').promises
 

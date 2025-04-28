@@ -2,12 +2,9 @@ import { plugin } from "../../../../asyncModules.js";
 import { metaRecords } from "../../../../server/endPoints.js";
 import { isImagePath } from "../../../../../src/toolBox/feature/forFileSystem/forPathType.js"
 import { confirmAsPromise } from '../../../../../src/toolBox/base/useEnv/siyuanDialog.js'
-import { 压缩单个图片 } from '../../../../../src/utils/image/compress.js'
 import { 打开文件夹,批量打开文件夹 } from './electron-frontEnd.js/folder.js'
 import { showInputDialogPromise } from "../../dialog/inputDialog.js";
-import { getLang } from '../../../../src/utils/lang.js';
-import { showMessage } from 'siyuan';
-import { compressImageFile } from '../../../../../src/toolBox/feature/featureExports.js';
+import { compressImageFile } from '../../../../../src/toolBox/feature/useImage/forImageManipulation.js';
 
 const 生成压缩目标文件名 = (imagePath, 压缩质量, 文件格式) => {
     return imagePath.replace(/\.[^.]+$/, '') + `_sac_${压缩质量}.${文件格式}`

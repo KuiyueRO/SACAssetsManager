@@ -1,4 +1,5 @@
-import { parseEfuContentFromFile, searchByEverything } from '../../../src/utils/thirdParty/everything.js';
+import { fromEfuFile_parseContent } from "../../../src/toolBox/feature/thirdParty/thirdParty/everything/fromEfuFile.js";
+import { useEverything_search } from '../../../src/toolBox/feature/thirdParty/thirdParty/everything/useEverythingApi.js';
 import { 获取本地文件夹数据, 获取标签列表数据, 获取颜色查询数据, 处理默认数据, 获取文档中的文件链接, 获取本地文件列表数据 } from "../../data/siyuanAssets.js"
 import { searchByAnytxt } from '../../fromThirdParty/anytext/index.js'
 export const 获取数据到缓存 = async (接口位置, 搜索函数, 搜索, 接口启用, 数据缓存) => {
@@ -81,7 +82,7 @@ export const 根据数据配置获取数据到缓存 = (数据模型, signal, ca
         '本地文件系统': () => 获取本地文件夹数据(数据模型.realGlob, 数据模型.附件数据源, callBack, 1, signal),
         '思源标签': () => 获取标签列表数据(数据模型.tagLabel, 数据模型.附件数据源, callBack, 1, signal, 数据模型.realGlob),
         '内部颜色索引': () => 获取颜色查询数据(数据模型.color, 数据模型.附件数据源, callBack, 1, signal, 数据模型.realGlob),
-        'everything': () => 获取数据到缓存(数据模型.everythingApiLocation, searchByEverything, 数据模型.realGlob.search, 数据模型.status.apiEnabled, 数据模型.附件数据源),
+        'everything': () => 获取数据到缓存(数据模型.everythingApiLocation, useEverything_search, 数据模型.realGlob.search, 数据模型.status.apiEnabled, 数据模型.附件数据源),
         'anytxt': () => 获取数据到缓存(数据模型.anytxtApiLocation, searchByAnytxt, 数据模型.realGlob.search, 数据模型.status.apiEnabled, 数据模型.附件数据源),
         '默认': () => 处理默认数据(数据模型.tab, 数据模型.附件数据源, async () => {
             if (数据模型.block_id) {
@@ -99,7 +100,7 @@ export const 根据数据配置获取数据到缓存 = (数据模型, signal, ca
 const fetchEfuData = async (efuPath, dataTarget, callBack) => {
     let data;
     try {
-        data = await parseEfuContentFromFile(efuPath);
+        data = await fromEfuFile_parseContent(efuPath);
         dataTarget.push(...data);
         callBack && callBack();
     } catch (e) {

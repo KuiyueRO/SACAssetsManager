@@ -1,5 +1,5 @@
 import { ref,computed } from "../../../../static/vue.esm-browser.js"
-import { createShapeMask } from "../../../../toolBox/feature/forCanvas/useShapeMasks.js"
+import { createShapeMask } from "../../../../src/toolBox/feature/forCanvas/useShapeMasks.js"
 
 export const useNodeImage = () => {
     const nodeImageUrl = ref('')

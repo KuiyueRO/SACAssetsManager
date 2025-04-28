@@ -4,7 +4,7 @@
  */
 
 import { fromRgbToLab } from '../../base/forColor/colorSpace.js';
-import { CIEDE2000 } from './useCIEDE2000.js'; // 直接从源文件导入
+import { CIEDE2000 } from '../forColors/useCIEDE2000.js'; // 直接从源文件导入
 
 /**
  * 计算两个 RGB 颜色之间的 CIE76 色差。

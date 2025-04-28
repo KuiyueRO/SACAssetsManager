@@ -11,12 +11,12 @@
  * @module 系统初始化
  */
 
-// 启用自定义require功能
-import '../../src/utils/hack/hackRequire.js'
+// import '../../src/utils/hack/hackRequire.js' // 织注释掉这行，因为文件似乎已废弃
 
 // 导入各初始化模块
 import { 初始化消息通道 } from './bootstrap/requireHack.js'
 import { 在DOM加载后初始化日志 } from './bootstrap/logManager.js'
+import '../../src/toolBox/base/useNode/forRequire/hackRequire.js'
 
 /**
  * 系统启动流程

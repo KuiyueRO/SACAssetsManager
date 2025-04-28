@@ -2,10 +2,10 @@ import { kernelApi, plugin } from '../asyncModules.js'
 import { applyURIStreamJson, applyURIStreamJsonCompatible, createCompatibleCallback } from './fetchStream.js'
 import { queryTags } from './tags.js'
 import { 转换笔记查询结果到附件项 } from './transform/toAssetItem.js'
-import { 异步数组转存 } from '../../src/utils/useEcma/useArray/pipe.js'
-import { 按文档ID查询file链接, 查询块id数组 } from '../../src/utils/sql/siyuanSentence.js'
+import { 异步数组转存 } from '../../src/toolBox/base/useEcma/forArray/forAsyncTransfer.js'
+import { getSqlQuery_FileLinksByDocId, getSqlQuery_BlocksByIds } from '../../src/toolBox/useAge/forSiyuan/getSQLQueries.js'
 import { applyStmt } from './galleryDefine.js'
-import { 按笔记本查询附件, 查询所有附件, 按文档ID查询所有子文档附件 } from '../../src/utils/sql/siyuanSentence.js'
+import { getSqlQuery_AssetsByBox, getSqlQuery_AllAssets, getSqlQuery_ChildAssetsByDocId } from '../../src/toolBox/useAge/forSiyuan/getSQLQueries.js'
 export async function 获取本地文件夹数据(globSetting, target, callback, step, signal) {
     console.log('[SiyuanAssets] 开始获取本地文件夹数据:', {
         globSetting,
@@ -23,7 +23,7 @@ export async function 获取本地文件夹数据(globSetting, target, callback,
 async function 获取标签相关笔记(tagLabel) {
     let tagNotes = await kernelApi.fullTextSearchBlock({ query: `#${tagLabel}#` })
     let sql查询结果 = await kernelApi.sql({
-        stmt: 查询块id数组(tagNotes.blocks.map(item => `"${item.id}"`))
+        stmt: getSqlQuery_BlocksByIds(tagNotes.blocks.map(item => item.id))
     })
     return await 转换笔记查询结果到附件项(sql查询结果)
 }
@@ -77,17 +77,17 @@ export const 处理默认数据 = (tab, target, callback) => {
 function 获取查询语句(tab, limit, offset) {
     if (tab && tab.data) {
         if (tab.data.block_id) {
-            return 按文档ID查询所有子文档附件(tab.data.block_id, limit, offset)
+            return getSqlQuery_ChildAssetsByDocId(tab.data.block_id, limit, offset)
         } else if (tab.data.box) {
-            return 按笔记本查询附件(tab.data.box, limit, offset)
+            return getSqlQuery_AssetsByBox(tab.data.box, limit, offset)
         } else if (tab.data.type === 'sql') {
             return tab.data.stmt
         }
     }
-    return 查询所有附件(limit, offset)
+    return getSqlQuery_AllAssets(limit, offset)
 }
 export async function 获取文档中的文件链接(docId, limit = 100, offset = 0) {
-    const query = 按文档ID查询file链接(docId, limit, offset)
+    const query = getSqlQuery_FileLinksByDocId(docId, limit, offset)
     const result = await kernelApi.sql({ stmt: query })
     let lute = window.Lute.New()
     // 合并所有markdown文本为一个字符串

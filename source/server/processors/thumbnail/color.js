@@ -1,9 +1,9 @@
-import { computeKMeansClustersEuclidean as 欧几里得聚类 } from '../../../../toolBox/feature/forColor/useColorClustering.js'
+import { computeKMeansClustersEuclidean as 欧几里得聚类 } from '../../../../src/toolBox/feature/forColor/useColorClustering.js'
 // import { 欧几里得聚类, CIEDE2000聚类 } from '../../../../src/utils/color/Kmeans.js'
 import { 找到文件颜色, 添加到颜色索引 } from '../color/colorIndex.js'
-import { awaitForEach } from '../../../../src/toolBox/base/baseExports.js'
+import { forEachAsyncSerial } from '../../../../src/toolBox/base/useAsync/forEachAsyncSerial.js'
 import { 缩放图像到32 } from './utils/sharp.js'
-import { isImageDataBufferLike, getBufferFromImageDataLike } from '../../../../src/toolBox/base/baseExports.js'
+import { isImageDataBufferLike, getBufferFromImageDataLike } from '../../../../src/toolBox/base/useData/forBuffer.js'
 /**
  * 获取图像的主色调
  * @param {Object} buffer - 图像的缓冲区对象
@@ -52,7 +52,7 @@ async function processColors(rgba, filePath) {
             color: center.color.map(Math.floor)
         }))
         .filter(item => item.percent > 0.05)
-    await awaitForEach(colors, async (colorItem) => {
+    await forEachAsyncSerial(colors, async (colorItem) => {
         await 添加到颜色索引(colorItem, filePath)
     })
     let finded = await 找到文件颜色(filePath)

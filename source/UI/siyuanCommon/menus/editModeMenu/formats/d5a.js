@@ -1,10 +1,10 @@
 import { confirmAsPromise } from '../../../../../../src/toolBox/base/useEnv/siyuanDialog.js'
 import { kernelApi, plugin } from '../../../../../asyncModules.js'
 import {
-  处理单个D5A文件缩略图,
-  执行缩略图写入,
-  批量处理D5A文件缩略图数据,
-} from '../../../../../../src/utils/thirdParty/d5/index.js'
+  useD5a_processSingleThumbnail as 处理单个D5A文件缩略图,
+  useD5a_replaceThumbnail as 执行缩略图写入,
+  useD5a_processBatchThumbnails as 批量处理D5A文件缩略图数据
+} from '../../../../../../src/toolBox/feature/forD5a/useD5aFile.js'
 const { 翻译 } = plugin
 
 // 新增辅助函数，提高代码可读性

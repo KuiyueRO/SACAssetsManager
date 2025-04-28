@@ -9,8 +9,11 @@
   </div>
 </template>
 <script nodeDefine>
-import { 计算图像感知哈希,计算图像相似度 } from '../../../../src/utils/image/pHash.js';
-import {ref} from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue';
+//import { useNodeData } from './useNodeData.js'; // 注释掉未使用的导入
+import { 计算图像感知哈希, 计算图像相似度 } from '../../../toolBox/feature/useImage/computePerceptualHash.js';
+import { kernelApi } from "runtime";
+
 // 声明运行时状态存储
 const runtime = {
   originalImage: ref("/plugins/SACAssetsManager/assets/wechatDonate.jpg"),

@@ -1,4 +1,4 @@
-import { Vector2 } from "../../../../src/utils/image/textures/pattern/geometry-utils.js"
+import { Vector2 } from "/plugins/SACAssetsManager/src/toolBox/feature/useProceduralImageGeneration/pattern/index.js"
 export const genPatternConfig = (basis1, basis2, nodeTransform, fillImageUrl, fillTransform, lineColor, lineWidth) => {
     return {
         lattice: {

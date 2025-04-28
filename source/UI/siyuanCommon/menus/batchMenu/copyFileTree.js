@@ -4,7 +4,7 @@ import { confirmAsPromise } from "../../../../../src/toolBox/base/useEnv/siyuanD
 const path = require('path');
 const fs = require('fs').promises;
 const { clipboard } = require('electron');
-import { 从文件树生成markdown列表,从文件树生成markdown段落 } from "../../../../../src/utils/siyuanData/contentBuilder.js";
+import { formatTreeToMarkdownList, formatTreeToMarkdownParagraphs } from "../../../../../src/toolBox/base/format/formatTreeToMarkdown.js";
 /**
  * 获取文件属性
  * @param {string} fullPath - 文件的完整路径
@@ -118,9 +118,9 @@ export const 执行复制文档树结构 = async (localPath, sortBy = 'name', so
             
             let markdownContent = `# 文档树结构: ${localPath}\n\n`;
             if (type === 'list') {
-                markdownContent += 从文件树生成markdown列表(treeStructure);
+                markdownContent += formatTreeToMarkdownList(treeStructure);
             } else if (type === 'paragraph') {
-                markdownContent += 从文件树生成markdown段落(treeStructure);
+                markdownContent += formatTreeToMarkdownParagraphs(treeStructure);
             } else {
                 throw new Error(`未知的类型: ${type}`);
             }

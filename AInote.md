@@ -479,5 +479,6 @@ export default class SACAssetsManager extends Plugin {
 ## Refactoring Todos
 
 -   **Refactor `assetGalleryPanel.vue`:** Remove dependency on monkey-patching `Array.prototype.push` (from `src/utils/useEcma/useArray/push.js`). See `src/utils/AInote.md` for details.
+-   **TODO (from src/utils/AInote.md):** Refactor `assetGalleryPanel.vue` to remove dependency on `创建带中间件的Push方法` (originally in `src/utils/useEcma/useArray/push.js`, which relied on monkey-patching `Array.prototype.push`). Replace the push call with a new data processing function encapsulating the middleware logic.
 
 <!-- Potentially more notes --> 

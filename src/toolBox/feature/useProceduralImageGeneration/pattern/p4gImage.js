@@ -1,10 +1,9 @@
-import { CMImagePattern } from "./cmImage.js";
-import { 在画布上下文批量绘制线条 } from "../../../canvas/draw/simpleDraw/lines.js";
+import { 在画布上下文批量绘制线条 } from "../../../base/useBrowser/useCanvas/simpleDraw/lines.js";
+import { drawImageWithConfig } from "../../../base/useBrowser/useCanvas/simpleDraw/images.js";
+import { 在画布上下文批量绘制点 } from "../../../base/useBrowser/useCanvas/simpleDraw/points.js";
 import { 校验P1晶格基向量, 校验配置基向量是否等长 as 校验P4G图案配置 } from "./utils/config.js";
 import { 规范化P1图案配置, 规范化CM图案配置 } from "./utils/config.js";
 import { 从视点和基向量对计算P1网格范围 } from "./utils/index.js";
-import { drawImageWithConfig } from "../../../canvas/draw/simpleDraw/images.js";
-import { 在画布上下文批量绘制标记点 } from "../../../canvas/draw/simpleDraw/points.js";
 
 export class P4GImagePattern {
     constructor(config) {
@@ -81,7 +80,7 @@ export class P4GImagePattern {
         if (this.config.render.showGrid) {
             const { lines, points } = this.renderRhombusGrid(ctx, gridRange);
             lines && 在画布上下文批量绘制线条(ctx, lines);
-            points && 在画布上下文批量绘制标记点(ctx, points, {
+            points && 在画布上下文批量绘制点(ctx, points, {
                 color: '#ff0000',
                 radius: 3
             })

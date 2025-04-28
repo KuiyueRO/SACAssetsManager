@@ -59,7 +59,11 @@ const gridGroup = ref(null);
 
 // 定义绘制网格的函数
 const drawGrid = () => {
-  if (!gridGroup.value || !gridGroup.value.getNode() || !props.visible) return;
+  // 确保gridGroup存在且有getNode方法
+  if (!gridGroup.value || !gridGroup.value.getNode || !props.visible) return;
+  
+  const konvaGroup = gridGroup.value.getNode();
+  if (!konvaGroup) return;
 
   // 获取当前视口边界并添加额外信息
   const bounds = { 
@@ -70,7 +74,7 @@ const drawGrid = () => {
 
   // 调用工具函数绘制网格
   drawGridWithThrottle(
-    gridGroup.value.getNode(),  // Konva网格组
+    konvaGroup,  // 使用Konva的原生节点对象
     bounds,                     // 视口边界
     props.scale,                // 当前缩放比例
     props.gridSize,             // 网格大小配置
@@ -100,6 +104,22 @@ onMounted(() => {
 // 向父组件暴露方法
 defineExpose({
   redraw: drawGrid,
-  gridGroup
+  gridGroup,
+  // 添加设置可见性的方法
+  setVisible(isVisible) {
+    // 通过直接修改DOM元素的可见性来实现
+    if (gridGroup.value) {
+      const konvaGroup = gridGroup.value.getNode && gridGroup.value.getNode();
+      if (konvaGroup) {
+        konvaGroup.visible(isVisible);
+        // 如果有父级Layer，触发它的绘制
+        const parent = konvaGroup.getParent();
+        if (parent && typeof parent.batchDraw === 'function') {
+          parent.batchDraw();
+        }
+      }
+    }
+    return isVisible;
+  }
 });
 </script> 

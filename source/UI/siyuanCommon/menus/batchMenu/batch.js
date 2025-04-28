@@ -6,7 +6,7 @@ import { 执行删除所有ThumbsDB } from './removeThumbsDb.js'
 import { 执行按扩展名分组 as 执行展平并按扩展名分组 } from './flatWithExtend.js'
 import { 以artTemplate渲染模板 as 渲染模板 } from '../../../../../src/toolBox/useAge/forText/useArtTemplate.js'
 import { 执行还原重复文件 } from './restoreDuplicates.js'
-import { isImagePathByExtension } from '../../../../src/toolBox/base/usePath/forCheck.js'
+import { isImagePathByExtension } from '../../../../../src/toolBox/base/usePath/forCheck.js'
 
 const 构建UI执行函数 = (options={执行函数:null,用户确认提示:null}) => {
     const {执行函数,用户确认提示} = options

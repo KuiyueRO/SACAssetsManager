@@ -15,7 +15,7 @@ export const exportCanvasAsImage = (options = {}, stageRef, layerRefs, viewState
     quality = 1
   } = options;
 
-  if (!stageRef || !stageRef.getNode()) {
+  if (!stageRef) {
     console.error('无法导出：舞台不存在');
     return null;
   }
@@ -62,43 +62,122 @@ export const exportCanvasAsImage = (options = {}, stageRef, layerRefs, viewState
       layerRefs.backgroundLayer,
       layerRefs.mainLayer,
       layerRefs.uiLayer
-    ].filter(layer => layer && layer.getNode());
+    ].filter(layer => layer);
 
     for (const layerRef of allLayers) {
-      // 复制图层节点
-      const originalLayer = layerRef.getNode();
-      const children = originalLayer.getChildren();
+      // 获取原始图层
+      const originalLayer = layerRef;
+      
+      // 确保图层存在
+      if (!originalLayer) continue;
+      
+      // 更安全地获取子元素
+      let children = [];
+      try {
+        if (typeof originalLayer.getChildren === 'function') {
+          children = originalLayer.getChildren();
+        } else if (originalLayer.children) {
+          children = originalLayer.children;
+        } else if (originalLayer.$children) {
+          // Vue组件可能有$children属性
+          children = originalLayer.$children;
+        } else if (originalLayer.getNode && typeof originalLayer.getNode === 'function') {
+          const node = originalLayer.getNode();
+          if (node && typeof node.getChildren === 'function') {
+            children = node.getChildren();
+          }
+        }
+      } catch (e) {
+        console.warn('获取图层子元素时出错:', e);
+        continue;
+      }
+
+      // 确保children是数组
+      if (!Array.isArray(children)) {
+        console.warn('图层子元素不是数组');
+        continue;
+      }
 
       for (const child of children) {
         try {
-          // 克隆节点
-          const clone = child.clone();
+          // 安全地克隆节点
+          let clone;
+          try {
+            if (typeof child.clone === 'function') {
+              clone = child.clone();
+            } else {
+              // 如果不能克隆，创建一个简单的矩形作为占位符
+              console.warn('无法克隆节点，使用占位符');
+              clone = new Konva.Rect({
+                x: 0,
+                y: 0,
+                width: 10,
+                height: 10,
+                fill: 'rgba(0,0,0,0.2)'
+              });
+            }
+          } catch (cloneErr) {
+            console.warn('克隆节点失败:', cloneErr);
+            continue;
+          }
 
-          // 坐标转换过程：
-          // 1. 从画布坐标转换到世界坐标
-          const canvasX = child.x();
-          const canvasY = child.y();
+          // 安全地获取坐标
+          let canvasX = 0, canvasY = 0;
+          try {
+            if (typeof child.x === 'function') {
+              canvasX = child.x();
+              canvasY = child.y();
+            } else if (child.attrs && typeof child.attrs.x !== 'undefined') {
+              canvasX = child.attrs.x;
+              canvasY = child.attrs.y;
+            } else if (typeof child.x !== 'undefined') {
+              canvasX = child.x;
+              canvasY = child.y;
+            }
+          } catch (posErr) {
+            console.warn('获取节点位置失败:', posErr);
+          }
 
-          // 2. 从世界坐标转换到屏幕坐标
+          // 坐标转换
           const screenX = canvasX * viewState.scale + viewState.position.x;
           const screenY = canvasY * viewState.scale + viewState.position.y;
 
-          // 3. 应用像素比例
-          clone.x(screenX * pixelRatio);
-          clone.y(screenY * pixelRatio);
-
-          // 4. 调整缩放比例
-          clone.scaleX(child.scaleX() * viewState.scale * pixelRatio);
-          clone.scaleY(child.scaleY() * viewState.scale * pixelRatio);
-
-          // 5. 如果是线条，需要特别处理线宽
-          if (clone.getClassName() === 'Line') {
-            clone.strokeWidth((child.strokeWidth() / viewState.scale) * pixelRatio);
+          // 安全地设置克隆对象的属性
+          try {
+            if (typeof clone.x === 'function') {
+              clone.x(screenX * pixelRatio);
+              clone.y(screenY * pixelRatio);
+              
+              // 设置缩放
+              const scaleX = (typeof child.scaleX === 'function') ? child.scaleX() : 1;
+              const scaleY = (typeof child.scaleY === 'function') ? child.scaleY() : 1;
+              clone.scaleX(scaleX * viewState.scale * pixelRatio);
+              clone.scaleY(scaleY * viewState.scale * pixelRatio);
+              
+              // 处理线宽
+              if (clone.getClassName && clone.getClassName() === 'Line' && typeof clone.strokeWidth === 'function') {
+                const strokeWidth = (typeof child.strokeWidth === 'function') ? child.strokeWidth() : 1;
+                clone.strokeWidth((strokeWidth / viewState.scale) * pixelRatio);
+              }
+            } else {
+              // 如果clone没有这些方法，直接设置属性
+              clone.x = screenX * pixelRatio;
+              clone.y = screenY * pixelRatio;
+              
+              clone.scaleX = (child.scaleX || 1) * viewState.scale * pixelRatio;
+              clone.scaleY = (child.scaleY || 1) * viewState.scale * pixelRatio;
+              
+              if (clone.className === 'Line') {
+                clone.strokeWidth = ((child.strokeWidth || 1) / viewState.scale) * pixelRatio;
+              }
+            }
+          } catch (propErr) {
+            console.warn('设置克隆节点属性失败:', propErr);
           }
 
           tempContentLayer.add(clone);
-        } catch (cloneError) {
-          console.warn('克隆节点时出错:', cloneError);
+        } catch (nodeErr) {
+          console.warn('处理节点时出错:', nodeErr);
         }
       }
     }

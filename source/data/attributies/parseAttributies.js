@@ -1,4 +1,4 @@
-import { 块类型语言对照表 } from '../../../src/utils/siyuanData/block.js'
+import { SIYUAN_BLOCK_TYPE_MAP } from '../../../src/toolBox/useAge/forSiyuan/constants.js'
 
 const dateParser = (value) => {
     const date = new Date(value)
@@ -236,7 +236,7 @@ export const 获取素材属性值 = async (data, key) => {
 }
 export const 计算素材类型角标 =(data)=>{
     if (data.type === 'note') {
-        return `笔记:${块类型语言对照表[data.$meta.type] || data.$meta.type}`;
+        return `笔记:${SIYUAN_BLOCK_TYPE_MAP[data.$meta.type] || data.$meta.type}`;
     }
     return data.path?.split('.').pop()||'未知的类型'
 }

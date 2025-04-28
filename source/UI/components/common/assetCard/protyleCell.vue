@@ -9,7 +9,8 @@
 <script nodeDefine>
 import { ref } from 'vue';
 import { kernelApi } from 'runtime';
-import { createProtyleById } from '../../../../ui/integrations/siyuan/protyleAdapter.js';
+import { createProtyleById } from '../../../../../src/ui/integrations/siyuan/protyleAdapter.js';
+
 const $blockID = ref('')
 const  handleInput=()=>{
     $blockID.value&&nodeDefine.process( $blockID.value)

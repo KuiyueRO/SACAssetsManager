@@ -61,7 +61,7 @@
 import { ref, computed, onUnmounted, toRef, markRaw, watch, onMounted, nextTick, shallowRef, defineComponent } from 'vue';
 import errorContainer from './errorContainer.vue';
 import { ErrorBoundary } from '../../../components/common/wraper/utilsComponent.js';
-import { 按指定值分组 } from '../../../../../src/utils/useEcma/useArray/groupBy.js';
+import { computeGroupBy } from '../../../../../src/toolBox/base/useEcma/useArray/computeGroupBy.js';
 import { validateSize, validatePosition } from '../geometry/validatGeometry.js';
 import { getAnchorStyle } from './nodeDefineParser/controllers/anchorConfig.js';
 import * as 向量 from '../geometry/geometryCalculate/vector.js';
@@ -475,7 +475,7 @@ watch(cardStyle, () => {
 
 // 按方向分组锚点
 const groupedAnchors = computed(() => {
-  const groups = 按指定值分组(anchors.value, 'side', Object.values(anchorSides))
+  const groups = computeGroupBy(anchors.value, 'side', Object.values(anchorSides))
   console.log("groups", groups)
   Object.values(groups).forEach(group => {
     group.sort((a, b) => a.position - b.position);

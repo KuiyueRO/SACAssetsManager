@@ -1,8 +1,8 @@
-import { drawImageWithConfig } from "../../../canvas/draw/simpleDraw/images.js";
+import { drawImageWithConfig } from "../../../base/useBrowser/useCanvas/simpleDraw/images.js";
 import { 从视点和基向量对计算P1网格范围 } from "./utils/index.js";
-import { 校验P1晶格基向量, 规范化P1图案配置 } from "./utils/config.js";
-import { 在画布上下文批量绘制线条 } from "../../../canvas/draw/simpleDraw/lines.js";
-import { 校验配置基向量是否等长 as 校验CM图案配置,规范化CM图案配置 } from "./utils/config.js";
+import { 校验P1晶格基向量, 校验配置基向量是否等长 } from "./utils/config.js";
+import { 规范化P1图案配置, 规范化CM图案配置 } from "./utils/config.js";
+import { 在画布上下文批量绘制线条 } from "../../../base/useBrowser/useCanvas/simpleDraw/lines.js";
 
 
 export class CMImagePattern  {

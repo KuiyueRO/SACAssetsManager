@@ -1,10 +1,11 @@
-import { px, per, em } from "../../../../src/utils/css/unitedStrings.js"
+import { px, per, em } from "../../../../src/toolBox/base/useCss/formatCssUnit.js"
 import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/toolBox/base/useCss/cssKeywords.js"
 import { cssVarProxy } from "../../../../src/toolBox/base/useCss/forCssVar.js"
 import { createChainableProxy } from "../../../../src/toolBox/base/useEcma/forObject/createChainableProxy.js"
 import { 表格视图阈值 } from "../../utils/threhold.js"
 import { 根据阈值计算最大宽度 } from "../../utils/threhold.js"
 import { LAYOUT_COLUMN } from "../../utils/threhold.js"
+
 const 根据尺寸计算圆角 = (size) => {
     if (size > 表格视图阈值) {
         return size / 24

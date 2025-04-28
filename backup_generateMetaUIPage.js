@@ -1,0 +1,396 @@
+/**
+ * @fileoverview 生成用于展示和测试 API 路由的元数据 UI 页面 (HTML)。
+ * TODO: Refactor this to use separate HTML template and CSS files instead of hardcoding in JS.
+ */
+
+/**
+ * 生成元路由 UI 页面的 HTML 字符串。
+ * @param {string} prefix - 元路由的基础路径 (例如 '/meta')。
+ * @returns {string} 完整的 HTML 页面字符串。
+ */
+export function generateMetaRouterUIPage(prefix) {
+    // HTML structure with inline CSS and JS
+    // Note: Backticks are used for the main template literal.
+    // Internal strings within HTML/JS use single or double quotes, escaped where necessary.
+    return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 元路由</title>
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-color: #f9fafb;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --text-secondary: #6b7280;
+      --border-color: #e5e7eb;
+      --success-color: #10b981;
+      --error-color: #ef4444;
+      --warning-color: #f59e0b;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+      --link-color: var(--primary-color);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; padding-bottom: 50px; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    header { margin-bottom: 30px; text-align: center; }
+    h1 { color: var(--primary-color); margin-bottom: 10px; }
+    .subtitle { color: var(--text-secondary); font-size: 1.1rem; }
+    .card { background-color: var(--card-bg); border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); margin-bottom: 30px; overflow: hidden; }
+    .card-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); background-color: #fdfdff; }
+    .card-title { font-size: 1.3rem; font-weight: 600; }
+    .card-body { padding: 20px; }
+    .route-list { list-style: none; }
+    .route-item { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; cursor: pointer; transition: background-color 0.2s ease-in-out; }
+    .route-item:last-child { border-bottom: none; }
+    .route-item:hover { background-color: rgba(79, 70, 229, 0.05); }
+    .route-method { font-family: monospace; padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; min-width: 75px; text-align: center; margin-right: 15px; text-transform: uppercase; }
+    .method-get { background-color: #e0f2fe; color: #0ea5e9; } /* sky-100, sky-600 */
+    .method-post { background-color: #dcfce7; color: #22c55e; } /* green-100, green-500 */
+    .method-put { background-color: #fef3c7; color: #f59e0b; } /* amber-100, amber-500 */
+    .method-delete { background-color: #fee2e2; color: #ef4444; } /* red-100, red-500 */
+    .method-patch { background-color: #f5d0fe; color: #d946ef; } /* fuchsia-100, fuchsia-500 */
+    .method-options, .method-head, .method-all { background-color: #e5e7eb; color: #4b5563; } /* gray-200, gray-600 */
+    .route-path { font-family: monospace; font-weight: 500; flex: 1; word-break: break-all; }
+    .route-summary { color: var(--text-secondary); font-size: 0.9rem; margin-left: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 35%; }
+    .route-details { background-color: #f9fafb; border-top: 1px solid var(--border-color); padding: 20px; margin-top: -1px; display: none; }
+    .route-details.active { display: block; }
+    .detail-section { margin-bottom: 25px; }
+    .detail-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; }
+    .detail-item { margin-bottom: 15px; }
+    .detail-label { display: block; font-weight: 600; margin-bottom: 5px; color: #374151; }
+    .code-block { background-color: var(--code-bg); color: var(--code-text); padding: 15px; border-radius: 6px; font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; white-space: pre-wrap; overflow-x: auto; font-size: 0.9rem; }
+    .param-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .param-table th, .param-table td { border: 1px solid var(--border-color); padding: 10px; text-align: left; }
+    .param-table th { background-color: #f3f4f6; font-weight: 600; }
+    .param-name { font-family: monospace; }
+    .param-required { color: var(--error-color); font-weight: bold; }
+    .response-status { font-weight: bold; margin-right: 10px; }
+    #test-section { display: none; }
+    #test-section.active { display: block; }
+    textarea { width: 100%; min-height: 100px; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: monospace; font-size: 0.9rem; margin-top: 5px; resize: vertical; }
+    button { background-color: var(--primary-color); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: background-color 0.2s; margin-top: 15px; }
+    button:hover { background-color: var(--primary-hover); }
+    #test-result { margin-top: 20px; }
+    .status-success { color: var(--success-color); }
+    .status-error { color: var(--error-color); }
+    .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 20px; height: 20px; border-radius: 50%; border-left-color: var(--primary-color); animation: spin 1s linear infinite; display: inline-block; margin-left: 10px; vertical-align: middle; display: none; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    a { color: var(--link-color); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .registration-info { font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>API 元路由</h1>
+      <p class="subtitle">查看已注册的路由信息并进行测试</p>
+      <a href="${prefix}/openapi" target="_blank">查看 OpenAPI 文档</a>
+    </header>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">路由列表</h2>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <ul id="route-list" class="route-list"></ul>
+      </div>
+    </div>
+
+    <div id="details-card" class="card" style="display: none;">
+      <div class="card-header">
+        <h2 class="card-title">路由详情</h2>
+      </div>
+      <div class="card-body">
+        <div id="route-details-content"></div>
+        <div id="test-section">
+          <div class="detail-section">
+            <h3 class="detail-title">路由测试</h3>
+            <div class="detail-item">
+              <label class="detail-label" for="query-params">查询参数 (JSON)</label>
+              <textarea id="query-params" rows="3">{}</textarea>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label" for="body-params">请求体参数 (JSON)</label>
+              <textarea id="body-params" rows="5">{}</textarea>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label" for="headers">请求头 (JSON)</label>
+              <textarea id="headers" rows="3">{}</textarea>
+            </div>
+            <button id="run-test-btn">发送测试请求</button>
+            <div class="spinner" id="test-spinner"></div>
+          </div>
+          <div id="test-result" class="detail-section">
+            <h3 class="detail-title">测试结果</h3>
+            <div id="test-result-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Ensure the prefix is correctly handled in JS strings
+    const API_PREFIX = '${prefix}';
+    const routeListElement = document.getElementById('route-list');
+    const detailsCardElement = document.getElementById('details-card');
+    const routeDetailsContentElement = document.getElementById('route-details-content');
+    const testSectionElement = document.getElementById('test-section');
+    const queryParamsElement = document.getElementById('query-params');
+    const bodyParamsElement = document.getElementById('body-params');
+    const headersElement = document.getElementById('headers');
+    const runTestBtnElement = document.getElementById('run-test-btn');
+    const testResultContentElement = document.getElementById('test-result-content');
+    const testSpinnerElement = document.getElementById('test-spinner');
+    
+    let currentRoute = null;
+
+    async function fetchRoutes() {
+      loadingElement.style.display = 'block';
+      errorElement.style.display = 'none';
+      try {
+        const response = await fetch('/' + API_PREFIX + '/routes');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        renderRoutes(data.routes);
+      } catch (error) {
+        routeListElement.innerHTML = `<li>加载路由失败: ${error.message}</li>`;
+        errorElement.textContent = `加载路由失败: ${error.message}`;
+        errorElement.style.display = 'block';
+        console.error('Failed to fetch routes:', error);
+      } finally {
+        loadingElement.style.display = 'none';
+      }
+    }
+
+    function renderRoutes(routes) {
+      routeListElement.innerHTML = ''; // Clear previous list
+      if (!routes || routes.length === 0) {
+        routeListElement.innerHTML = '<li>没有找到注册的路由</li>';
+        return;
+      }
+      routes.sort((a, b) => a.path.localeCompare(b.path) || a.method.localeCompare(b.method));
+      routes.forEach(route => {
+        const item = document.createElement('li');
+        item.classList.add('route-item');
+        // Use template literals for cleaner HTML generation
+        item.innerHTML = `
+          <span class="route-method method-${route.method.toLowerCase()}">${route.method}</span>
+          <span class="route-path">${escapeHtml(route.path)}</span>
+          <span class="route-summary">${escapeHtml(route.summary)}</span>
+        `;
+        item.addEventListener('click', () => showDetails(route));
+        routeListElement.appendChild(item);
+      });
+    }
+
+    function showDetails(route) {
+      currentRoute = route;
+      renderRouteDetails(route);
+      detailsCardElement.style.display = 'block';
+      testSectionElement.style.display = 'block'; // Always show test section
+      testResultContentElement.innerHTML = ''; // Clear previous test results
+      // Reset test inputs with placeholders using JSON.stringify for correct formatting
+      queryParamsElement.value = JSON.stringify({ key: "value" }, null, 2);
+      bodyParamsElement.value = JSON.stringify({ data: "example" }, null, 2);
+      headersElement.value = JSON.stringify({ Authorization: "Bearer YOUR_TOKEN" }, null, 2);
+       // Scroll to details
+      detailsCardElement.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderRouteDetails(route) {
+      let paramsHtml = '<p>无参数</p>';
+      if (route.params && Object.keys(route.params).length > 0) {
+        paramsHtml = `
+          <table class="param-table">
+            <thead><tr><th>名称</th><th>位置</th><th>类型</th><th>必需</th><th>描述</th></tr></thead>
+            <tbody>
+              ${Object.entries(route.params).map(([name, param]) => {
+                // Determine 'in' location robustly
+                const inLocation = param.in || (route.path.includes(`:${name}`) ? 'path' : 'query');
+                const required = inLocation === 'path' || !!param.required; // Path params are always required
+                return `<tr>
+                  <td class="param-name">${escapeHtml(name)}</td>
+                  <td>${escapeHtml(inLocation)}</td>
+                  <td>${escapeHtml(param.type || 'string')}</td>
+                  <td>${required ? '<span class="param-required">是</span>' : '否'}</td>
+                  <td>${escapeHtml(param.description || '-') || '-'}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>`;
+      }
+
+      let responseHtml = '<p>响应信息未定义</p>';
+      if(route.response) {
+          // Simplify response rendering logic
+          const successResponse = route.response['200'] || route.response['201'] || (route.response.type ? { description: 'Success', content: { 'application/json': { schema: { type: route.response.type } } } } : null);
+          if (successResponse) {
+             responseHtml = `<p><span class="response-status">Success:</span> ${escapeHtml(successResponse.description || 'Successful operation')}</p>`;
+             if(successResponse.content && successResponse.content['application/json'] && successResponse.content['application/json'].schema) {
+                try {
+                    responseHtml += `<div class="detail-label">Schema:</div><pre class="code-block">${escapeHtml(JSON.stringify(successResponse.content['application/json'].schema, null, 2))}</pre>`;
+                } catch (e) {
+                    responseHtml += `<div class="detail-label">Schema:</div><pre class="code-block status-error">Error stringifying schema</pre>`;
+                }
+             }
+          } else {
+             // Attempt to show a generic response if specific codes aren't present
+             try {
+                responseHtml = `<div class="detail-label">Raw Response Definition:</div><pre class="code-block">${escapeHtml(JSON.stringify(route.response, null, 2))}</pre>`;
+             } catch(e){ responseHtml = '<p>无法显示响应定义</p>'; }
+          }
+          // TODO: Add specific rendering for other common status codes (e.g., 4xx, 5xx)
+      }
+      
+      const registrationInfoHtml = route.registrationInfo ? 
+          `<div class="registration-info">Registered at: ${escapeHtml(route.registrationInfo)}</div>` : '';
+
+      routeDetailsContentElement.innerHTML = `
+        <div class="detail-section">
+          <h3 class="detail-title">基本信息</h3>
+          <div class="detail-item"><span class="detail-label">路径:</span> <code class="code-block" style="display: inline-block; padding: 2px 6px; background: #eee; color: #333;">${escapeHtml(route.path)}</code></div>
+          <div class="detail-item"><span class="detail-label">方法:</span> <span class="route-method method-${route.method.toLowerCase()}">${route.method}</span></div>
+          <div class="detail-item"><span class="detail-label">摘要:</span> ${escapeHtml(route.summary)}</div>
+          <div class="detail-item"><span class="detail-label">描述:</span> ${escapeHtml(route.description || '-') || '-'}</div>
+           ${registrationInfoHtml}
+        </div>
+        <div class="detail-section">
+          <h3 class="detail-title">参数</h3>
+          ${paramsHtml}
+        </div>
+        <div class="detail-section">
+          <h3 class="detail-title">响应</h3>
+          ${responseHtml}
+        </div>
+      `;
+    }
+
+    runTestBtnElement.addEventListener('click', async () => {
+      if (!currentRoute) return;
+      
+      let queryParams, bodyParams, headers;
+      try {
+        queryParams = JSON.parse(queryParamsElement.value || '{}');
+        bodyParams = JSON.parse(bodyParamsElement.value || '{}');
+        headers = JSON.parse(headersElement.value || '{}');
+      } catch (e) {
+        testResultContentElement.innerHTML = '<p class="status-error">参数或请求头JSON格式错误</p>';
+        console.error('JSON parse error:', e);
+        return;
+      }
+
+      testSpinnerElement.style.display = 'inline-block';
+      runTestBtnElement.disabled = true;
+      testResultContentElement.innerHTML = '<p>正在发送请求...</p>';
+
+      try {
+        // Call the /test endpoint
+        const testResponse = await fetch('/' + API_PREFIX + '/test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify({
+            method: currentRoute.method,
+            // Send the original path, the /test endpoint will resolve it
+            path: currentRoute.path,
+            queryParams,
+            bodyParams,
+          })
+        });
+        
+        const resultData = await testResponse.json();
+        
+        // Pass the result data (which includes status, body etc. from the actual call) to render
+        renderTestResult(resultData);
+
+      } catch (error) {
+        // Error calling the /test endpoint itself
+        renderTestResult({ status: 500, error: `Meta test request failed: ${error.message}` });
+        console.error('Meta test request failed:', error);
+      } finally {
+        testSpinnerElement.style.display = 'none';
+        runTestBtnElement.disabled = false;
+      }
+    });
+
+    function renderTestResult(result) {
+        let headersHtml = '无响应头';
+        if (result.headers && typeof result.headers === 'object' && Object.keys(result.headers).length > 0) {
+            headersHtml = Object.entries(result.headers)
+                .map(([key, value]) => `<div><strong>${escapeHtml(key)}:</strong> ${escapeHtml(value)}</div>`)
+                .join('');
+        }
+
+        let bodyHtml;
+        // Prefer error message if present
+        let errorMsg = result.error || (result.result && result.result.error);
+        
+        if (errorMsg) {
+             bodyHtml = `<p><strong>错误:</strong> ${escapeHtml(errorMsg)}</p>`;
+             // Show stack trace if available (usually only from test endpoint itself)
+             if(result.isTestEndpointError && result.errorDetails) {
+                 bodyHtml += `<h4>错误详情:</h4><pre class="code-block">${escapeHtml(result.errorDetails)}</pre>`;
+             }
+        } else if (result.result !== undefined && result.result !== null) {
+             // Try to pretty print JSON, otherwise show as string
+             try {
+                 bodyHtml = `<pre class="code-block">${escapeHtml(JSON.stringify(result.result, null, 2))}</pre>`;
+             } catch (e) {
+                 bodyHtml = `<pre class="code-block">${escapeHtml(String(result.result))}</pre>`;
+             }
+        } else {
+            bodyHtml = '<p>无响应体</p>';
+        }
+
+        // Status code handling
+        const statusCode = result.status !== undefined ? result.status : 'N/A';
+        const statusClass = typeof statusCode === 'number' && statusCode >= 200 && statusCode < 400 ? 'status-success' : 'status-error';
+
+        testResultContentElement.innerHTML = `
+            <div class="detail-item">
+                <span class="detail-label">状态码:</span> 
+                <strong class="${statusClass}">${statusCode}</strong>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">响应时间:</span> 
+                ${result.timing !== undefined ? `${result.timing} ms` : 'N/A'}
+            </div>
+             <div class="detail-item">
+                 <span class="detail-label">响应头:</span>
+                 <div class="code-block" style="background: #f3f4f6; color: #333;">${headersHtml}</div>
+             </div>
+            <div class="detail-item">
+                <span class="detail-label">响应体:</span>
+                ${bodyHtml}
+            </div>
+        `;
+    }
+    
+    // Basic HTML escaping function
+    function escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') {
+             if (unsafe === null || unsafe === undefined) return '';
+             try { unsafe = String(unsafe); } catch(e) { return ''; }
+        }
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+     }
+
+    // Initial fetch of routes when the page loads
+    fetchRoutes();
+  </script>
+</body>
+</html>`;
+} 

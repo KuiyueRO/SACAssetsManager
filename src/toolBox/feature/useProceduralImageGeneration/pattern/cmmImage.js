@@ -1,5 +1,5 @@
 import { CMImagePattern } from "./cmImage.js";
-import { 在画布上下文批量绘制线条 } from "../../../canvas/draw/simpleDraw/lines.js";
+import { 在画布上下文批量绘制线条 } from "../../../base/useBrowser/useCanvas/simpleDraw/lines.js";
 export class CMMImagePattern extends CMImagePattern {
     constructor(config) {
         super(config);

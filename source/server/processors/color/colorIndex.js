@@ -1,5 +1,5 @@
 // import { diffColor } from "../../../../src/utils/color/Kmeans.js"
-import { computeCIEDE2000DifferenceRGBA } from "../../../../toolBox/feature/forColor/useColorSimilarity.js"
+import { computeCIEDE2000DifferenceRGBA } from "../../../../src/toolBox/feature/forColor/useColorSimilarity.js"
 import { getCachePath } from '../fs/cached/fs.js'
 import { 修正路径分隔符号为反斜杠, 修正路径分隔符号为正斜杠 } from '../../../../src/toolBox/base/usePath/forFix.js'
 const path = require('path')

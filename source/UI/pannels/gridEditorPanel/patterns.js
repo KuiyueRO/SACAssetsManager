@@ -1,9 +1,9 @@
-import { PatternRenderer } from '../../../../src/utils/image/textures/pattern/index.js'
-import { P1ImagePattern } from '../../../../src/utils/image/textures/pattern/p1Image.js';
-import { P2ImagePattern } from '../../../../src/utils/image/textures/pattern/p2Image.js'
-import { PGImagePattern } from '../../../../src/utils/image/textures/pattern/pgImage.js';
-import { PMImagePattern } from '../../../../src/utils/image/textures/pattern/pmImage.js'
-import { PGGImagePattern } from '../../../../src/utils/image/textures/pattern/pggImage.js'
+import { PatternRenderer } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/index.js'
+import { P1ImagePattern } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/p1Image.js';
+import { P2ImagePattern } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/p2Image.js'
+import { PGImagePattern } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/pgImage.js';
+import { PMImagePattern } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/pmImage.js'
+import { PGGImagePattern } from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/pggImage.js'
 import {
     P4GImagePattern,
     PMMImagePattern,
@@ -17,7 +17,7 @@ import {
     P6ImagePattern,
     P6MImagePattern,
     P31MImagePattern
-} from '../../../../src/utils/image/textures/pattern/pmm.js'
+} from '../../../../src/toolBox/feature/useProceduralImageGeneration/pattern/pmm.js'
 export {PatternRenderer}
 export const getPatternClass = (type) => {
     const patterns = {

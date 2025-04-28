@@ -1,13 +1,13 @@
 <template>
     <span :class="'protyle-breadcrumb__item'">
-        <img v-if="!isSvg(icon)" :src="icon" :class="'breadcrumb-icon'" />
+        <img v-if="!isSvgDataUrl(icon)" :src="icon" :class="'breadcrumb-icon'" />
         {{ name }}
     </span>
 </template>
 <script setup>
 import { ref, computed } from 'vue'
 import { toRefs, defineProps } from 'vue'
-import { isSvg } from '../../../../../src/utils/siyuanData/icon.js'
+import { isSvgDataUrl } from '../../../../../src/toolBox/useAge/forSiyuan/forUIUtils/getSiyuanBlockIcon.js'
 
 const props = defineProps({
     name: {

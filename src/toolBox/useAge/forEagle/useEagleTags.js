@@ -4,6 +4,8 @@
  */
 
 import { 发送请求 } from './useEagleRequest.js';
+const fs = window.require('fs'); // 引入 fs
+const path = window.require('path'); // 引入 path
 
 /**
  * 获取标签列表
@@ -133,8 +135,37 @@ export const 删除标签 = async ({ tagId }) => {
     }
 };
 
+/**
+ * 从文件系统读取 Eagle 素材库的 tags.json 文件并解析
+ * @param {string} 素材库路径 - Eagle 素材库的根目录路径
+ * @returns {object|null} 解析后的标签对象，如果文件不存在或解析失败则返回 null
+ */
+export function 从文件系统获取eagle素材库标签列表(素材库路径) {
+    if (!素材库路径 || typeof 素材库路径 !== 'string') {
+        console.error('从文件系统获取eagle素材库标签列表：无效的素材库路径');
+        return null;
+    }
+    const 标签文件路径 = path.join(素材库路径, 'tags.json');
+    try {
+        if (fs.existsSync(标签文件路径)) {
+            const tagJson = fs.readFileSync(标签文件路径, 'utf8');
+            const tagJsonObj = JSON.parse(tagJson);
+            return tagJsonObj;
+        } else {
+            console.warn(`从文件系统获取eagle素材库标签列表：标签文件不存在于 ${标签文件路径}`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`从文件系统获取eagle素材库标签列表：读取或解析 ${标签文件路径} 失败:`, error);
+        return null;
+    }
+}
+
 // 导出英文版 API
 export const getTagsList = 获取标签列表;
 export const createTag = 创建标签;
 export const updateTag = 更新标签;
-export const deleteTag = 删除标签; 
+export const deleteTag = 删除标签;
+
+// 导出 getEagleTagsFromLibrary 作为 从文件系统获取eagle素材库标签列表 的英文别名
+export const getEagleTagsFromLibrary = 从文件系统获取eagle素材库标签列表; 

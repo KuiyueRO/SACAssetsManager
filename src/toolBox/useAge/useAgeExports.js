@@ -55,6 +55,9 @@ export * from './forSiyuan/forBlock/useBlockHandler.js';
 export * from './forSiyuan/forBlock/useSiyuanBlockIcon.js';
 export * from './forSiyuan/forMarkdown/useSiyuanMarkdown.js';
 export * from './forSiyuan/forAsset/useSiyuanUpload.js';
+export * from './forSiyuan/getSQLQueries.js';
+export * from './forSiyuan/forFormatting/formatChartOptions.js';
+export * from './forSiyuan/constants.js';
 
 // 导出思源特定功能工具
 export {

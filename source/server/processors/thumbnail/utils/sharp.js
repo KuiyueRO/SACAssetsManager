@@ -1,5 +1,7 @@
 const sharp = require('sharp')
-import { 创建变换预设 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/transform.js'
+// import { 创建变换预设 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/transform.js' // 旧路径
+// import { 创建变换预设 } from '../../../../../src/toolBox/base/useEcma/forString/forTransform.js' // 错误路径
+import { 创建变换预设 } from '../../../../../src/toolBox/feature/useSharp/transform.js' // 新路径
 
 /**
  * 处理图像缓冲区，将图像缩放到32x32像素

@@ -3,7 +3,7 @@ import {
     从视点和基向量对计算P1网格范围
 } from "./utils/index.js";
 import { 校验P1晶格基向量, 规范化P1图案配置 } from "./utils/config.js";
-import { 顺序连接生成器 } from "../../base/useEcma/forGenerator/forGeneratorCombine.js";
+import { 顺序连接生成器 } from "../../../base/useEcma/forGenerator/forGeneratorCombine.js";
 
 
 export class P1ImagePattern {

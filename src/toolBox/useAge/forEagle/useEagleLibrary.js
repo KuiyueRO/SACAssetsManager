@@ -132,8 +132,47 @@ export const 获取库图标 = async ({ libraryPath }) => {
     }
 };
 
+/**
+ * 根据文件路径查找其所在的 Eagle 素材库根目录路径。
+ * @param {string} 文件路径 - 需要查找的文件完整路径。
+ * @returns {string|null} 素材库的根目录路径，如果找不到则返回 null。
+ */
+export function 查找文件所在素材库路径(文件路径) {
+    if (!文件路径 || typeof 文件路径 !== 'string') {
+        console.error('查找文件所在素材库路径：无效的文件路径');
+        return null;
+    }
+    try {
+        // 统一路径分隔符为 /
+        const 标准化路径 = 文件路径.replace(/\\/g, "/");
+        const 路径项数组 = 标准化路径.split("/");
+        // 从后往前查找第一个以 .library 结尾的目录
+        let 素材库路径下标 = -1;
+        for (let i = 路径项数组.length - 1; i >= 0; i--) {
+            if (路径项数组[i].endsWith(".library")) {
+                素材库路径下标 = i;
+                break;
+            }
+        }
+
+        if (素材库路径下标 !== -1) {
+            const 素材库路径 = 路径项数组.slice(0, 素材库路径下标 + 1).join("/");
+            return 素材库路径;
+        } else {
+            console.warn(`查找文件所在素材库路径：在路径 ${文件路径} 中未找到 .library 文件夹`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`查找文件所在素材库路径：处理路径 ${文件路径} 时出错:`, error);
+        return null;
+    }
+}
+
 // 导出英文版 API
 export const getLibraryInfo = 获取库信息;
 export const getLibraryHistory = 获取库历史记录;
 export const switchLibrary = 切换库;
-export const getLibraryIcon = 获取库图标; 
+export const getLibraryIcon = 获取库图标;
+
+// 导出英文版 API 别名
+export const getEagleLibraryPathByFilePath = 查找文件所在素材库路径; 

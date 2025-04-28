@@ -1,5 +1,5 @@
 import { plugin } from '../../asyncModules.js'
-import { setFocus } from '../../../src/utils/DOM/focus.js'
+import { setFocus } from '../../../src/toolBox/base/useBrowser/useDOM/forFocus.js'
 export { setFocus }
 window[Symbol.for('sacAssetsStatus')] = window[Symbol.for('sacAssetsStatus')] || {}
 const handlePreviousSelection = (event, galleryContainer, currentLayout) => {

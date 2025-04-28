@@ -11,6 +11,8 @@ import { 初始化错误处理, 创建错误信息, 加载历史记录 } from '.
 // 声明全局配置和状态
 let Vue;
 let SfcLoader;
+let VueKonva;
+let Konva;
 let 配置 = {
   // 公用组件路径
   公用组件路径: '',
@@ -55,10 +57,42 @@ export const 初始化组件加载器 = async (options = {}) => {
     // 第三步：添加到模块缓存
     添加到模块缓存('vue', Vue);
     
-    // 第四步：初始化错误处理
+    // 第四步：尝试加载VueKonva和Konva
+    try {
+      加载历史记录.记录事件('尝试加载VueKonva和Konva');
+      // 先尝试从window对象获取
+      VueKonva = options.VueKonva || window.VueKonva;
+      Konva = options.Konva || window.Konva;
+      
+      // 如果没有找到，尝试从静态资源导入
+      if (!VueKonva || !Konva) {
+        const KonvaModule = await import('/static/konva.js');
+        Konva = KonvaModule.default || KonvaModule;
+        
+        const VueKonvaModule = await import('/static/vue-konva.mjs');
+        VueKonva = VueKonvaModule.default || VueKonvaModule;
+        
+        加载历史记录.记录事件('VueKonva和Konva加载成功', { VueKonva: !!VueKonva, Konva: !!Konva });
+      }
+      
+      // 添加到模块缓存
+      添加到模块缓存('konva', Konva);
+      添加到模块缓存('vue-konva', VueKonva);
+      
+      // 为所有Vue应用默认启用VueKonva
+      if (Vue && VueKonva) {
+        加载历史记录.记录事件('为Vue应用默认启用VueKonva');
+      }
+    } catch (error) {
+      // 记录错误但不阻止继续运行
+      加载历史记录.记录错误(error, '加载VueKonva或Konva失败，应用将不支持绘图功能');
+      console.warn('加载VueKonva或Konva失败，应用将不支持绘图功能:', error);
+    }
+    
+    // 第五步：初始化错误处理
     初始化错误处理(配置.调试模式, Vue);
     
-    // 第五步：返回组件加载器接口
+    // 第六步：返回组件加载器接口
     return {
       Vue,
       SfcLoader,
@@ -74,7 +108,30 @@ export const 初始化组件加载器 = async (options = {}) => {
        * @returns {Promise<Object>} Vue应用实例
        */
       加载组件: async (组件路径, 组件名称 = '', 附加选项 = {}, 热重载目录 = '', 数据 = {}) => {
-        return await 初始化Vue应用(组件路径, 组件名称, 附加选项, 热重载目录, 数据, Vue, SfcLoader);
+        // 添加VueKonva到moduleCache
+        if (VueKonva && !附加选项.moduleCache?.['vue-konva']) {
+          附加选项.moduleCache = 附加选项.moduleCache || {};
+          附加选项.moduleCache['vue-konva'] = VueKonva;
+        }
+        
+        // 在创建Vue应用前添加VueKonva插件
+        const 原始创建应用 = Vue.createApp;
+        Vue.createApp = function(...args) {
+          const app = 原始创建应用.apply(this, args);
+          // 如果已加载VueKonva则自动安装
+          if (VueKonva && VueKonva.install) {
+            app.use(VueKonva);
+          }
+          return app;
+        };
+        
+        // 调用原始的初始化Vue应用函数
+        const app = await 初始化Vue应用(组件路径, 组件名称, 附加选项, 热重载目录, 数据, Vue, SfcLoader);
+        
+        // 恢复原始的createApp方法
+        Vue.createApp = 原始创建应用;
+        
+        return app;
       },
       
       /**
@@ -86,7 +143,25 @@ export const 初始化组件加载器 = async (options = {}) => {
        * @returns {Promise<Object>} Vue应用实例
        */
       创建界面: async (容器, 组件路径, 容器ID = '', 附加数据 = {}) => {
-        return await 创建Vue界面(容器, 组件路径, 容器ID, 附加数据, Vue, SfcLoader);
+        // 添加VueKonva支持
+        const 原始创建应用 = Vue.createApp;
+        Vue.createApp = function(...args) {
+          const app = 原始创建应用.apply(this, args);
+          // 如果已加载VueKonva则自动安装
+          console.error(VueKonva)
+          if (VueKonva && VueKonva.install) {
+            app.use(VueKonva);
+          }
+          return app;
+        };
+        
+        // 调用原始的创建Vue界面函数
+        const app = await 创建Vue界面(容器, 组件路径, 容器ID, 附加数据, Vue, SfcLoader);
+        
+        // 恢复原始的createApp方法
+        Vue.createApp = 原始创建应用;
+        
+        return app;
       },
       
       /**

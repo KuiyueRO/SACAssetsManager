@@ -5,7 +5,6 @@ import {
 import { 调整亮度, 调整对比度, 调整阴影 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/adjust/light.js';
 import { 调整色相偏移 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/adjust/color.js';
 import { 自动曝光 } from '../../../../../src/utils/image/adjust/exposure.js';
-import { 生成法线图 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/Generator/normalMap.js';
 import { 去雾滤镜 } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/adjust/dehazing.js';
 import * as kernels from '../../../../../src/utils/fromDeps/sharpInterface/kernels.js';
 import { getValueType } from '../../../../../src/toolBox/base/useEcma/forType/getValueType.js';

@@ -90,6 +90,12 @@ const 当前文档 = 获取当前文档();
 });
 ```
 
+### SQL 查询 (`useSiyuanWorkspace.js` / `getSQLQueries.js`)
+
+-   `sql(sql)`: 执行 SQL 语句 (仅限写操作和非 select 读操作)。
+-   `querySql(sql)`: 执行 SQL select 语句并返回结果。
+-   `getSqlQuery_*`: (位于 `getSQLQueries.js`) 提供一系列函数，用于生成常见的思源数据库查询语句（如按 ID 查块、按笔记本查附件等）。
+
 ## 贡献指南
 
 向思源特定工具添加新函数时，请遵循以下原则：

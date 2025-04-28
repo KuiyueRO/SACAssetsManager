@@ -1,9 +1,8 @@
-import { drawImageWithConfig } from "../../../canvas/draw/simpleDraw/images.js";
+import { drawImageWithConfig } from "../../../base/useBrowser/useCanvas/simpleDraw/images.js";
 import { 校验P1晶格基向量,规范化P1图案配置 } from "./utils/config.js";
 import { 校验PGG图案配置,规范化PGG图案配置 } from "./pggImage.js";
-import { 从视点和基向量对计算P1网格范围 } from "./utils/index.js";
-import { 以基向量对生成网格线数据 } from "./utils/index.js";
-import { 在画布上下文批量绘制线条 } from "../../../canvas/draw/simpleDraw/lines.js";
+import { 从视点和基向量对计算P1网格范围, 以基向量对生成网格线数据 } from './utils/index.js';
+import { 在画布上下文批量绘制线条 } from "../../../base/useBrowser/useCanvas/simpleDraw/lines.js";
 export class PMMImagePattern  {
     constructor(config) {
         校验P1晶格基向量(config);

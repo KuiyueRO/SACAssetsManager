@@ -147,7 +147,8 @@ async function 获取图片文件列表(dir) {
 
 import { isImagePathByExtension } from '../../../../../src/toolBox/base/usePath/forCheck.js';
 import { 打开任务控制对话框 } from '../../dialog/tasks.js';
-import { computeImagePHash, computeImageDataHash } from '../../../../../src/toolBox/feature/featureExports.js';
+import { computeImagePHash } from '../../../../../src/toolBox/feature/useImage/computePerceptualHash.js';
+import { computeImageDataHash } from '../../../../../src/toolBox/feature/useImage/computeSimpleHash.js';
 import { filePickPromise } from '../../dialog/fileDiffAndPick.js';
 async function 计算图片哈希(filePath, mode = 'simple') {
     try {
