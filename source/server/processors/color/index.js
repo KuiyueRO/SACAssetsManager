@@ -1,5 +1,6 @@
-import {kMeansPP} from "../../../../src/utils/color/Kmeans.js"
-import {CIEDE2000RGBA} from "../../../../src/utils/color/simlarity.js"
+// import {kMeansPP} from "../../../../src/utils/color/Kmeans.js"
+import { computeKMeansPlusPlusClusters as kMeansPP } from "../../../../toolBox/feature/forColor/useColorClustering.js"
+import { computeCIEDE2000DifferenceRGBA as CIEDE2000RGBA } from "../../../../toolBox/feature/forColor/useColorSimilarity.js"
 export function 获取颜色(buffer){
     // 创建一个离线canvas
     const canvas = document.createElement("canvas")

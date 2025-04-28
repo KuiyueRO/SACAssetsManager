@@ -1,11 +1,13 @@
 import { fromURL } from "../../../../src/utils/fromDeps/sharpInterface/useSharp/toSharp.js"
-import { loadImageFromUrl as loadImage } from "../../../../src/utils/image/loader/fromURL.js"
-import { 获取事件canvas坐标 } from "../../../../src/utils/canvas/events.js"
+// import { loadImageFromUrl as loadImage } from "../../../../src/utils/image/loader/fromURL.js"
+import { getImageFromURL as loadImage } from "../../../../toolBox/feature/forImageLoading/fromURL.js"
+import { 获取事件canvas坐标 } from "../../../../toolBox/feature/forCanvas/useEventUtils.js"
 import { 尖头马克笔, 宽头马克笔, 水彩笔, 铅笔, 钢笔, 鸭嘴笔 } from "../../../../src/utils/canvas/draw/brushes.js"
 import { brushImageProcessor } from '../../../../src/utils/canvas/draw/brushes.js'
 import { 按距离采样点序列 } from "../../math/geometry/geom2d.js"
-import { 获取事件压力值 } from "../../../../src/toolBox/base/forEvent/usePointerEventUtils.js"
-import { $canvas混合模式 } from "../../constants/browser.js"
+import { 获取事件压力值 } from "../../../../toolBox/base/forEvent/usePointerEventUtils.js"
+// import { $canvas混合模式 } from "../../constants/browser.js"
+import { $canvas混合模式 } from "../../../../toolBox/base/useBrowser/constants/canvasConstants.js"
 import { brushConfigs } from "./brushes/configs.js"
 export class DrawingTools {
     constructor(canvas) {

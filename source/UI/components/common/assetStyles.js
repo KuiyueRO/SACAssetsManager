@@ -1,6 +1,6 @@
 import { px, per, em } from "../../../../src/utils/css/unitedStrings.js"
-import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/utils/css/inherentValues.js"
-import { cssVarProxy } from "../../../../src/utils/css/cssVarGenerator.js"
+import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/toolBox/base/useCss/cssKeywords.js"
+import { cssVarProxy } from "../../../../src/toolBox/base/useCss/forCssVar.js"
 import { createChainableProxy } from "../../../../src/toolBox/base/useEcma/forObject/createChainableProxy.js"
 import { 表格视图阈值 } from "../../utils/threhold.js"
 import { 根据阈值计算最大宽度 } from "../../utils/threhold.js"

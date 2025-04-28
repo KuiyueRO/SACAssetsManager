@@ -9,7 +9,7 @@
 <script nodeDefine>
 import { ref } from 'vue';
 import { kernelApi } from 'runtime';
-import { 根据块ID创建protyle } from '../../../../../src/utils/siyuanUI/protyle/build.js';
+import { createProtyleById } from '../../../../ui/integrations/siyuan/protyleAdapter.js';
 const $blockID = ref('')
 const  handleInput=()=>{
     $blockID.value&&nodeDefine.process( $blockID.value)
@@ -91,7 +91,7 @@ const protyleContainer = ref(null);
 let protyle;
 let buildProtyle = (blockID) => {
     requestIdleCallback(() => {
-        blockID && protyleContainer.value && (protyle = 根据块ID创建protyle(protyleContainer.value.firstElementChild, blockID));
+        blockID && protyleContainer.value && (protyle = createProtyleById(protyleContainer.value.firstElementChild, blockID));
         protyle && protyleContainer.value && (protyleContainer.value.style.minHeight = 0)
     }, { timeout: 100 });
 }

@@ -213,7 +213,7 @@ module.exports = class SACAssetsManager extends Plugin {
       return 字符串数组.reduce((结果, 字符串, 索引) =>
         结果 + 字符串 + (插值[索引] || ''), '');
     };
-    import(`${this.插件自身伺服地址}/src/utils/i18n/aiI18n.js`).then(
+    import(`${this.插件自身伺服地址}/src/toolBox/useAge/forSiyuan/forAI/aiI18n.js`).then(
       module => {
         this.翻译 = (字符串数组, ...插值) => {
           let 完整模板 = '';
@@ -256,7 +256,6 @@ module.exports = class SACAssetsManager extends Plugin {
         }
       }
     )
-
   }
 
   /**

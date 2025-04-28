@@ -1,4 +1,4 @@
-import { requireWGSLCode } from "../../module/wgslModule.js";
+import { requireWGSLCode } from "../../../../../src/toolBox/feature/forWebGPU/useWGSLProcessor/index.js";
 const adapter = await navigator.gpu.requestAdapter();
 // 请求设备时设置限制
 const device = await adapter.requestDevice({

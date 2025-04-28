@@ -34,6 +34,8 @@ export * from './useChat/forStreamProcessing.js';
 
 // useDataStruct 数据结构工具
 export * from './useDataStruct/index.js';
+export * from './useDataStruct/useHeaps/useMinHeap.js';
+export * from './useDataStruct/usePetriNet.js';
 
 // useImage 图像处理工具
 export * from './useImage/imageToolBox.js';

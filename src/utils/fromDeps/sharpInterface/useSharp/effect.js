@@ -1,7 +1,7 @@
 /**
  * 特效处理模块 - 提供各种图像特效
  */
-import { requirePluginDeps } from "../../../module/requireDeps.js";
+import { requirePluginDeps } from "../../../src/toolBox/useAge/forSiyuan/usePluginRequire.js";
 const sharp = requirePluginDeps('sharp')
 
 /**

@@ -73,4 +73,72 @@ export const 创建浏览器窗口 = (url, 用户配置 = {}) => {
  * 创建基于URL的浏览器窗口
  * 兼容性函数，保持与旧版API兼容
  */
-export const createBrowserWindowByURL = 创建浏览器窗口; 
+export const createBrowserWindowByURL = 创建浏览器窗口;
+
+/**
+ * 创建一个无边框窗口。
+ * @param {object} [配置={}] - Electron `BrowserWindow` 的配置选项。
+ * @returns {{窗口: Electron.BrowserWindow, 窗口内容: Electron.WebContents}} 包含创建的窗口和其webContents的对象。
+ * @throws {Error} 如果无法获取 Electron BrowserWindow 或 @electron/remote.dialog。
+ */
+export const 创建无边框窗口 = (配置 = {}) => {
+    // 确保electron环境并获取BrowserWindow构造函数
+    const BrowserWindow = 获取BrowserWindow();
+    if (!BrowserWindow) {
+      throw new Error('创建无边框窗口需要Electron环境');
+    }
+
+    // 尝试获取 remote 模块，用于启用 webContents
+    let remote;
+    try {
+        remote = window.require('@electron/remote');
+        if (!remote) throw new Error('window.require("@electron/remote") returned null/undefined');
+    } catch (error) {
+        console.error('Failed to require @electron/remote:', error);
+        // 根据需要决定是否抛出错误或返回
+        throw new Error('依赖的@electron/remote模块无法加载。');
+    }
+
+    const 默认配置 = {
+        width: 800,
+        height: 600,
+        frame: false, // 核心：无边框
+        webPreferences: {
+            nodeIntegration: true, // 警告：安全风险，考虑改为 false 并使用 preload 脚本
+            contextIsolation: false, // 警告：安全风险，应改为 true
+            // preload: path.join(__dirname, 'preload.js') // 推荐使用预加载脚本
+        }
+    };
+
+    // 合并默认配置和用户配置
+    const 最终配置 = { ...默认配置, ...配置, webPreferences: { ...默认配置.webPreferences, ...配置.webPreferences } };
+
+    const 窗口 = new BrowserWindow(最终配置);
+    const 窗口内容 = 窗口.webContents;
+
+    // 启用 remote 模块 for webContents
+    try {
+        // 正确的方式是 remote.require('@electron/remote/main').enable(webContents);
+        // 但如果 remote 是通过 window.require 获取的，可能需要不同的调用方式
+        // 检查 remote 对象结构并相应调用
+        if (remote && remote.require) {
+             const remoteMain = remote.require('@electron/remote/main');
+             if (remoteMain && remoteMain.enable) {
+                 remoteMain.enable(窗口内容);
+             } else {
+                 console.warn('@electron/remote/main or enable function not found.');
+                 // 尝试旧版方法或记录警告
+             }
+        } else {
+             console.warn('Could not find require method on remote object.');
+             // 可能需要不同的方法来启用 remote for webContents
+        }
+    } catch (error) {
+        console.error('Failed to enable remote for webContents:', error);
+        // 决定如何处理此错误，例如关闭窗口或记录
+        // 窗口.close();
+        // throw new Error('无法为新窗口启用remote模块。');
+    }
+
+    return { 窗口, 窗口内容 };
+} 

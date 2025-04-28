@@ -6,7 +6,7 @@
 import * as Vue from '../../../../../static/vue.esm-browser.js'
 import {loadModule} from '../../../../../static/vue3-sfc-loader.esm.js';
 import * as loader from "../../../../../static/vue3-sfc-loader.esm.js"
-import { extractDeclaredVarsInNodeDefine } from '../../../../utils/codeLoaders/js/lexicalAnalyzer.js';
+import { extractDeclaredVarsInNodeDefine } from '../../../base/useCodeAnalysis/forJsDeclarationExtractor.js';
 
 import * as runtime from '../../../../../source/asyncModules.js'
 /**

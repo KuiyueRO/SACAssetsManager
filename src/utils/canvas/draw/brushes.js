@@ -1,6 +1,7 @@
 import { brushImageProcessor } from './brushSampleProcessor.js'
 import { mixer } from './gpuMix.js'
 import { brushConfigs,BRUSH_TYPES } from './brushes/configs.js'
+import { drawCircle, drawRectangle } from '../../../../toolBox/feature/forCanvas/useDrawingUtils.js'
 /**
  * 工厂函数
  */
@@ -195,22 +196,6 @@ function drawShapeBrush(ctx, config, startX, startY, endX, endY, effectiveSize) 
         drawBrushPoint(ctx, null, x, y, angle, effectiveSize, config)
     }
 }
-
-function drawCircle(ctx, diameter) {
-    ctx.beginPath()
-    ctx.arc(0, 0, diameter / 2, 0, Math.PI * 2)
-    ctx.fill()
-}
-
-function drawRectangle(ctx, width, height) {
-    ctx.beginPath()
-    ctx.rect(-width / 2, -height / 2, width, height)
-    ctx.fill()
-}
-
-
-
-
 
 /**
  * 导出笔刷函数

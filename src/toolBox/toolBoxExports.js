@@ -244,4 +244,10 @@ export {
   // 兼容原有API
   parseJSDocConfig,
   parseJSDocConfigFromURL
-} from './feature/forCodeAnalysis/jsParser.js'; 
+} from './feature/forCodeAnalysis/jsParser.js';
+
+// useNode Node.js相关工具
+export * from './useNode/forFile/useFileFingerprint.js';
+
+// useNative 原生功能交互工具
+// export * from './useNode/index.js'; // 如果 useNode/index.js 不存在或未被使用，可以注释掉或移除 

@@ -1,11 +1,14 @@
 /**
- * @fileoverview 函数柯里化工具
+ * @fileoverview 柯里化与反向柯里化函数
+ * 提供将多参数函数转换为系列单参数或部分参数函数的能力
  */
 
 /**
- * 创建一个柯里化版本的函数
- * @param {Function} 原始函数 - 需要被柯里化的原始函数
- * @returns {Function} 返回一个新的函数，这个函数会收集所有传递给它的参数，直到这些参数的数量达到了原始函数的参数数量
+ * 创建一个柯里化版本的函数。
+ * 
+ * @param {Function} 原始函数 - 需要被柯里化的原始函数。
+ * @returns {Function} 返回一个新的函数，这个函数会收集所有传递给它的参数，直到这些参数的数量达到了原始函数的参数数量，然后它会调用原始函数并传递所有收集到的参数。
+ * 
  * @example
  * let add = (a, b, c) => a + b + c;
  * let curriedAdd = 柯里化(add);
@@ -32,20 +35,25 @@ export function 柯里化(原始函数) {
                 }
             }
         } catch (错误) {
-            throw new Error(
-                `执行柯里化函数"${函数名}"时发生错误:\n` +
+            console.error(
+                `执行柯里化函数 "${函数名}" 时发生错误:\n` +
                 `预期参数数量: ${原始函数.length}\n` +
                 `实际接收参数: ${输入参数.length}\n` +
-                `错误信息: ${错误.message}`
+                `错误信息: ${错误.message}`,
+                错误 // 同时打印原始错误对象以便调试
             );
+            throw new Error(`柯里化函数 "${函数名}" 执行失败`); // 抛出更简洁的错误
         }
     };
 }
 
+
 /**
- * 创建一个反向柯里化版本的函数
- * @param {Function} 原始函数 - 需要被反向柯里化的原始函数
- * @returns {Function} 返回一个新的函数，这个函数会从右向左收集所有传递给它的参数，直到参数数量满足要求
+ * 创建一个反向柯里化版本的函数。
+ * 
+ * @param {Function} 原始函数 - 需要被反向柯里化的原始函数。
+ * @returns {Function} 返回一个新的函数，这个函数会从右向左收集所有传递给它的参数，直到参数数量满足要求。
+ * 
  * @example
  * let divide = (a, b, c) => a / b / c;
  * let rightCurriedDivide = 反向柯里化(divide);
@@ -64,7 +72,7 @@ export function 反向柯里化(原始函数) {
         try {
             if (输入参数.length >= 原始函数.length) {
                 // 反转参数顺序后应用到原始函数
-                return 原始函数.apply(this, 输入参数.reverse());
+                return 原始函数.apply(this, [...输入参数].reverse()); // 使用扩展运算符创建副本再反转，避免修改原始输入参数数组
             } else {
                 return function (...args2) {
                     // 将新参数放在数组前面，保持从右向左的顺序
@@ -72,12 +80,14 @@ export function 反向柯里化(原始函数) {
                 }
             }
         } catch (错误) {
-            throw new Error(
-                `执行反向柯里化函数"${函数名}"时发生错误:\n` +
+            console.error(
+                `执行反向柯里化函数 "${函数名}" 时发生错误:\n` +
                 `预期参数数量: ${原始函数.length}\n` +
                 `实际接收参数: ${输入参数.length}\n` +
-                `错误信息: ${错误.message}`
+                `错误信息: ${错误.message}`,
+                错误
             );
+            throw new Error(`反向柯里化函数 "${函数名}" 执行失败`);
         }
     };
 } 

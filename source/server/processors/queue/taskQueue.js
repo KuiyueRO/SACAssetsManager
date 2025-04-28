@@ -1,4 +1,8 @@
-import { MinHeap } from '../../../../src/utils/useEcma/useArray/minHeap.js'
+/**
+ * @deprecated 此文件依赖的旧版 MinHeap 已废弃，且自身功能可能已被 toolBox 中其他模块替代。
+ */
+// HACK: 更新导入，使用 toolBox 中的新版 MinHeap
+import { createMinHeap } from '../../../../src/toolBox/feature/useDataStruct/useHeaps/useMinHeap.js' 
 import { reportHeartbeat } from '../../../../src/toolBox/base/useElectron/useHeartBeat.js'
 
 // 常量配置
@@ -16,9 +20,9 @@ const priorityComparators = {
         const priorityB = b.priority ?? Infinity;
         
         if ((priorityA >= 0 && priorityB < 0) || (priorityA < 0 && priorityB >= 0)) {
-            return priorityB - priorityA; // 非负数优先
+            return priorityB - priorityA; // 非负数优先 (小的在前)
         }
-        return priorityA - priorityB;
+        return priorityA - priorityB; // 数值小的优先
     },
     
     auxiliaryQueue: (a, b) => {
@@ -26,17 +30,19 @@ const priorityComparators = {
         const priorityB = b.priority ?? Infinity;
         
         if ((priorityA >= 0 && priorityB < 0) || (priorityA < 0 && priorityB >= 0)) {
-            return priorityA - priorityB; // 负数优先
+            return priorityA - priorityB; // 负数优先 (大的在前，因为是辅助堆用于淘汰)
         }
-        return priorityB - priorityA;
+        return priorityB - priorityA; // 数值大的优先 (用于淘汰低优先级)
     }
 }
 
-// TaskQueue 类
-class TaskQueue extends MinHeap {
+// TaskQueue 类 (不再继承 MinHeap)
+class TaskQueue {
     constructor() {
-        super(priorityComparators.mainQueue);
-        this.auxiliaryHeap = new MinHeap(priorityComparators.auxiliaryQueue);
+        // 使用组合替代继承
+        this.mainHeap = createMinHeap(priorityComparators.mainQueue);
+        this.auxiliaryHeap = createMinHeap(priorityComparators.auxiliaryQueue);
+        
         this.paused = false;
         this.started = false;
         this.isProcessing = false;
@@ -46,6 +52,8 @@ class TaskQueue extends MinHeap {
             lastTimeout: 0,
             logs: []
         };
+        
+        // 绑定 this
         this.processNext = this.processNext.bind(this);
         this.start = this.start.bind(this);
         this.handleEmptyQueue = this.handleEmptyQueue.bind(this);
@@ -55,10 +63,32 @@ class TaskQueue extends MinHeap {
         this.push = this.push.bind(this);
         this.pause = this.pause.bind(this);
         this.priority = this.priority.bind(this);
-        
-        // 定义ended方法
-        this.ended = () => this.size() === 0;
+        this.ended = this.ended.bind(this);
+    }
 
+    // --- MinHeap 接口适配 ---
+    size() {
+        return this.mainHeap.size();
+    }
+
+    peek() {
+        return this.mainHeap.peek();
+    }
+
+    pop() {
+        // 需要同时从辅助堆中移除 (如果存在)
+        const task = this.mainHeap.pop();
+        // 注意：辅助堆用于淘汰，不直接参与pop逻辑，但在 push 时维护
+        return task;
+    }
+
+    isEmpty() {
+        return this.mainHeap.isEmpty();
+    }
+    // --- End MinHeap 接口适配 ---
+
+    ended() {
+        return this.isEmpty();
     }
 
     // 任务管理方法
@@ -67,13 +97,21 @@ class TaskQueue extends MinHeap {
             throw new Error('任务必须是一个函数，并且返回一个Promise');
         }
 
-        MinHeap.prototype.添加.call(this, task);
-        this.auxiliaryHeap.添加(task);
+        // 直接使用内部 mainHeap 的 push
+        this.mainHeap.push(task); 
+        // 辅助堆用于跟踪任务以淘汰低优先级，也需要添加
+        this.auxiliaryHeap.push(task); 
         
-        if (this.size() >= CONFIG.MAX_TASKS) {
-            const lowestPriorityTask = this.auxiliaryHeap.pop();
+        // 检查是否超出最大任务数限制
+        if (this.mainHeap.size() > CONFIG.MAX_TASKS) {
+            // 从辅助堆中移除优先级最低的任务 (对于辅助堆，是值最大的)
+            const lowestPriorityTask = this.auxiliaryHeap.pop(); 
             if (lowestPriorityTask) {
                 lowestPriorityTask.$canceled = true;
+                // TODO: 如何从 mainHeap 中高效移除这个 task？
+                // 当前 MinHeap 实现不支持按值移除。这是一个潜在问题。
+                // 临时解决方案：在 executeTask 时检查 $canceled 标志。
+                console.warn("Task queue full, lowest priority task marked as canceled, but removal from main heap is not efficient.");
             }
         }
     }
@@ -89,8 +127,10 @@ class TaskQueue extends MinHeap {
     }
 
     async executeTask(task) {
+        // 在执行前检查取消标志
         if (task.$canceled) {
-            return {};
+             console.log("Skipping canceled task.");
+             return {}; // 返回空对象或特定值表示跳过
         }
         
         const start = performance.now();
@@ -99,7 +139,7 @@ class TaskQueue extends MinHeap {
             this.updateTimeout(performance.now() - start);
             return result;
         } catch (error) {
-            console.error(error);
+            console.error('Task execution error:', error);
             this.stats.timeout = Math.min(this.stats.timeout * 2, CONFIG.MAX_TIMEOUT);
             throw error;
         }
@@ -134,9 +174,10 @@ class TaskQueue extends MinHeap {
 
     // 核心处理逻辑
     processNext($timeout = 0, force = false) {
-        // 使用箭头函数绑定this
         const scheduleNext = (timeout) => {
-            setTimeout(() => this.processNext(), timeout);
+            // 确保 timeout 是有效数字且在合理范围内
+            const validTimeout = Math.max(CONFIG.MIN_TIMEOUT, Math.min(timeout || 0, CONFIG.MAX_TIMEOUT));
+            setTimeout(this.processNext, validTimeout);
         };
 
         reportHeartbeat();
@@ -153,92 +194,104 @@ class TaskQueue extends MinHeap {
         }
 
         if (this.isProcessing) {
-            scheduleNext(this.stats.timeout);
+            // 如果正在处理，不再重复调度，等待当前处理完成
+            // scheduleNext(this.stats.timeout);
+            return;
+        }
+
+        if (this.isEmpty() || this.paused) {
+            this.handleEmptyQueue(); // 处理空队列或暂停状态
             return;
         }
 
         this.isProcessing = true;
 
-        if (this.peek() && !this.paused) {
-            this.stats.index++;
-            this.logProgress();
-            
-            const task = this.pop();
-            this.executeTask(task)
-                .then(stat => {
-                    this.logProgress(stat);
-                    scheduleNext(this.stats.timeout);
-                })
-                .catch(() => {
-                    scheduleNext(this.stats.timeout);
-                });
-                
-            this.stats.timeout = Math.max(this.stats.timeout / 10, CONFIG.MIN_TIMEOUT);
-            this.isProcessing = false;
-        } else {
-            this.handleEmptyQueue();
+        const task = this.pop(); // 从主堆获取任务
+        if (!task) { // 可能在并发场景下为空
+             this.isProcessing = false;
+             scheduleNext(this.stats.timeout); 
+             return;
         }
+        
+        this.stats.index++;
+        this.logProgress();
+
+        this.executeTask(task)
+            .then(stat => {
+                this.logProgress(stat);
+            })
+            .catch((err) => {
+                 console.error("Task execution failed in processNext:", err);
+                 // 可以在这里添加错误处理逻辑，比如重试或记录
+            })
+            .finally(() => {
+                this.isProcessing = false;
+                scheduleNext(this.stats.timeout); // 不论成功失败，都调度下一次
+            });
+                
+        // 更新超时：倾向于减少超时以快速处理
+        this.stats.timeout = Math.max(this.stats.timeout / 10, CONFIG.MIN_TIMEOUT);
     }
 
     handleEmptyQueue() {
-        if (!this.ended()) {
+        this.isProcessing = false; // 确保标记为非处理状态
+        if (!this.ended() && !this.paused) { // 如果队列非空且未暂停 (例如，任务在pop后加入)
             this.logProgress();
+            // 计算等待超时
             this.stats.timeout = Math.min(
-                Math.max(this.stats.timeout * 2, this.stats.timeout + 100),
+                Math.max(this.stats.timeout * 2, this.stats.timeout + 100), 
                 CONFIG.MAX_TIMEOUT
             );
-            setTimeout(() => this.processNext(), this.stats.timeout);
+            setTimeout(this.processNext, this.stats.timeout);
+        } else if (this.ended()) {
+             console.log("Task queue is empty.");
+             // 可选：触发队列空事件
+        } else if (this.paused) {
+             console.log("Task queue is paused.");
         }
-        this.isProcessing = false;
     }
 
     start($timeout = 0, force = false) {
         console.log('恢复后台任务', "执行间隔:" + $timeout, force ? "强制开始:" : '');
-        if (this.started) {
-            // 使用箭头函数绑定this
-            setTimeout(() => this.processNext($timeout, force), 0);
-            return;
+        if (this.started && !this.paused && !force) {
+             console.log("Task queue already started and not paused.");
+             return;
         }
-        this.ended = () => this.size() === 0;
-        // 使用箭头函数绑定this
-        setTimeout(() => this.processNext($timeout, force), 0);
+        
+        this.paused = false; // 确保未暂停
         this.started = true;
+        
+        // 延迟启动，避免阻塞当前流程
+        setTimeout(() => this.processNext($timeout, force), 0);
     }
 }
 
 // 创建全局单例
 const globalTaskQueue = new TaskQueue();
+// 保持全局访问方式不变
 globalThis[Symbol.for('taskQueue')] = globalThis[Symbol.for('taskQueue')] || globalTaskQueue;
 
-// 导出公共API
+// 导出公共API (保持不变)
 export { globalTaskQueue };
 export const 暂停全局任务队列执行 = () => globalTaskQueue.pause();
 export const 恢复全局任务队列执行 = () => {
-    globalTaskQueue.paused = false;
-    globalTaskQueue.start();
+    // 恢复时强制启动一次检查
+    globalTaskQueue.start(0, true); 
 };
 export const 添加全局任务 = (task) => globalTaskQueue.push(task);
-/**
- * 创建优先级任务
- * @param {Function} taskFn 要执行的任务函数
- * @param {number} priority 优先级值
- * @returns {Object} 任务对象
- */
+
 export const 添加带有优先级的全局任务 = (taskFn, priority) => {
     globalTaskQueue.push(
         globalTaskQueue.priority(
             async () => {
                 const result = await taskFn();
-                return result || {};
+                return result || {}; // 确保返回对象
             },
             priority
         )
     )
 }
 
-/**
- * 临时实现,以负数优先级实现后进先出,之后需要更加准确的优先级计算逻辑
- */
 export const 添加后进先出后台任务=(任务函数)=>{
     const 负数时间优先级 = 0-Date.now()
     添加带有优先级的全局任务(任务函数,负数时间优先级)

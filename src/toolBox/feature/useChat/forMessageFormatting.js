@@ -2,7 +2,7 @@
  * 聊天消息格式化工具
  * 提供解析和格式化聊天消息的功能
  */
-import { 转义HTML, 反转义HTML, 文本转HTML } from '../../../toolBox/base/useEcma/forString/forHtmlProcessing.js';
+import { escapeHTML, unescapeHTML, textToHTML } from '../../base/useEcma/forString/forHtmlProcessing.js';
 
 /**
  * 解析思考内容，处理<think>标签
@@ -21,7 +21,7 @@ export function 解析思考内容(内容) {
 
   // 先转义内容中的HTML，但保留think标签
   const 安全内容 = 内容.replace(/<think>(.*?)<\/think>/g, (匹配, 组1) => {
-    return `<think>${转义HTML(组1)}</think>`;
+    return `<think>${escapeHTML(组1)}</think>`;
   });
 
   // 使用DOM解析器安全提取标签内容
@@ -31,10 +31,10 @@ export function 解析思考内容(内容) {
 
   if (思考元素) {
     // 获取think标签内的内容并反转义
-    const 思考内容 = 反转义HTML(思考元素.textContent.trim());
+    const 思考内容 = unescapeHTML(思考元素.textContent.trim());
     // 移除think标签后的剩余内容并反转义
     思考元素.remove();
-    const 普通内容 = 反转义HTML(文档.body.textContent.trim());
+    const 普通内容 = unescapeHTML(文档.body.textContent.trim());
 
     return {
       思考内容,
@@ -47,14 +47,14 @@ export function 解析思考内容(内容) {
   if (内容.includes('<think>') && !内容.includes('</think>')) {
     return {
       思考内容: '',
-      普通内容: 转义HTML(内容),
+      普通内容: escapeHTML(内容),
       有思考: false
     };
   }
 
   return {
     思考内容: '',
-    普通内容: 转义HTML(内容),
+    普通内容: escapeHTML(内容),
     有思考: false
   };
 }
@@ -73,7 +73,7 @@ export function 格式化富文本消息(消息文本) {
   // 创建包含思考内容的HTML(如果有)
   let 结果HTML = '';
   if (有思考 && 思考内容) {
-    结果HTML += `<div class="think-content">${文本转HTML(思考内容)}</div>`;
+    结果HTML += `<div class="think-content">${textToHTML(思考内容)}</div>`;
   }
   
   // 创建主要内容的HTML
@@ -89,7 +89,7 @@ export function 格式化富文本消息(消息文本) {
     // 5. 处理引用 >文本
     .replace(/^>\s*(.*?)$/gm, '<blockquote>$1</blockquote>');
   
-  结果HTML += 文本转HTML(处理后内容);
+  结果HTML += textToHTML(处理后内容);
   return 结果HTML;
 }
 

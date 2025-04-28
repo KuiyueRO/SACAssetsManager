@@ -1,5 +1,5 @@
 import * as 向量 from '../geometry/geometryCalculate/vector.js'
-import * as LUT处理器 from '../../../../../src/utils/Lut/lutProcessor.js'
+import * as LUT处理器 from '../../../../../src/toolBox/feature/applyLutFilter/lutProcessor.js'
 export const 预定义带节点定义组件路径 = '/plugins/SACAssetsManager/src/shared/components/withNodeDefine'
 export const 解析预定义带节点定义组件 = (subpath) => {
     return `${预定义带节点定义组件路径}/${subpath}`
@@ -45,7 +45,7 @@ export const 默认函数式节点加载表 = [
     },
     {
         module: LUT处理器,
-        path: '/plugins/SACAssetsManager/src/utils/Lut/lutProcessor.js',
+        path: '/plugins/SACAssetsManager/src/toolBox/feature/applyLutFilter/lutProcessor.js',
         config: {
             componentPrefix: 'image',
             moduleName: 'LUT',

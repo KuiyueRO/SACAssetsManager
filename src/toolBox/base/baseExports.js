@@ -44,10 +44,17 @@ export * from './useEcma/forFunctions/forTaskQueue.js';
 export * from './useEcma/forLogs/useLogger.js';
 export * from './useEcma/forCrypto/forHash/computeMd5Hash.js';
 export * from './useEcma/forCrypto/forCache/useCacheProvider.js';
+export * from './useEcma/useArray/computeImmutableDelete.js';
+export * from './useEcma/useArray/modifyRemoveFirstMatch.js';
+export * from './useEcma/useArray/computeGroupBy.js';
+export * from './useEcma/forDebugging/useStackTrace.js';
+export * from './useEcma/forPersistence/useEnhancedSerialization.js';
+export * from './useEcma/forType/computeTypeConversion.js';
 
 // useBrowser 浏览器相关工具
 export * from './useBrowser/forIdle/idleQueueTools.js';
 export * from './useBrowser/useCanvas/index.js';
+export * from './useBrowser/useCanvas/drawCanvasRulers.js';
 export * from './useBrowser/useClipBoard.js';
 export * from './useBrowser/forDOM/elementBuilder.js';
 export * from './useBrowser/useDOM/forFocus.js';
@@ -57,6 +64,8 @@ export * from './useElectron/useHeartBeat.js';
 export * from './useElectron/forCSharp/useCSharpLoader.js';
 export * from './useElectron/forWindow/useBrowserWindow.js';
 export * from './useElectron/forWindow/useWebview.js';
+export * from './useElectron/useElectronShell.js';
+export * from './useElectron/useElectronDialog.js';
 
 // useEnv 环境相关工具
 export * from './useEnv/index.js';
@@ -113,3 +122,10 @@ export * from './useLayout/computeFitScale.js';
 
 // useDOM DOM操作工具
 export * from './useDOM/index.js';
+
+// useAsync 异步处理工具
+export * from './useAsync/computeAsyncArrayDelete.js';
+export * from './useAsync/computeAsyncArrayDuplicates.js';
+export * from './useAsync/computeAsyncArrayMap.js';
+export * from './useAsync/forEachAsyncSerial.js';
+export * from './useAsync/appendAsyncIterable.js';

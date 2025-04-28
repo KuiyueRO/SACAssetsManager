@@ -1,4 +1,4 @@
-import { requireWGSLCode } from '../utils/module/wgslModule.js';
+import { requireWGSLCode } from '../../../../../src/toolBox/feature/forWebGPU/useWGSLProcessor/index.js';
 export class DarkChannelDehaze {
     static WORKGROUP_SIZE = 16;
 

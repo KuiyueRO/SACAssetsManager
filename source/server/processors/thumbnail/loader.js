@@ -1,5 +1,5 @@
 import { getColor } from './color.js'
-import { diffColor } from '../../../../src/utils/color/Kmeans.js'
+// import { diffColor } from '../../../../src/utils/color/Kmeans.js'
 import { globalTaskQueue,  添加后进先出后台任务 } from '../queue/taskQueue.js'
 import { 内置缩略图生成器序列 } from './loaders/internal.js'
 import { getCommonLoader } from './loaders/query.js'
@@ -8,6 +8,7 @@ import { 写入缩略图缓存 } from './cache/writer.js'
 import { 创建缩略图生成上下文 } from './cache/context.js'
 import { 从缓存获取缩略图 } from './cache/reader.js'
 import { 日志 } from "../../../../src/toolBox/base/useEcma/forLogs/useLogger.js"
+import { computeCIEDE2000DifferenceRGBA } from '../../../../toolBox/feature/forColor/useColorSimilarity.js'
 
 const fs = require('fs')
 export function listLoaders() {
@@ -491,7 +492,7 @@ export async function diffFileColor(filePath, color) {
         }
         
         for await (let item of simiColor) {
-            if (diffColor(item.color, color)) {
+            if (computeCIEDE2000DifferenceRGBA(item.color, color) < 20) {
                 日志.调试(`找到匹配颜色`, 'ThumbnailLoader', {
                     元数据: {
                         请求ID,

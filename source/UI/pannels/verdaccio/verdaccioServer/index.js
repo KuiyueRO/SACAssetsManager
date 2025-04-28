@@ -1,4 +1,4 @@
-import { requirePluginDeps } from "../../../../../src/utils/module/requireDeps.js";
+import { requirePluginDeps } from "../../../../../src/toolBox/useAge/forSiyuan/usePluginRequire.js";
 
 const verdaccio = requirePluginDeps('verdaccio')
 const { runServer } = verdaccio

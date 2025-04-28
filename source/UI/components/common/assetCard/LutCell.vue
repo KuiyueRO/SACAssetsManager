@@ -24,7 +24,7 @@ import { LAYOUT_COLUMN } from '../../../utils/threhold.js';
 import { fromRgbArrayToString } from '../../../../../src/toolBox/base/forColor/formatColor.js';
 import { 获取素材属性值, 计算素材类型角标 } from '../../../../data/attributies/parseAttributies.js';
 import ImageComparison from '../../../../../src/shared/components/withNodeDefine/ImageComparison.vue';
-import { processImageWithLUTFile } from '../../../../../src/utils/Lut/lutProcessor.js';
+import { processImageWithLUTFile } from '../../../../../src/toolBox/feature/applyLutFilter/lutProcessor.js';
 async function handleFileUpload() {
     const { dialog } = window.require('@electron/remote');
     const result = await dialog.showOpenDialog({

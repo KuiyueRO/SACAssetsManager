@@ -1,4 +1,5 @@
-import { 欧几里得聚类, CIEDE2000聚类 } from '../../../../src/utils/color/Kmeans.js'
+import { computeKMeansClustersEuclidean as 欧几里得聚类 } from '../../../../toolBox/feature/forColor/useColorClustering.js'
+// import { 欧几里得聚类, CIEDE2000聚类 } from '../../../../src/utils/color/Kmeans.js'
 import { 找到文件颜色, 添加到颜色索引 } from '../color/colorIndex.js'
 import { awaitForEach } from '../../../../src/toolBox/base/baseExports.js'
 import { 缩放图像到32 } from './utils/sharp.js'

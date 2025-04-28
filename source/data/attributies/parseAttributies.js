@@ -1,13 +1,5 @@
-import { 柯里化 } from '../../../src/utils/functions/currying.js'
 import { 块类型语言对照表 } from '../../../src/utils/siyuanData/block.js'
 
-const numberParser = (value) => {
-    const num = Number(value)
-    if (isNaN(num)) {
-        return 0
-    }
-    return num
-}
 const dateParser = (value) => {
     const date = new Date(value)
     return date.toLocaleString()

@@ -13,7 +13,7 @@ import { 打开本地资源视图 } from "../tabs/assetsTab.js";
 import { isImagePathByExtension } from "../../../../src/toolBox/base/usePath/forCheck.js";
 import { getContrastingTextColor } from "../../../../src/toolBox/base/forColor/getContrastingColor.js";
 import { fetchSync } from "../../../../src/toolBox/base/forNetWork/forFetch/fetchSyncTools.js";
-import { 向菜单批量添加项目 } from "../../../../src/utils/siyuanUI/menu.js";
+import { 向菜单批量添加项目 } from "../../../../src/toolBox/useAge/forSiyuan/useSiyuanMenu.js";
 import { checkClipboardForFilePath } from "../../../../src/toolBox/base/useBrowser/useClipBoard.js";
 import { fromRgbaToHex } from "../../../../src/toolBox/base/forColor/colorSpace.js";
 import { createElement, createFragment } from "../../../../src/toolBox/base/useBrowser/forDOM/elementBuilder.js";

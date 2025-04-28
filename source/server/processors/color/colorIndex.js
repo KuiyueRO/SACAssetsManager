@@ -1,4 +1,5 @@
-import { diffColor } from "../../../../src/utils/color/Kmeans.js"
+// import { diffColor } from "../../../../src/utils/color/Kmeans.js"
+import { computeCIEDE2000DifferenceRGBA } from "../../../../toolBox/feature/forColor/useColorSimilarity.js"
 import { getCachePath } from '../fs/cached/fs.js'
 import { 修正路径分隔符号为反斜杠, 修正路径分隔符号为正斜杠 } from '../../../../src/toolBox/base/usePath/forFix.js'
 const path = require('path')
@@ -310,7 +311,10 @@ export async function 根据颜色查找内容(color, cutout = 0.6) {
     let result = [];
     for (let i = 0; i < colorIndex.length; i++) {
         let item = colorIndex[i];
-        let diffResult = diffColor(item.color, color, cutout)
+        if (item.count === 0) {
+            continue
+        }
+        let diffResult = computeCIEDE2000DifferenceRGBA(item.color, color) < 20
         if (diffResult) {
             // 这里不需要返回，直接校验
             // 校验颜色索引文件条目(item);
@@ -325,7 +329,10 @@ export async function 流式根据颜色查找内容(color, cutout = 0.6, callba
         for (let i = 0; i < colorIndex.length; i++) {
             let item = colorIndex[i];
             let fn = async () => {
-                let diffResult = diffColor(item.color, color, cutout)
+                if (item.count === 0) {
+                    return;
+                }
+                let diffResult = computeCIEDE2000DifferenceRGBA(item.color, color) < 20
                 if (diffResult) {
                     let len = item.assets.length
                     item.assets.forEach(

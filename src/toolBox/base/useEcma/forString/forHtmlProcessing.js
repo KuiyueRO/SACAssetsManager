@@ -47,6 +47,10 @@ export const escapeHTMLAttr = (text) => {
     return escapeHTML(text);
 };
 
+// 中文别名导出
+export const 转义HTML = escapeHTML;
+export const 转义HTML属性 = escapeHTMLAttr;
+
 /**
  * Unescapes HTML entities in a string.
  * Converts HTML entities back to their corresponding special characters.
@@ -58,6 +62,9 @@ export const unescapeHTML = (text) => {
   return text.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/g, entity => HTML_UNESCAPE_MAP[entity] || entity);
 };
 
+// 中文别名导出
+export const 反转义HTML = unescapeHTML;
+
 /**
  * Removes leading/trailing whitespace and replaces multiple whitespace characters with a single space.
  * @param {string} text - The text to sanitize.
@@ -67,6 +74,9 @@ export const sanitizeText = (text) => {
   if (!text || typeof text !== 'string') return '';
   return text.trim().replace(/\s+/g, ' ');
 };
+
+// 中文别名导出
+export const 清理文本 = sanitizeText;
 
 /**
  * Removes all HTML tags from a string, leaving only the text content.
@@ -78,6 +88,9 @@ export const stripHTMLTags = (text) => {
   // This regex removes tags but leaves content between them.
   return text.replace(/<[^>]*>/g, '');
 };
+
+// 中文别名导出
+export const 去除HTML标签 = stripHTMLTags;
 
 /**
  * Converts plain text to HTML paragraphs.
@@ -97,6 +110,9 @@ export const textToParagraphs = (text, shouldEscape = true) => {
     .map(line => `<p>${line}</p>`) // Wrap each line in <p> tags
     .join(''); // Join paragraphs
 };
+
+// 中文别名导出
+export const 文本转段落 = textToParagraphs;
 
 /**
  * Escapes HTML safely, preserving specified HTML tags.
@@ -133,6 +149,9 @@ export const partialEscapeHTML = (text, allowedTags = []) => {
   });
 };
 
+// 中文别名导出
+export const 部分转义HTML = partialEscapeHTML;
+
 /**
  * Converts plain text to basic HTML, preserving line breaks and spaces.
  * @param {string} text - The plain text to convert.
@@ -144,4 +163,7 @@ export const textToHTML = (text) => {
     .replace(/\n/g, '<br>')
     .replace(/  /g, '&nbsp; ') // Replace double space with nbsp + space for better rendering
     .replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'); // Replace tab with 4 nbsps
-}; 
+};
+
+// 中文别名导出
+export const 文本转HTML = textToHTML; 

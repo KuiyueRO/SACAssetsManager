@@ -474,4 +474,10 @@ export default class SACAssetsManager extends Plugin {
 7.  **CSS**: 如果 `plugin.json` 中定义了 CSS 文件路径，或者插件信息中包含 CSS 字符串，其内容会被自动加载到页面 `<head>` 中。
 8.  **界面集成**: 插件可以通过特定的 API 或在插件实例上定义属性（如 `topBarIcons`, `statusBarIcons`, `docks`）来注册和添加界面元素到思源笔记中。
 
-**重要**: 由于平台约定，根目录的 `index.js` 和默认导出是必须的，这覆盖了通用编码规范中关于避免使用 `index.js` 和默认导出的建议。 
+**重要**: 由于平台约定，根目录的 `index.js` 和默认导出是必须的，这覆盖了通用编码规范中关于避免使用 `index.js` 和默认导出的建议。
+
+## Refactoring Todos
+
+-   **Refactor `assetGalleryPanel.vue`:** Remove dependency on monkey-patching `Array.prototype.push` (from `src/utils/useEcma/useArray/push.js`). See `src/utils/AInote.md` for details.
+
+<!-- Potentially more notes --> 

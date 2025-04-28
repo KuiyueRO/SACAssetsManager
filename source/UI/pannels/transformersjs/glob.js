@@ -15,7 +15,7 @@ const pendingIds = [...allHashIds] // 待查询ID
 const embeddings = new Map(); // Map<id, Array<{text: string, embedding: number[]}>>();
 
 // 添加任务队列控制器
-import { 串行任务控制器 } from '../../../../src/utils/queue/task.js';
+import { 串行任务控制器 } from '../../../../src/toolBox/base/useAsync/forTaskQueue/forSerialTaskQueue.js';
 const embeddingQueue = new 串行任务控制器({
     destroyOnComplete: false,
     useIdleCallback: true

@@ -12,7 +12,7 @@
 
 <script setup>
 import { computed, inject, ref, watch, onUnmounted } from 'vue'
-import { 创建Vue组件界面 } from '../../tab.js';
+import { createVueInterface as 创建Vue组件界面 } from '/plugins/SACAssetsManager/src/toolBox/feature/useVue/vueComponentLoader.js';
 
 const appData = inject('appData')
 const componentContainer = ref(null)

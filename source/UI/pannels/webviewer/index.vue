@@ -284,7 +284,7 @@ onMounted(() => {
     console.log("开始加载")
     console.log(initialUrl)
 
-    loadURL(initialUrl);
+    loadUrl(initialUrl);
     currentUrl.value = initialUrl;
     console.log('加载完成')
   }, 3000);

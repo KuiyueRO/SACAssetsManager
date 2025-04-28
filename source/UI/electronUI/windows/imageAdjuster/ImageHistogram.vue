@@ -78,7 +78,7 @@ import ImageAdjuster from './ImageAdjuster.vue';
 import imageGalleryHori from './components/imageGalleryHori.vue';
 import { ref, computed, inject, toRef, onUnmounted, onMounted, shallowRef, watch } from 'vue';
 import { fromFilePath, fromBuffer } from '../../../../../src/utils/fromDeps/sharpInterface/useSharp/toSharp.js';
-import { requirePluginDeps } from '../../../../../src/utils/module/requireDeps.js';
+import { requirePluginDeps } from '../../../../../src/toolBox/useAge/forSiyuan/usePluginRequire.js';
 import { getImageDisplayRect } from './utils/css.js';
 import { 选择图片文件 } from '../../../../../src/utils/useRemote/dialog.js';
 import { 覆盖保存 } from '../../../../../src/utils/fs/write.js';
@@ -620,7 +620,7 @@ const cancelChanges = async () => {
 
         切换编辑器到空闲模式()
 
-        // 重新生成���览
+        // 重新生成预览
         if (currentSharpObject.value) {
             await generatePreview(currentSharpObject.value)
         }

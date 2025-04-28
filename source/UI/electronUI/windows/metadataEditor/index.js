@@ -1,5 +1,5 @@
 // 直接使用静态导入
-import { initVueApp } from '/plugins/SACAssetsManager/source/utils/module/vue/loadVueApp.js';
+import { initVueApp } from '/plugins/SACAssetsManager/src/toolBox/feature/useVue/vueComponentLoader.js';
 
 // 解析组件的完整路径
 const componentPath = import.meta.resolve('./components/app.vue');

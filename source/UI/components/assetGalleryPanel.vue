@@ -88,7 +88,8 @@ import apiIcon from './galleryPanel/apiIcon.vue';
 import { plugin } from 'runtime'
 import _path from '../../../polyfills/path.js'
 import * as endPoints from '../../server/endPoints.js'
-import { addUniquePalletColors } from '../../../src/utils/color/filter.js';
+import { 获取图片颜色分布, 提取图片主题色, 计算颜色距离, rgbToHex, hexToRgb, rgbToHsl, hslToRgb } from '../../../toolBox/feature/forColor/useColorAnalysis.js';
+import { addUniquePalletColors } from '../../../toolBox/feature/forColor/useColorPaletteUtils.js';
 import multiple from "./common/selection/multiple.vue";
 import { 更新扩展名中间件 } from './galleryPanel/middlewares/extensions.js';
 import { 提取缩略图路径中间件, 提取NoteID中间件, 提取tags中间件 } from '../../data/attributies/attributeParsers.js';

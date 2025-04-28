@@ -1,4 +1,4 @@
-import { requirePluginDeps } from '../../../../module/requireDeps.js';
+import { requirePluginDeps } from '../../../../src/toolBox/useAge/forSiyuan/usePluginRequire.js';
 import { GPU } from '../../../../../../static/gpu.js';
 const sharp = requirePluginDeps('sharp')
 /**

@@ -1,4 +1,4 @@
-import { requireWGSLCode } from "../../../../../src/utils/module/wgslModule.js";
+import { requireWGSLCode } from "../../../../../src/toolBox/feature/forWebGPU/useWGSLProcessor/index.js";
 
 export class PBRPass {
     constructor(gpuContext) {

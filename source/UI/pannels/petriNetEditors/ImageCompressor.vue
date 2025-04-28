@@ -60,7 +60,7 @@
   </div>
 </template>
 <script nodeDefine>
-import { requirePluginDeps } from '../../../../src/utils/module/requireDeps.js';
+import { requirePluginDeps } from '../../../../../../../src/toolBox/useAge/forSiyuan/usePluginRequire.js';
 import { ref, computed } from 'vue';
 
 const sharp = requirePluginDeps('sharp');

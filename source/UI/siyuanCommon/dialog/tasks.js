@@ -1,5 +1,5 @@
 import { openTaskDialog } from "../../../../src/toolBox/feature/useVue/dialogTools.js";
-import { 串行任务控制器 } from "../../../../src/toolBox/base/useEcma/forFunctions/forTaskQueue.js";
+import { 串行任务控制器 } from "../../../../src/toolBox/base/useAsync/forTaskQueue/forSerialTaskQueue.js";
 import { clientApi } from "../../../asyncModules.js";
 
 /**

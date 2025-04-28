@@ -47,18 +47,18 @@ import { verticalScrollFirst } from '../../utils/scroll.js';
 import assetsImage from '../../components/assetInfoPanel/assetsImage.vue';
 import { 打开文件夹数组素材页签 } from './assetinfoPanel.js';
 import { 搜集eagle元数据 } from '../../../../src/utils/thirdParty/eagle.js';
-import { 在资源管理器打开本地文件夹数组 } from '../../../../src/utils/useRemote/shell.js';
+import { 在资源管理器打开本地文件夹数组 } from '../../../../src/toolBox/base/useElectron/useElectronShell.js';
 import { 获取数组中素材所在笔记 } from '../../../../src/utils/sql/siyuanSentence.js';
 
 // 导入新工具函数
-import { 
-  获取资产文件格式, 
-  获取资产本地文件夹, 
+import {
+  获取资产文件格式,
+  获取资产本地文件夹,
   生成资产描述标签,
   处理资产路径数组,
   比较资产路径数组
 } from '../../../../src/toolBox/feature/forAssets/forAssetInfo.js';
-import { 异步清理重复元素, 异步映射 } from '../../../../src/utils/useEcma/useArray/index.js';
+import { computeMapAsync } from '../../../../src/toolBox/base/useAsync/computeAsyncArrayMap.js';
 
 const path = _path.default
 const imageSrc = ref(['http://127.0.0.1/thumbnail/?path=assets%2F42-20240129031127-2sioyhf.jpg']);
@@ -94,15 +94,14 @@ const openFolderAssetsTab = () => {
 }
 
 watchStatu(状态注册表.选中的资源, async (newVal) => {
-  const assets = await 异步清理重复元素(newVal)
-  const assetPaths = await 异步映射(assets, asset => asset?.data?.path);
+  const uniqueAssets = Array.from(new Set(newVal));
+  const assetPaths = await computeMapAsync(uniqueAssets, asset => asset?.data?.path);
   
   if (!assetPaths[0]) {
     console.log('未获取到选中列表,跳过查询');
     return;
   }
   
-  // 使用新工具函数比较资产路径数组
   if (比较资产路径数组(assetPaths, lastAssetPaths.value)) {
     console.log('路径列表未变化，跳过查询');
     return;
@@ -110,29 +109,23 @@ watchStatu(状态注册表.选中的资源, async (newVal) => {
   
   lastAssetPaths.value = assetPaths;
   
-  // 处理缩略图
-  if (assets) {
+  if (uniqueAssets.length > 0) {
     imageSrc.value = getCommonThumbnailsFromAssets(
-      assets.map(item => item && item.data).filter(item => item)
+      uniqueAssets.map(item => item && item.data).filter(item => item)
     );
   }
   
-  // 使用新工具函数生成资产描述
-  const assetDataList = assets.map(item => item.data);
+  const assetDataList = uniqueAssets.map(item => item.data);
   name.value = 生成资产描述标签(assetDataList);
   
-  // 使用新工具函数获取文件格式
   format.value = 获取资产文件格式(assetDataList);
   
-  // 使用新工具函数获取文件夹信息
   const folderInfo = 获取资产本地文件夹(assetDataList);
   currentFolderInfo.value = folderInfo;
   folder.value = folderInfo.displayText;
   
-  // 获取Eagle元数据
   eagleMetas.value = await 搜集eagle元数据(assetDataList);
   
-  // 获取所在笔记
   doc.value = (await 获取数组中素材所在笔记(lastAssetPaths.value))
     .map(item => item.root_id)
     .join(',');
