@@ -287,17 +287,21 @@ export class 串行任务控制器 {
             const result = await executeTask(); // 等待任务执行完成
             this.completedTasks++;
             console.log(`任务完成，已完成: ${this.completedTasks}/${this.totalTasks}`);
-            // 触发任务完成事件
-            this.eventBus.emit('taskCompleted', {
-                completedTasks: this.completedTasks,
-                totalTasks: this.totalTasks,
-                result: result
-            });
+            // 触发任务完成事件 - 检查 eventBus 是否存在
+            if (this.eventBus) {
+                this.eventBus.emit('taskCompleted', {
+                    completedTasks: this.completedTasks,
+                    totalTasks: this.totalTasks,
+                    result: result
+                });
+            }
 
         } catch (error) {
             console.error('任务执行出错:', error, this.currentTask);
-            // 触发任务错误事件
-            this.eventBus.emit('taskError', { error, task: this.currentTask });
+            // 触发任务错误事件 - 检查 eventBus 是否存在
+            if (this.eventBus) {
+                this.eventBus.emit('taskError', { error, task: this.currentTask });
+            }
         } finally {
             // 清理工作
             if (this.idleCallbackId && this.supportIdle) {
@@ -342,7 +346,10 @@ export class 串行任务控制器 {
             cancelIdleCallback(this.idleCallbackId);
             this.idleCallbackId = null;
         }
-        this.eventBus.emit('queueCleared');
+        // Check if eventBus exists before emitting
+        if (this.eventBus) {
+            this.eventBus.emit('queueCleared');
+        }
         // isProcessing 标志会在当前任务结束后由 finally 重置
     }
 
@@ -400,8 +407,8 @@ export class 串行任务控制器 {
         console.log("销毁串行任务控制器...");
         this.pause(); // 首先暂停
         this.clear(); // 清空队列
-        // 移除所有事件监听器
-        this.eventBus.offAll(); 
+        // 移除所有事件监听器 - 实际使用的 eventBus 库可能没有 offAll
+        // this.eventBus.offAll(); 
         // 可能需要更彻底地清理状态？置为 null？
         this.taskQueue = null; 
         this.eventBus = null;
