@@ -7,7 +7,7 @@ export class HybridWatcher {
         this.watchers = new Map();
         this.subscriptions = new Set();
         this.watchOptions = {
-            ignore: ['.git', 'node_modules', '.*'],
+            ignore: ['.git', 'node_modules', '.*', '**/.sac/**'],
         };
     }
 

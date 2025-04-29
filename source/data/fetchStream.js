@@ -124,7 +124,6 @@ export function createCompatibleCallback(推送目标, 原回调函数, 回调�
         原回调函数 && 原回调函数(data);
         break;
       case 'stepCallback':
-        // 这个case可能不需要，因为我们在pushData中已经处理了步长回调
         break;
       case 'complete':
         原回调函数 && 原回调函数();

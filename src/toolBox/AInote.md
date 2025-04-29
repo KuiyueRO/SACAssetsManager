@@ -1,5 +1,21 @@
 # 这个区块的内容来自开发者,禁止AI未经允许修改
 
+# AI 笔记
+
+## 依赖位置原则
+
+1.  **第三方库:**
+    *   npm 依赖: 保留在 `node_modules`，直接 `import` 包名。
+    *   独立 JS 文件: 放置在根目录 `static/` 下 (如 `rbush.js`)。
+2.  **内部模块:**
+    *   **核心/底层 (`src/toolBox/`):** 通用、独立工具，不反向依赖 `source/`，配置项通过参数传入。
+    *   **应用/UI (`source/`):
+        *   通用 UI 工具 (`source/UI/utils/`): UI 层复用工具、常量 (如 `layoutConstants.js`)。
+        *   UI 组件 (`source/UI/components/`): Vue 组件等。
+        *   其他按功能划分 (server, data, polyfills)。
+
+**目标:** 职责清晰，避免反向依赖，规范存放。
+
 现在扫描所有utils等类似命名的文件夹,尝试进行重构
 
 注意我们需要集中思源笔记的环境依赖,可以使用useSiyuan进行集中

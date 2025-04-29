@@ -32,7 +32,7 @@
 import { ref, computed, toRef, onMounted, onBeforeUnmount, defineEmits, nextTick, watch } from 'vue';
 import { thumbnail } from '../../../server/endPoints.js';
 import { fromRgbArrayToString } from '../../../../src/toolBox/base/forColor/formatColor.js';
-import { LAYOUT_COLUMN, LAYOUT_ROW } from '../../utils/threhold.js';
+import { LAYOUT_COLUMN, LAYOUT_ROW } from '../../utils/layoutConstants.js';
 import { 获取素材属性值, UNDEFINED_MARKER, 解析文件内部属性显示, 解析文件属性名标签 } from '../../../data/attributies/parseAttributies.js';
 import { findTagsByFilePath } from '../../../data/tags.js';
 import tagsCell from './assetCard/tagsCell.vue';

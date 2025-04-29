@@ -21,8 +21,19 @@ export const 更新扩展名中间件 = (获取配置, 获取扩展名缓存) =>
 
 export const 过滤器中间件 = (filterFunc) => {
     return (args) => {
-        let result = args.filter(arg => filterFunc(arg));
-        return result
+        if (!args || args.length === 0) return args; // 没有参数，直接返回
+
+        // 假设 fetchStream 总是 push 单个元素
+        const item = args[0];
+        // console.log('[Middleware] 过滤器中间件 - 检查项目:', item ? item.name || item.path : 'null/undefined'); // 移除日志
+
+        // 直接对单个元素进行过滤判断
+        const shouldKeep = filterFunc(item);
+
+        // console.log(`[Middleware] 过滤器中间件 - ${shouldKeep ? '保留' : '过滤掉'} 项目`); // 移除日志
+
+        // 如果应该保留，返回包含该元素的数组；否则返回空数组
+        return shouldKeep ? args : [];
     };
 }
 

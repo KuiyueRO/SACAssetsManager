@@ -15,7 +15,7 @@
 <script setup lang="jsx">
 import { computed, toRef, defineEmits, ref, onMounted } from 'vue';
 import { 计算素材缩略图样式, 计算扩展名标签样式 } from '../assetStyles.js';
-import { LAYOUT_COLUMN } from '../../../utils/threhold.js';
+import { LAYOUT_COLUMN } from '../../../utils/layoutConstants.js';
 import { getAssetItemColor } from '../../../../data/attributies/getAsyncAttributes.js';
 import { 色彩工具,素材条目管理工具 } from '../../componentUtils.js';
 const {rgb数组转字符串}=色彩工具

@@ -19,7 +19,7 @@ import { headerTypes } from '../../src/toolBox/base/forNetWork/useHeaders/useHea
 import { genColor, getFilesByColor } from './handlers/get-color.js'
 import { createSiyuanBroadcastChannel } from './processors/web/siyuanWebSocket.js'
 import { globalTaskQueue } from './middlewares/runtime_queue.js';
-const siyuanBroadcastChannel = await createSiyuanBroadcastChannel('sacAssetsManager', window.siyuanPort)
+const siyuanBroadcastChannel = await createSiyuanBroadcastChannel('sacAssetsManager', window.siyuanPort, window?.siyuanConfig?.api?.token || '');
 siyuanBroadcastChannel.onmessage = (e) => {
     日志.信息(e, 'SiyuanChannel');
 }

@@ -1,5 +1,5 @@
 <template>
-    <div @wheel.ctrl.stop.prevent="(event) => { size = 从滚轮事件计算(size, event, 1024, 32) }" class=" fn__flex-column"
+    <div @wheel.ctrl.stop.prevent="(event) => { size = computeSizeFromWheel(size, event, 1024, 32) }" class=" fn__flex-column"
         style="max-height: 100%;" ref="root">
         <div class=" fn__flex " style="min-height:36px;align-items: center;">
             <div class="fn__space fn__flex-1"></div>
@@ -52,6 +52,7 @@
                 @layoutChange="handlerLayoutChange" @scrollTopChange="handlerScrollTopChange" :sorter="sorter"
                 @layoutCount="(e) => { layoutCount.found = e }" 
                 @paddingChange="(e) => paddingLR = e" @layoutLoadedCount="(e) => { layoutCount.loaded = e }"
+                @columnCountChange="handleColumnCountChange" 
                 :size="$size">
                 <template #header>
                     <div class="header-cell preview-cell" :style="{width:$size+'px',textAlign:'center'}">预览</div>
@@ -96,12 +97,15 @@ import { 过滤器中间件 } from './galleryPanel/middlewares/extensions.js';
 import { 创建带中间件的Push方法 } from "../../../src/toolBox/base/useEcma/forArray/push.js";
 import { 校验数据项扩展名, 解析数据模型, 根据数据配置获取数据到缓存, 构建遍历参数, useGlob, useExtensions } from "./galleryPanelData.js";
 import { 柯里化 } from "../../../src/toolBox/base/useEcma/forFunctions/forCurrying.js";
-import { LAYOUT_COLUMN, LAYOUT_ROW, 根据尺寸获取显示模式, 表格视图阈值 } from '../utils/threhold.js';
+import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '../utils/layoutConstants.js';
 import ColorPicker from './galleryPanel/colorPicker.vue'
 import Slider from './galleryPanel/toolbar/slider.vue'
 import { useAppData } from './galleryPanel/useAppData.js';
 import GalleryToolbarButton from './galleryPanel/toolbar/galleryToolbarButton.vue'
 import { 打开附件组菜单 } from '../siyuanCommon/menus/galleryItem.js';
+import { computeSizeFromWheel } from '../../../src/toolBox/base/useBrowser/useEvents/computeSizeFromWheel.js';
+import { debounce } from '../../../src/toolBox/base/useEcma/forFunctions/forDebounce.js';
+//import { globalKeyboardEvents } from '../../events/eventNames.js';
 
 const { appData, tagLabel } = useAppData({
     data: inject('appData'), controller: {
@@ -132,6 +136,10 @@ onMounted(() => {
         )
     }
 })
+
+// 创建防抖版的 refreshPanel
+const debouncedRefreshPanel = debounce(refreshPanel, 300); // 300ms 延迟
+
 watch(selectedExtensions, (newValue, oldValue) => {
     filterFunc = (item) => {
         if (newValue.length === 0) {
@@ -144,9 +152,9 @@ watch(selectedExtensions, (newValue, oldValue) => {
             return newValue.includes('note')
         }
     };
-    refreshPanel();
+    // refreshPanel(); // 改为调用防抖版
+    debouncedRefreshPanel();
 });
-
 
 /**
  * 启动之后聚焦到关键词输入框
@@ -227,6 +235,10 @@ const 初始化数据缓存 = () => {
 
 let 数据缓存 = shallowRef(初始化数据缓存())
 const grid = ref(null)
+const currentColumnCount = ref(1);
+const handleColumnCountChange = (count) => {
+    currentColumnCount.value = count;
+};
 let controller = new AbortController();
 let signal = controller.signal;
 const everthingEnabled = ref(false)
@@ -246,17 +258,29 @@ const 创建回调并获取数据 = async () => {
     }
     try {
         initializeSize();
+        let fetcherCompleted = false; // 标志位
         if (filListProvided.value) {
             console.log('[AssetGalleryPanel] 使用提供的文件列表:', filListProvided.value.length, '个文件');
             数据缓存.value.data.push(...filListProvided.value);
+            fetcherCompleted = true; // 标记完成
         } else {
             console.log('[AssetGalleryPanel] 开始解析数据模型, glob:', $realGlob.value);
             const dataModel = 解析数据模型(appData.value, 数据缓存.value, $realGlob.value, everthingEnabled);
             console.log('[AssetGalleryPanel] 数据模型解析完成:', dataModel);
-            const fetcher = 根据数据配置获取数据到缓存(dataModel, signal, callBack);
-            await fetcher()
+            // 注意：callBack 不应该传给 fetcher，fetcher 只负责获取数据填充 数据缓存
+            const fetcher = 根据数据配置获取数据到缓存(dataModel, signal);
+            await fetcher();
+            fetcherCompleted = true; // 标记完成
+            // --- 添加日志 ---
+            console.log('[AssetGalleryPanel] 数据获取完成。数据缓存长度:', 数据缓存.value.data.length);
+            console.log('[AssetGalleryPanel] 当前选中扩展名:', selectedExtensions.value);
+            // console.log('[AssetGalleryPanel] 数据缓存内容:', JSON.stringify(数据缓存.value.data)); // 内容可能过多，暂时注释
+            // --- 添加日志结束 ---
         }
-        nextTick(callBack);
+        // 确保 fetcher 完成后才调用 callBack
+        if (fetcherCompleted) {
+            nextTick(callBack);
+        }
     } catch (e) {
         console.error('[AssetGalleryPanel] 数据获取错误:', e);
     }
@@ -358,10 +382,9 @@ onMounted(() => {
 const $size = computed(
     () => {
         let raw = parseInt(size.value)
-        grid.value ? raw = Math.min(raw, grid.value.getContainerWidth() - 20) : null
-        let columnCount
-        grid.value && (columnCount = 根据宽度和尺寸计算列数和边距(grid.value.getContainerWidth(), raw, 表格视图阈值).columnCount);
-        columnCount === 1 && (raw > 表格视图阈值) ? raw = grid.value.getContainerWidth() - 20 : null
+        // 使用父组件存储的 columnCount，并添加 grid.value 检查
+        currentColumnCount.value === 1 && (raw > 表格视图阈值) && grid.value ? raw = grid.value.getContainerWidth() - 20 : null 
+        grid.value ? raw = Math.min(raw, grid.value.getContainerWidth() - 20) : null // 这行检查放到最后，确保不会超过容器宽度
         return raw
     }
 )
@@ -401,6 +424,12 @@ const selectionBox = ref({ startX: 0, startY: 0, endX: 0, endY: 0 });
 const selectedItems = ref([])
 const previousSelectedItem = ref([])
 const endSelection = (event) => {
+    // 检查布局是否已初始化
+    if (!currentLayout.value || !currentLayout.value.layout) {
+        console.warn('[AssetGalleryPanel] 布局尚未就绪，无法结束选择。');
+        isSelecting.value = false; // 确保选择状态被重置
+        return; 
+    }
     endSelectionWithController(event, selectionController)
     const galleryContainer = root.value.querySelector('.gallery_container');
     const layoutRect = galleryContainer.getBoundingClientRect();
@@ -420,10 +449,22 @@ const selectionController = {
     selectedItems,
     root,
 }
-const startSelection = (e) => { startSelectionWithController(e, selectionController) }
+const startSelection = (e) => { 
+    // 检查布局是否已初始化
+    if (!currentLayout.value || !currentLayout.value.layout) {
+        console.warn('[AssetGalleryPanel] 布局尚未就绪，无法开始选择。');
+        return; 
+    }
+    startSelectionWithController(e, selectionController) 
+}
 const 画廊组件容器 = computed(() => root.value.querySelector('.gallery_container'))
 
 const updateSelection = (event) => {
+    // 检查布局是否已初始化
+    if (!currentLayout.value || !currentLayout.value.layout) {
+        // console.warn('[AssetGalleryPanel] 布局尚未就绪，无法更新选择。'); // 频繁触发，暂时注释
+        return; 
+    }
     let 选择框 = selectionBox.value
     let 选择状态中 = isSelecting.value
     let 布局元素矩形 = 画廊组件容器.value.getBoundingClientRect()
@@ -470,7 +511,7 @@ const sorter = ref({
         return -(a.data.mtimeMs - b.data.mtimeMs)
     }
 })
-import { 根据宽度和尺寸计算列数和边距 } from '../utils/layoutComputer/masonry/columnAndPadding.js';
+import { computeMasonryLayoutMetrics } from '../../../src/toolBox/base/useMath/geometry/computeMasonryLayoutMetrics.js';
 const openMenu = (event) => {
     let assets = currentLayout.value.layout.filter(item => item.selected).map(item => item.data).filter(item => item)
     打开附件组菜单(event, assets, {

@@ -8,11 +8,11 @@ globalThis[Symbol.for('AssetsManagerStatus')]=globalThis[Symbol.for('AssetsManag
 }
 let status=globalThis[Symbol.for('AssetsManagerStatus')]
 const messageQueue=status.messageQueue||[]
-export  async function createSiyuanBroadcastChannel(channel,port){
+export  async function createSiyuanBroadcastChannel(channel, port, token) {
     if(status.connected){
         return status.socket
     }
-    const socket = new WebSocket(`ws://127.0.0.1:${port}/ws/broadcast?channel=${channel}&&token=xqatmtk3jfpchiah`);
+    const socket = new WebSocket(`ws://127.0.0.1:${port}/ws/broadcast?channel=${channel}&&token=${token}`);
     //socket连接成功时返回socket
     return new Promise((resolve,reject)=>{
         socket.onopen=()=>{

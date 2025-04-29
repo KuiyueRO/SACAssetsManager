@@ -28,7 +28,7 @@
     </div>
 </template>
 <script setup>
-import { 表格视图阈值 } from "../../utils/threhold.js";
+import { 表格视图阈值 } from "../../utils/layoutConstants.js";
 import {
     ref,
     onMounted,
@@ -40,7 +40,8 @@ import {
     defineEmits,
     shallowRef,
     defineExpose,
-    computed
+    computed,
+    onUnmounted
 } from 'vue'
 import {  创建瀑布流布局, getColumnNextSiblingByIndex } from "../../utils/layoutComputer/masonry/layout.js";
 import assetsThumbnailCard from "../common/assetsThumbnailCard.vue";
@@ -245,35 +246,43 @@ const 更新可见卡片 = (可见框) => {
     // 微调卡片下一个元素的y坐标以避免重叠
 }
 const 更新可见区域 = (flag) => {
-    const { scrollTop, clientWidth, clientHeight } = 获取可见区域尺寸()
-    上报统计数据()
-    if (!是否更新(flag)) {
+    上报统计数据() // 先上报基础统计
+    if (!是否更新(flag)) { // 检查是否需要更新，这里会检查 scrollContainer.value
         return
     }
+    // 确保 scrollContainer.value 存在后再获取尺寸
+    const { scrollTop, clientWidth, clientHeight } = 获取可见区域尺寸()
+
     更新布局容器高度()
-    布局对象.value && (布局对象.value.timeStep += 5);
-    try {
-        oldScrollTop = scrollTop
-        const 可见框 = 计算可见框(scrollTop, clientHeight, clientWidth)
-        更新可见卡片(可见框)
-        加载更多卡片(scrollContainer.value, 布局对象.value, 附件数据源数组.data)
-        更新布局容器高度()
-        上报统计数据()
-    } catch (e) {
-        console.warn(e)
+    // 确保 布局对象.value 存在后再访问
+    if (布局对象.value) {
+        布局对象.value.timeStep += 5; // 增加 timeStep，表示有活动
+        try {
+            oldScrollTop = scrollTop
+            const 可见框 = 计算可见框(scrollTop, clientHeight, clientWidth)
+            更新可见卡片(可见框)
+            加载更多卡片(scrollContainer.value, 布局对象.value, 附件数据源数组.data)
+            更新布局容器高度()
+            上报统计数据() // 上报包含加载数量等更新后的统计
+        } catch (e) {
+            console.warn('更新可见区域时出错:', e)
+        }
     }
     isUpdating = false
 }
 
 
-import { 以函数创建尺寸监听 } from "../../utils/observers/resize.js"
+import { createResizeObserverController } from "../../../../src/toolBox/base/useBrowser/useObservers/useResizeObserver.js"
 let lastWidth = 0
-const 监听尺寸函数 = 以函数创建尺寸监听((stat) => {
-    if (stat.width === lastWidth) {
-        return
+const resizeController = createResizeObserverController((stat) => {
+    if (scrollContainer.value) {
+        let { width, height } = stat
+        if (width === lastWidth) {
+            return
+        }
+        列数和边距监听器(width)
+        lastWidth = width
     }
-    列数和边距监听器(stat.width)
-    lastWidth = stat.width
 }, true)
 const 列数和边距监听器 = async () => {
     if (!scrollContainer.value) {
@@ -338,7 +347,7 @@ async function 确认初始化界面并排序(total) {
     }
     emitLayoutChange()
     nextTick(() => {
-        监听尺寸函数(scrollContainer.value)
+        resizeController.start(scrollContainer.value)
     })
 }
 defineExpose({
@@ -347,19 +356,21 @@ defineExpose({
     getContainerWidth: () => scrollContainer.value.clientWidth
 })
 
-onMounted(async () => {
-    nextTick(
-        () => {
-            emit('ready')
-        }
-    )
+onMounted(() => {
+    resizeController.start(scrollContainer.value)
+    emit('ready')
+})
+onUnmounted(() => {
+    if (scrollContainer.value instanceof Element) {
+        resizeController.stop(scrollContainer.value)
+    }
 })
 /**
  * 计算布局使用的列宽和边距
  */
-import { 根据宽度和尺寸计算列数和边距 } from "../../utils/layoutComputer/masonry/columnAndPadding.js";
+import { computeMasonryLayoutMetrics } from "../../../../src/toolBox/base/useMath/geometry/computeMasonryLayoutMetrics.js";
 const 计算列数和边距 = (width) => {
-    const result = 根据宽度和尺寸计算列数和边距(width, size.value, 表格视图阈值);
+    const result = computeMasonryLayoutMetrics(width, size.value, 表格视图阈值);
     columnCount.value = result.columnCount;
     paddingLR.value = result.paddingLR;
     emit('paddingChange', paddingLR.value);

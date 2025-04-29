@@ -2,9 +2,8 @@ import { px, per, em } from "../../../../src/toolBox/base/useCss/formatCssUnit.j
 import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/toolBox/base/useCss/cssKeywords.js"
 import { cssVarProxy } from "../../../../src/toolBox/base/useCss/forCssVar.js"
 import { createChainableProxy } from "../../../../src/toolBox/base/useEcma/forObject/createChainableProxy.js"
-import { 表格视图阈值 } from "../../utils/threhold.js"
-import { 根据阈值计算最大宽度 } from "../../utils/threhold.js"
-import { LAYOUT_COLUMN } from "../../utils/threhold.js"
+import { LAYOUT_ROW, getDisplayModeBySize, 表格视图阈值 } from "../../utils/layoutConstants.js"
+import { computeMaxWidthStyleBySize } from "../../utils/layoutConstants.js"
 
 const 根据尺寸计算圆角 = (size) => {
     if (size > 表格视图阈值) {
@@ -87,17 +86,27 @@ export const 计算卡片内容主体样式 = (cardData, size, firstColorString,
         .$raw;
 }
 export const 计算扩展名标签样式 = (displayMode, cardData, size) => {
+    let positionStyle = 'position: absolute;'; // 默认为绝对定位 (Row 模式)
+    let offsetStyle = `top: ${cardData.width / 24}px; left: ${cardData.width / 24}px;`; // 默认偏移
+    let flexStyle = ''; // Row 模式下不需要 flex:1
+
+    if (displayMode !== LAYOUT_ROW) { // 如果不是行模式 (Column 或 Table)
+        positionStyle = 'position: relative;'; // 改为相对定位
+        offsetStyle = 'top: 0; left: 0;'; // 相对定位下，通常不需要额外偏移，或者使用 margin
+        flexStyle = 'flex: 1;'; // Column 模式下可能需要 flex
+        // 考虑是否需要 margin 替代 top/left? margin: ${cardData.width / 24}px; ?
+    }
+
     return `
-    position:${displayMode === LAYOUT_COLUMN ? 'absolute' : 'relative'};
-    top: ${cardData.width / 24}px;
-    left: ${cardData.width / 24}px;
-    max-width: ${根据阈值计算最大宽度(size)};
+    ${positionStyle}
+    ${offsetStyle}
+    max-width: ${computeMaxWidthStyleBySize(size)};
     max-height: 1.5em;
     border-radius: 5px;
-background-color:var(--b3-theme-background);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;height:36px;
-        flex:1;
-        `
+    background-color:var(--b3-theme-background);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;height:36px;
+    ${flexStyle}
+    `
 }
 
 /**

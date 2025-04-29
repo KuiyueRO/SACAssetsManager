@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { 从滚轮事件计算 } from '../../../utils/scroll.js'
+import { computeSizeFromWheel } from '../../../../../src/toolBox/base/useBrowser/useEvents/computeSizeFromWheel.js'
 
 const props = defineProps({
   modelValue: {
@@ -39,6 +39,6 @@ watch(localSize, (newVal) => {
 })
 
 const handleWheel = (event) => {
-  localSize.value = 从滚轮事件计算(localSize.value, event, props.max, 32)
+  localSize.value = computeSizeFromWheel(localSize.value, event, props.max, 32)
 }
 </script>
