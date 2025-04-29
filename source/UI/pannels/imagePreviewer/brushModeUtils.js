@@ -1,5 +1,5 @@
 import { createBrushModeHandlers } from "../../../globalStatus/mode/brush.js"
-import { setBlockAttrs } from "../../../fromThirdParty/siyuanKernel/attr.js"
+import { 设置块属性 as setBlockAttrs } from "../../../src/toolBox/useAge/forSiyuan/useSiyuanBlock.js"
 // 创建通用块元素笔刷构造器
 export const createBlockBrushHandlers = ({
   isBrushMode,

@@ -8,7 +8,8 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { Dialog } from '../../fromThirdParty/siyuanClient/runtime.js';
+// import { Dialog } from '../../fromThirdParty/siyuanClient/runtime.js'; // 删除旧的导入
+import { createSimpleDialog as Dialog } from '../../src/toolBox/useAge/forSiyuan/useSiyuanDialog.js'; // 修改为从 toolBox 导入并重命名
 
 const props = defineProps({
   title: {
@@ -72,7 +73,8 @@ const destroyDialog = () => {
 
 const createDialog = () => {
   try {
-    dialog.value = new Dialog({
+    // dialog.value = new Dialog({ // 旧的调用方式
+    dialog.value = Dialog({ // 使用 toolBox 导出的函数 createSimpleDialog (重命名为 Dialog)
       title: props.title,
       content: '<div class="dialog-content"></div>',
       width: props.width,

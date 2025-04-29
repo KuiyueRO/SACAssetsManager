@@ -120,6 +120,29 @@ utils子文件夹是重构进度的重点,它们需要被移动到toolBox中
 
 ## 历史记录
 
+### 2024-07-28 (织)
+- 清理 `source/fromThirdParty/siyuanClient/` 目录下的废弃兼容层文件 (`runtime.js`, `index.js`, `dialogs/confirmPromises.js`)。
+- 更新 `src/toolBox/useAge/forSiyuan/forAsset/useSiyuanUpload.js` 和 `source/UI/components/CCDialog.vue` 中对上述废弃文件的引用，使其直接从 `toolBox` 导入。
+- **学习到:** 搜索文件引用时应使用更通用的路径片段，删除文件前应先移动到 `@trashed` 目录，并在对应文件夹的 AInote.md 中记录删除。
+- 开始迁移 `source/fromThirdParty/siyuanKernel/utils/` 下的函数，将 `fetchWithTimeout` 迁移至 `toolBox`。
+- 完成 `siyuanKernel/utils/` 的迁移和清理，将 `getAuthHeaders` 迁移至 `toolBox`。
+- 清理 `source/fromThirdParty/siyuanKernel/asset.js` (兼容层)。
+- 清理 `source/fromThirdParty/siyuanKernel/block.js` (兼容层)。
+- 清理 `source/fromThirdParty/siyuanKernel/attr.js` (兼容层)。
+- 迁移 `source/fromThirdParty/siyuanKernel/av.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/bazaar.js` 到 `toolBox` 并更新内部引用。
+- 清理 `source/fromThirdParty/siyuanKernel/blockOp.js` (兼容层)。
+- 迁移 `source/fromThirdParty/siyuanKernel/bookmark.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/broadcast.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/clipboard.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/export.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/extension.js` 到 `toolBox` 并更新内部引用。
+- 清理 `source/fromThirdParty/siyuanKernel/file.js` (兼容层)。
+- 清理 `source/fromThirdParty/siyuanKernel/filetree.js` (兼容层)。
+- 迁移 `source/fromThirdParty/siyuanKernel/format.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/graph.js` 到 `toolBox` 并更新内部引用。
+- 迁移 `source/fromThirdParty/siyuanKernel/history.js` 到 `toolBox` 并更新内部引用。
+
 ### 2024-03-28
 - 开始分析source目录结构
 - 建立初步重构计划

@@ -4,8 +4,12 @@
  * @description 提供文件上传到思源笔记资源库的功能
  */
 
-import { confirmAsPromise } from "../../../../../source/fromThirdParty/siyuanClient/index.js";
-import { uploadAsset } from "../../../../../source/fromThirdParty/siyuanKernel/asset.js";
+import { request } from '../../../../base/forNetwork/forHttp.js';
+import { useSettings } from '../../../../globalStatus/settings.js';
+import { confirmAsPromise } from '../useSiyuanDialog.js';
+import { config } from '../../../../../../kernel/config.js';
+import { i18n } from '../../../../shared/i18n.js';
+import { 上传资源文件 as uploadAsset } from '../useSiyuanAsset.js';
 
 /**
  * 显示上传确认对话框

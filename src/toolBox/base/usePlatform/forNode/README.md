@@ -1,4 +1,22 @@
-# Node.js ZIP & FS 工具 (`forZipUtils.js`)
+# Node.js Platform Tools (`forNode`)
+
+This directory provides base utilities specifically designed for or dependent on the Node.js runtime environment.
+
+## Scope
+
+*   Wrappers around Node.js built-in modules (e.g., `fs`, `path`, `crypto`).
+*   Functions interacting with the Node.js process or environment.
+*   Utilities leveraging Node.js-specific APIs.
+
+## Usage
+
+Import functions directly from their respective files within this directory.
+
+```javascript
+import { computeFileFingerprint } from 'path/to/toolBox/base/usePlatform/forNode/useFileFingerprint.js';
+```
+
+## Node.js ZIP & FS 工具 (`forZipUtils.js`)
 
 本模块 (`src/toolBox/base/usePlatform/forNode/forZipUtils.js`) 提供了一系列基于 Node.js 文件系统 (`fs`) 和 `jszip` 库的 ZIP 文件操作工具，以及一个通用的文件保存函数。
 

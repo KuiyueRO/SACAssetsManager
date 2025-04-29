@@ -20,53 +20,40 @@
 
 **先停止不断扩充工具箱,开始检查功能代码的实现**
 
+---
+*2024-07-27 织: 已阅读并理解 `toolBox` 目录的整体结构、主要内容以及 `AInote.md` 和 `README.md` 中的开发要求与重构计划。*
+---
+
 # 工具箱重构笔记
 
 ## 工具箱结构概览
 
-工具箱采用三层分类模块化设计，按功能域组织为不同子目录:
+工具箱**继续采用**三层分类模块化设计，但**更侧重于职责划分**：
+- `base/`: 存放最核心、通用的基础工具，按**技术或底层概念**组织（如ECMA标准增强、网络原语、核心工具链、依赖封装）。
+- `feature/`: 存放基于`base`构建的、具有**特定技术能力或独立功能**的模块（如图像处理能力、Vue集成能力）。
+- `useAge/`: **严格按照应用领域或任务类型**组织，解决具体场景问题（如思源笔记工具集、文件管理流程）。
 
 ```
 src/toolBox/
-├── base/           - 基础工具函数
-│   ├── useEcma/    - ECMA标准功能封装
-│   │   ├── forFile/     - 文件操作相关工具
-│   │   ├── forMath/     - 数学计算工具
-│   │   ├── forString/   - 字符串处理工具 ✅
-│   │   ├── textTools.js - 文本处理工具 ✅
-│   │   └── ...
-│   ├── forNetwork/  - 网络相关工具
-│   │   ├── forFetch/     - fetch工具 ✅
-│   │   ├── forPort/      - 端口工具 ✅
-│   │   └── ...
-│   ├── forEvent/    - 事件处理工具
-│   ├── forMime/     - MIME类型处理
-│   ├── forCore/     - 核心串链器工具
-│   ├── forUI/       - 通用UI组件工具
-│   ├── usePolyfills/ - 平台兼容性工具
-│   │   ├── uaAnalysis.js - UA分析工具 ✅
-│   │   └── ...
-│   ├── useDeps/    - 依赖管理工具
-│   │   ├── pinyinTools.js - 拼音工具 ✅
-│   │   └── ...
-│   └── ...
-├── feature/        - 特定功能工具
-│   ├── useImage/   - 图像处理工具
-│   ├── useVue/     - Vue框架工具
-│   ├── forFileSystem/ - 文件系统工具
-│   └── ...
-├── useAge/         - 使用场景相关工具
-│   ├── forFileManage/    - 文件管理工具
-│   ├── forSiyuan/        - 思源特定功能工具
-│   │   ├── useSiyuanMenu.js    - 思源菜单工具 ✅
-│   │   ├── useSiyuanDialog.js  - 思源对话框工具 ✅
-│   │   ├── useSiyuanSystem.js  - 思源系统API ✅
-│   │   └── ...
-│   ├── useSiyuan.js      - 思源环境依赖集中管理 ✅
-│   └── ...
-├── toolBoxExports.js  - 统一导出接口
+├── base/           - 核心基础工具 (按技术基础分类)
+│   ├── useEcma/
+│   ├── forNetwork/
+│   ├── forChain/
+│   ├── useDeps/
+│   └── core/        # 新增：错误处理、日志、常量等
+├── feature/        - 特定功能模块 (按独立能力分类)
+│   ├── useImage/
+│   ├── useVue/
+│   └── forVectorEmbedding/
+├── useAge/         - 应用场景/任务工具 (按领域或任务分类)
+│   ├── forSiyuan/   # 示例：思源笔记相关
+│   ├── forFileManagement/ # 示例：文件管理任务
+│   └── ... (根据具体应用场景划分)
+├── toolBoxExports.js  - (**逐步废弃**) 统一导出接口，优先使用直接路径导入
 └── README.md       - 工具箱说明
 ```
+
+*注意：`toolBoxExports.js` 和桶文件 (`*Exports.js`) 将逐步被直接路径导入取代。*
 
 ## 已完成的重构(建议不要列举太多,隔一段时间总结一下,列出最近的动作就可以了)
 
@@ -103,10 +90,9 @@ src/toolBox/
    - 封装复杂实现细节
    - 提供简洁清晰的接口
 
-5. **命名规范**:
-   - 避免无语义的文件名(index.js, main.js)
-   - 优先使用中文命名函数
-   - 文件名应反映功能
+5. **命名规范 (修订)**:
+   - **核心原则:** 遵循项目根目录定义的 [**编码风格指南**](../../CODING_STYLE.md#命名规范-naming-conventions)。
+   - **强调:** 在 `toolBox` 模块内，尤其注意文件名的语义化，**禁止**使用 `index.js` 或 `main.js`。
 
 6. **模块化设计**:
    - 按功能域组织工具
@@ -122,6 +108,55 @@ src/toolBox/
    - 提供明确的错误处理机制
    - 返回有意义的错误信息
    - 支持错误恢复策略 (如果适用)
+
+## 文件夹规范 (2024-07-27 新增)
+
+**目标:** 确保 `toolBox` 内每个功能性文件夹都有明确的职责范围和代码准入标准。
+
+**要求:**
+- **强制性:** `toolBox` 下的**每一个**功能性子文件夹（无论位于 `base`, `feature`, `useAge`/`domain` 哪一层）都**必须**包含一个 `README.md` 或 `AInote.md` 文件。
+- **内容:** 该文件必须清晰地：
+    1.  **定义该文件夹的职责范围 (Scope):** 说明这个文件夹里的代码是用来做什么的。
+    2.  **明确代码准入标准 (Criteria):** 根据 `toolBox` 的整体三层架构（Base/Feature/Domain），说明什么样的代码**才被允许**放在这个文件夹里。例如，明确指出它属于哪一层，以及它应该（或不应该）依赖哪些其他模块。
+    3.  **链接总纲:** 必须包含指向 `toolBox` 根目录下架构说明文件 `[architecture_layers_explained.md](./architecture_layers_explained.md)` 的链接，作为统一的架构指导。
+- **示例:** （在具体文件夹的 `README.md` 或 `AInote.md` 中）
+    ```markdown
+    # 文件夹名称 (例如: base/lang/functions)
+
+    **所属层级:** Base
+
+    **职责范围:** 提供与 ECMAScript 函数相关的底层、通用工具，如函数组合、柯里化、节流、防抖等。
+
+    **准入标准:**
+    - 必须是纯粹的、与函数操作相关的底层工具。
+    - 必须无副作用（除非明确标记并隔离）。
+    - **禁止**依赖 `feature` 或 `domain` 层的任何模块。
+    - **禁止**包含特定应用的业务逻辑。
+    - 外部依赖必须通过 `base/deps` 引入。
+
+    **架构总纲:** [../../../architecture_layers_explained.md](../../../architecture_layers_explained.md) (根据实际层级调整路径)
+    ```
+- **维护:** 创建新文件夹或对文件夹职责进行重大调整时，必须同步创建或更新对应的说明文件。
+
+## 架构微调与导入导出规范 (2024-07-27 新增/修订)
+
+**核心目标:** 确保工具箱作为长期个人代码库的清晰性、可维护性和可扩展性。
+
+**架构微调:**
+- 维持 `base`, `feature`, `useAge`/`domain` 三层结构，但强化职责区分。
+- **详细的分层职责说明，特别是 `feature` 与 `domain` 的划分原则，请参阅：[./architecture_layers_explained.md](./architecture_layers_explained.md)**
+- `useAge` 层级命名可考虑调整为更贴切的名称，如 `domains/`, `tasks/`, `applications/` 等。
+
+**导入导出规范:**
+- **严格禁止** 使用 `import *` 和 `export *`。
+- **放弃** `*Exports.js` 等桶文件作为主要的模块导出方式。
+- **强制** 使用**命名导出** (`export const func = ...;`)，禁止默认导出 (`export default`)。
+- **强制** 使用**明确、直接的相对路径**进行模块导入：
+    - 层内导入: `import { util } from '../anotherModule/util.js';`
+    - 跨层导入: `import { baseFunc } from '../../base/someModule/file.js';`
+    - 外部导入: `import { tool } from '@toolBox/feature/someTool/index.js';` (推荐配置路径别名如 `@toolBox/`)
+- **优点:** 依赖清晰、利于 Tree Shaking、重构友好、避免循环依赖陷阱。
+- **接受:** 导入路径可能变长，可通过路径别名缓解。
 
 ## 外部依赖管理原则 (`useDeps`)
 
@@ -624,5 +659,47 @@ src/toolBox/
 - 实现了三层架构基本框架
 - 添加了核心工具函数
 - 建立了模块间依赖规则
+
+## 网络处理工具迁移建议
+
+以下是source目录中可整理到toolBox的网络处理相关的通用代码：
+
+### 已完成迁移
+- `source/data/fetchStream.js` → `src/toolBox/feature/networkingUtils/streamProcessors.js`
+  - 对流式JSON数据处理的功能已经被现代化、规范化并移至工具箱
+- `source/data/utils/streamHandler.js` → `src/toolBox/feature/networkingUtils/streamHandlers.js`
+  - 将类转换为函数式风格，提供更灵活的数据流处理API
+- `source/server/processors/streams/fileList2Stats.js` → `src/toolBox/feature/forFileSystem/forFileListProcessing.js`
+  - 重构为纯函数风格，提供文件列表到状态转换的功能
+- `source/server/processors/streams/withFilter.js` → `src/toolBox/feature/forStreamProcessing/streamFilters.js`
+  - 重构为纯函数风格，提供通用的流过滤器构建功能
+
+### 引用更新状态
+- 已更新 `source/server/handlers/stream-glob.js` 使用新的工具箱函数
+- 已为原始位置的文件创建兼容层重定向，确保现有代码不会中断
+
+### 清理计划
+为了确保代码库整洁和易于维护，计划在以下时间节点逐步移除兼容层：
+
+1. **第一阶段（当前）**：
+   - 保留兼容层，但添加弃用警告
+   - 鼓励新代码直接使用工具箱中的函数
+
+2. **第二阶段（2024年9月）**：
+   - 扫描项目中所有直接引用旧路径的代码，更新为新路径
+   - 收集兼容层使用情况的数据（通过警告日志）
+
+3. **第三阶段（2024年10月）**：
+   - 完全移除兼容层
+   - 检查并修复任何引用错误
+
+### 下一步计划
+- 优化新创建的模块之间的互操作性
+- 添加更多单元测试确保功能正确性
+- 继续扫描项目中对旧文件路径的引用，主动更新
+
+所有迁移工作遵循toolBox的架构规范，保持清晰的代码组织结构和职责划分。
+
+阶段计数:0
 
 

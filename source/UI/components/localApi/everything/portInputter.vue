@@ -20,8 +20,8 @@
     </div>
 </template>
 <script setup>
-import { ref, watch ,toRef} from 'vue';
-import { searchByEverything } from '../../../../../src/toolBox/feature/thirdParty/thirdParty/everything/useEverythingApi.js';
+import { ref, watch ,toRef, onMounted } from 'vue';
+import { useEverything_search as searchByEverything } from '../../../../../src/toolBox/feature/forEverything/useEverythingApi.js';
 const props = defineProps({
     modelValue: {
         type: Number,

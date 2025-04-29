@@ -1,6 +1,7 @@
 // source/UI/pannels/gridEditorPanel/gridBrushUtils.js
 import { createBrushModeHandlers } from "../../../globalStatus/mode/brush.js"
-import { setBlockAttrs } from "../../../fromThirdParty/siyuanKernel/attr.js"
+import { debounce } from "../../../src/toolBox/base/useEcma/useDebounce.js"
+import { 设置块属性 as setBlockAttrs } from "../../../src/toolBox/useAge/forSiyuan/useSiyuanBlock.js"
 
 export const createGridBrushHandlers = ({
   isBrushMode,

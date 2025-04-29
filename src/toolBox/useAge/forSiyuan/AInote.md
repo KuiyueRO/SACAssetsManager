@@ -88,5 +88,6 @@
 
 此目录 (`useAge/forSiyuan/`) 包含所有与思源笔记特定环境、API 或数据结构交互的应用层工具函数。
 
-**新增模块:**
-- `getSQLQueries.js`: 提供生成针对思源数据库的 SQL 查询语句的函数。 
+**新增/修改模块:**
+- `getSQLQueries.js`: 提供生成针对思源数据库的 SQL 查询语句的函数。
+- `apiUtils.js` (2024-07-28): 从 `source/fromThirdParty/siyuanKernel/utils/apiConfig.js` 迁移而来，包含 `getSiyuanApiUrl` 和 `handleSiyuanApiError`，用于处理 API URL 构建和基础错误处理。 

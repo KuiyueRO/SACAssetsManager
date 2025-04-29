@@ -1,6 +1,6 @@
 import { Query } from '../../../static/mingo.js';
-import { buildFileListStream } from '../processors/streams/fileList2Stats.js'
-import { buildFilterStream } from '../processors/streams/withFilter.js';
+import { createFileListToStatsStream } from '../../../src/toolBox/feature/forFileSystem/forFileListProcessing.js';
+import { createFilterStream } from '../../../src/toolBox/feature/forStreamProcessing/streamFilters.js';
 import { stat2assetsItemStringLine } from './utils/responseType.js';
 import { parseQuery } from '../middlewares/ctx/parseQuery.js'
 import { globalTaskQueue } from '../middlewares/runtime_queue.js';
@@ -213,33 +213,37 @@ export const globStream = (req, res) => {
 };
 export const fileListStream = async (req, res) => {
     const controller = new AbortController();
-    let scheme = {}
+    let scheme = {};
     if (req.query && req.query.setting) {
-        scheme = JSON.parse(req.query.setting)
+        scheme = JSON.parse(req.query.setting);
     }
     日志.信息(`开始fileListStream: ${JSON.stringify(scheme)}`, 'StreamGlob');
     req.on('close', () => {
         controller.abort();
         日志.信息('fileListStream已关闭', 'StreamGlob');
     });
-    let walkCount = buildCache('statCache').size
-    res.write(`data:${JSON.stringify({ walkCount })}\n`)
-    const _filter = scheme.query && JSON.stringify(scheme.query) !== '{}' ? new Query(scheme.query) : null
-    const jsonParserStream = buildFileListStream()
-    const filterStream = buildFilterStream(_filter)
+    let walkCount = buildCache('statCache').size;
+    res.write(`data:${JSON.stringify({ walkCount })}\n`);
+    const _filter = scheme.query && JSON.stringify(scheme.query) !== '{}' ? new Query(scheme.query) : null;
+    
+    // 使用新的工具箱函数
+    const jsonParserStream = createFileListToStatsStream(statWithCatch);
+    const filterStream = createFilterStream(_filter);
+    
     // 创建转换流，处理文件信息
     const transformStream = new (require('stream')).Transform({
         objectMode: true,
         transform(chunk, encoding, callback) {
             (async () => {
-                if (chunk&&chunk.path) {
-                    let path = chunk.path
-                    this.push(stat2assetsItemStringLine(await statWithCatch(path)))
+                if (chunk && chunk.path) {
+                    let path = chunk.path;
+                    this.push(stat2assetsItemStringLine(await statWithCatch(path)));
                 }
-                callback()
-            })()
+                callback();
+            })();
         }
     });
+    
     pipeline(
         req,
         jsonParserStream,
@@ -248,11 +252,10 @@ export const fileListStream = async (req, res) => {
         res,
         (err) => {
             if (err) {
-                日志.错误(`流处理错误: ${err}`, 'StreamGlob');
-                res.destroy(err);
+                日志.错误(`fileListStream错误: ${err}`, 'StreamGlob');
             } else {
-                日志.信息('流处理完成', 'StreamGlob');
+                日志.信息('fileListStream完成', 'StreamGlob');
             }
         }
     );
-}
+};
