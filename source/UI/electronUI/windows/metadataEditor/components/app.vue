@@ -74,7 +74,8 @@ import LayoutColumn from '../../../../components/common/layout/layoutColumn.vue'
 import { fromXBEL, fromEdgeBookMarkHTML } from '../../../../../URT/fromBookMarks.js';
 import { fromEdgeHistoryCSVStream } from '../../../../../URT/fromHistory/fromEdgeHistoryCSVStream.js';
 import { fromFolder } from '../../../../../URT/fromLocalFileSystem/fromFolder.js';
-import { createCollection } from '../../../../../URT/builder.js';
+import * as URT from '../../../../../toolBox/base/forURT/identifier';
+import { createCollection } from '../../../../../toolBox/base/forURT/builder.js';
 import URTNode from './URTNode.vue';
 import FileDropZone from '../../../../components/common/inputters/fileDropZone.vue';
 import CCIcon from '../../../../components/common/baseComponents/icons.vue';

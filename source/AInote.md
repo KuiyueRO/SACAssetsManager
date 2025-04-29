@@ -93,7 +93,7 @@ utils子文件夹是重构进度的重点,它们需要被移动到toolBox中
 | noteChat/ | src/modules | 低 | 待处理 |
 | globalStatus/ | src/services | 中 | 待处理 |
 | data/ | src/services | 中 | 待处理 |
-| URT/ | src/modules | 低 | 待处理 |
+| URT/ | src/toolBox/base/forURT | 低 | 待处理 |
 | utilWebviews/ | src/modules | 低 | 待处理 |
 | previewers/ | src/modules | 低 | 待处理 |
 | wgslLibs/ | src/toolBox/feature | 低 | 待处理 |
@@ -149,4 +149,11 @@ utils子文件夹是重构进度的重点,它们需要被移动到toolBox中
 
 ### 2024-03-25
 - 完成工具箱基础框架设计
-- 开始规划source目录迁移 
+- 开始规划source目录迁移
+
+## source 目录重构记录
+
+- 原 `source/fromThirdParty/` 目录下的所有第三方封装（siyuanKernel, anytext 等）已完成迁移或清理，相关历史记录已移至 `diary/fromThirdParty_Migration_History.md`。
+- 清理了 `source/` 目录下空的 `thumbnail.html` 和 `constants.js` 文件。
+- 将 `source/AInote-阅读进度.md` 移动到 `diary/source_Code_Reading_Notes.md`。
+- 将 `source/URT/` 目录整体迁移至 `src/toolBox/base/forURT/`。 

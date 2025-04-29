@@ -3,7 +3,8 @@
  * @module toolBox/useAge/forAnytext/useAnytextURT
  */
 
-import { createResource } from "../../../../src/utils/URT/builder.js";
+import { getLogger } from "../../../general/logger";
+import { createResource } from "../../base/forURT/builder.js";
 
 /**
  * 将 AnyTXT 搜索结果转换为 URT 资源
