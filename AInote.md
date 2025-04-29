@@ -481,4 +481,6 @@ export default class SACAssetsManager extends Plugin {
 -   **Refactor `assetGalleryPanel.vue`:** Remove dependency on monkey-patching `Array.prototype.push` (from `src/utils/useEcma/useArray/push.js`). See `src/utils/AInote.md` for details.
 -   **TODO (from src/utils/AInote.md):** Refactor `assetGalleryPanel.vue` to remove dependency on `创建带中间件的Push方法` (originally in `src/utils/useEcma/useArray/push.js`, which relied on monkey-patching `Array.prototype.push`). Replace the push call with a new data processing function encapsulating the middleware logic.
 
-<!-- Potentially more notes --> 
+## 笔记链接规则 (AI 记录)
+
+为了方便在不同会话中快速恢复上下文，所有在 `diary/` 目录或其他位置创建的详细分析笔记，都应该在与之最相关的代码目录下的 `AInote.md` 文件中添加一个 Markdown 链接指向它。 

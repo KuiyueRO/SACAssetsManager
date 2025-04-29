@@ -130,8 +130,60 @@ async function 计算文件夹优先级(path, fixedroot, 基础优先级) {
     }
 }
 
-export async function 更新目录索引(root) {
+export async function 更新目录索引(root, stats) {
     let fixedroot = root.replace(/\\/g, '/');
+
+    // --- 优化路径：如果提供了有效的 stats，则使用它 --- 
+    // See AInote.md for optimization details and future improvements.
+    if (stats && typeof stats === 'object' && Object.keys(stats).length > 0) {
+        console.log(`[更新目录索引] Using stats for optimized update: ${fixedroot}`);
+        
+        // 1. 确保根目录自身状态更新
+        await statWithNew(fixedroot);
+
+        // 2. 处理 stats 中的文件/目录
+        const statFilesSet = new Set();
+        for (const filePath in stats) {
+            const normalizedPath = filePath.replace(/\\/g, '/');
+            statFilesSet.add(normalizedPath); 
+            // 调用 statWithNew 更新数据库，它内部会处理文件和目录，并有哈希检查
+            await statWithNew(filePath); 
+        }
+        
+        // 3. 处理删除：找出数据库中有但 stats 中没有的条目
+        try {
+            const dbResults = await 查找子文件夹(fixedroot); // 获取当前 DB 中该 root 下的所有记录
+            if (dbResults && dbResults.results) {
+                dbResults.results.forEach(entry => {
+                    // entry 结构需要确认，假设它包含 path 属性
+                    if (entry && entry.path) {
+                        const dbPath = entry.path.replace(/\\/g, '/');
+                        if (!statFilesSet.has(dbPath)) { // 如果 DB 记录不在 stats 列表中
+                             // 避免误删根目录自身 (虽然理论上 statFilesSet 应该包含它)
+                            if (dbPath !== fixedroot) { 
+                                console.log(`[更新目录索引] File/Dir deleted (in DB, not in stats): ${dbPath}`);
+                                处理缓存文件(dbPath, entry); // 删除缓存和数据库记录
+                            }
+                        }
+                    } else {
+                        console.warn('[更新目录索引] Invalid entry found in dbResults:', entry);
+                    }
+                });
+            } else {
+                 console.warn(`[更新目录索引] 查找子文件夹 returned no results for: ${fixedroot}`);
+            }
+        } catch (dbError) {
+            console.error(`[更新目录索引] Error finding or processing DB children for deletion check: ${fixedroot}`, dbError);
+        }
+
+        // 4. 结束优化路径
+        return; 
+    }
+    // --- 结束优化路径 ---
+
+    // --- 原路径：没有有效 stats，执行完整 fdir 扫描 --- 
+    // See AInote.md for why full scan is sometimes necessary.
+    console.log(`[更新目录索引] No valid stats provided, performing full fdir scan: ${fixedroot}`);
     let 基础优先级 = await 计算目录遍历优先级(fixedroot);
     let count = 0;
     const 智能文件遍历回调 = async (path, isDir, fixedroot, count) => {
@@ -240,5 +292,5 @@ export  const 调度文件夹索引任务 = (root, stats, signal) => {
         await 更新目录索引(root, stats, signal)
         return {}
     }
-    添加后进先出后台任务(任务函数)
+    添加带有优先级的全局任务(任务函数, 10)
 }
