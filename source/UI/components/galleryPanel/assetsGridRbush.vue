@@ -263,10 +263,14 @@ const 更新可见区域 = (flag) => {
         布局对象.value.timeStep += 5; // 增加 timeStep，表示有活动
         try {
             oldScrollTop = scrollTop
-            const 可见框 = 计算可见框(scrollTop, clientHeight, clientWidth)
-            更新可见卡片(可见框)
+            // 1. 先加载更多卡片，确保新数据加入布局
             加载更多卡片(scrollContainer.value, 布局对象.value, 附件数据源数组.data)
+            // 2. 更新容器高度（可能因为新卡片增加了）
             更新布局容器高度()
+            // 3. 再计算可见框
+            const 可见框 = 计算可见框(scrollTop, clientHeight, clientWidth)
+            // 4. 最后根据更新后的布局计算可见卡片
+            更新可见卡片(可见框)
             上报统计数据() // 上报包含加载数量等更新后的统计
         } catch (e) {
             console.warn('更新可见区域时出错:', e)

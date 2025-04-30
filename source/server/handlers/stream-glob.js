@@ -115,7 +115,7 @@ const createWalkStream = async (cwd, filter, signal, res, timeout = 3000, walkCo
     const endHandler = createEndHandler(walkController, res, chunkedRef)
     
     let walkCount = 0
-    const stats = []
+    const stats = {}
     
     // 使用流式查找并处理结果
     for await (const result of 流式查找子文件夹(cwd, search, extensions)) {
@@ -129,7 +129,9 @@ const createWalkStream = async (cwd, filter, signal, res, timeout = 3000, walkCo
         
         // 应用过滤器
         if (!filterFun || filterFun(result)) {
-            stats.push(result)
+            if (result && result.path) {
+                stats[result.path.replace(/\\/g, '/')] = result 
+            }
             fileHandler(result)
         }
     }

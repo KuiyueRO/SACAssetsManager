@@ -52,6 +52,31 @@ async function 初始化数据库(dbPath, root) {
             mtime INTEGER
         )
     `);
+        dbs[root].exec(`
+            -- 创建 FTS5 虚拟表，索引 thumbnails 表的 fullName
+            CREATE VIRTUAL TABLE IF NOT EXISTS thumbnails_fts USING fts5(
+                fullName,
+                content='thumbnails',
+                content_rowid='rowid'
+            );
+
+            -- 创建触发器，在 thumbnails 表插入/删除/更新时自动同步到 FTS 表
+            -- 插入时同步
+            CREATE TRIGGER IF NOT EXISTS thumbnails_ai AFTER INSERT ON thumbnails BEGIN
+                INSERT INTO thumbnails_fts (rowid, fullName) VALUES (new.rowid, new.fullName);
+            END;
+
+            -- 删除时同步
+            CREATE TRIGGER IF NOT EXISTS thumbnails_ad AFTER DELETE ON thumbnails BEGIN
+                INSERT INTO thumbnails_fts (thumbnails_fts, rowid, fullName) VALUES ('delete', old.rowid, old.fullName);
+            END;
+
+            -- 更新 fullName 时同步 (虽然 fullName 是主键，理论上不应该更新，但以防万一)
+            CREATE TRIGGER IF NOT EXISTS thumbnails_au AFTER UPDATE OF fullName ON thumbnails BEGIN
+                INSERT INTO thumbnails_fts (thumbnails_fts, rowid, fullName) VALUES ('delete', old.rowid, old.fullName);
+                INSERT INTO thumbnails_fts (rowid, fullName) VALUES (new.rowid, new.fullName);
+            END;
+        `);
         dbs[root].prepare('CREATE UNIQUE INDEX IF NOT EXISTS idx_name ON thumbnails(fullName)').run();
         dbs[root].prepare('CREATE UNIQUE INDEX IF NOT EXISTS idx_statHash ON thumbnails(statHash)').run();
     } else {
@@ -123,14 +148,31 @@ export async function 根据文件名获取主数据库地址(filePath) {
 
 export async function 根据路径查找并加载主数据库(filePath) {
     console.log('[根据路径查找并加载主数据库] 开始查找:', filePath);
-    const { cachePath, root } = await 根据文件名获取主数据库地址(filePath)
-    console.log('[根据路径查找并加载主数据库] 数据库地址:', { cachePath, root });
+    let cachePath, root;
+    try {
+        const result = await 根据文件名获取主数据库地址(filePath);
+        cachePath = result.cachePath;
+        root = result.root;
+        console.log('[根据路径查找并加载主数据库] 数据库地址:', { cachePath, root });
+    } catch (error) {
+        console.error(`[根据路径查找并加载主数据库] 获取数据库地址失败 for path: ${filePath}`, error);
+        throw error; // rethrow the error if address generation fails
+    }
+
     /**
      * 这里应该已经创建好了文件夹,所以不许需要重复校验创建
      */
-    const db = await 初始化数据库(cachePath, root);
-    console.log('[根据路径查找并加载主数据库] 数据库加载完成');
-    return db;
+    try {
+        const db = await 初始化数据库(cachePath, root);
+        console.log('[根据路径查找并加载主数据库] 数据库加载完成');
+        return db;
+    } catch (error) {
+        // --- 新增：捕获初始化错误并打印详细信息 ---
+        console.error(`[根据路径查找并加载主数据库] 初始化或加载数据库失败! Input path: ${filePath}, Calculated dbPath: ${cachePath}, Root: ${root}`, error);
+        // 可以在这里决定是抛出错误还是返回 null/undefined
+        throw error; // 重新抛出错误，让上层知道失败了
+        // --- 新增结束 ---
+    }
 }
 
 

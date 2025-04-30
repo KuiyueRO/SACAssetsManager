@@ -21,6 +21,7 @@ export function 计算哈希(stat) {
     return hashValue
 }
 export async function 删除缩略图缓存行(fullName) {
+    console.log(`[删除缩略图缓存行] Received fullName: ${fullName}, Type: ${typeof fullName}`);
     let 磁盘缩略图数据库 = await 根据路径查找并加载主数据库(fullName)
     if (!磁盘缩略图数据库) {
         return
@@ -33,6 +34,7 @@ export async function 删除缩略图缓存行(fullName) {
     return result.changes; // 返回受影响的行数
 }
 export async function 写入缩略图缓存行(fullName, updateTime, stat, entryType) {
+    console.log(`[写入缩略图缓存行] Received fullName: ${fullName}, Type: ${typeof fullName}`);
     if (!stat) {
         throw new Error('尝试写入缓存记录时未提供stat')
     }
@@ -90,32 +92,48 @@ export async function 写入缩略图缓存行(fullName, updateTime, stat, entry
 
 function 构建子文件夹查询SQL(search, extensions) {
     let sql = `
-        SELECT stat
-        FROM thumbnails 
-        WHERE fullName LIKE ? || '%' 
-        AND fullName != ? 
+        SELECT t.stat
+        FROM thumbnails t
     `;
-    
+    let whereClauses = [
+        "t.fullName LIKE ? || '%'", // 前缀匹配保留
+        "t.fullName != ?"           // 排除自身保留
+    ];
+
+    // --- 修改：使用 FTS 进行搜索 --- 
     if (search) {
-        sql += ` AND fullName LIKE '%' || ? || '%'`;
+        // 连接 FTS 表进行搜索
+        sql += ` JOIN thumbnails_fts fts ON t.rowid = fts.rowid `;
+        // 使用 MATCH 操作符替代 LIKE '%...%'
+        whereClauses.push("fts.fullName MATCH ?");
+    } else {
+        // 如果没有搜索词，则不需要 JOIN FTS 表
     }
+    // --- 修改结束 ---
     
+    // --- 修改：扩展名匹配仍然使用 LIKE，但基于主表 --- 
     if (extensions && extensions.length > 0) {
-        sql += ` AND (`;
-        sql += extensions.map(() => `fullName LIKE '%' || ?`).join(' OR ');
-        sql += `)`;
+        const extClauses = extensions.map(() => `t.fullName LIKE '%' || ?`).join(' OR ');
+        whereClauses.push(`(${extClauses})`);
     }
+    // --- 修改结束 ---
     
-    sql += ` LIMIT 100000`;
+    sql += ` WHERE ${whereClauses.join(' AND ')} `;
+    sql += ` LIMIT 100000`; // LIMIT 暂时保留，观察性能
     return sql;
 }
 
 function 构建子文件夹查询参数(dirPath, search, extensions) {
+    // 基础参数：前缀匹配和排除自身
     const params = [转换为相对磁盘根目录路径(dirPath) + "%", 转换为相对磁盘根目录路径(dirPath)];
     
+    // --- 修改：如果搜索，添加 MATCH 参数 --- 
     if (search) {
-        params.push(search);
+        // FTS 查询语法通常可以直接使用搜索词，也可以用更复杂的 FTS 查询语法
+        // 这里先简单使用原始搜索词，如果需要更精确控制，可以调整
+        params.push(search); 
     }
+    // --- 修改结束 ---
     
     if (extensions && extensions.length > 0) {
         params.push(...extensions.map(ext => `.${ext}`));

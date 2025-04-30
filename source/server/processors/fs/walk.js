@@ -277,8 +277,14 @@ const processFileResult = async (result, filter, stepCallback) => {
 
 // 处理遍历结果
 export const processWalkResults = async (results, filter, stepCallback) => {
+    // --- 新增：打印 results 结构 --- 
+    console.log('[processWalkResults] Received results:', JSON.stringify(results, null, 2)); 
+    // --- 新增结束 ---
     const stats = {}
     for await (const result of results) {
+        // --- 新增：打印单个 result --- 
+        console.log('[processWalkResults] Processing result:', JSON.stringify(result, null, 2)); 
+        // --- 新增结束 ---
         globalTaskQueue.pause()
         stats[result.path] = result
         await processFileResult(result, filter, stepCallback)
