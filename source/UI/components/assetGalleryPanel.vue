@@ -46,7 +46,7 @@
             style="width:100%;overflow: hidden;" @mousedown.left="startSelection" @click.left="endSelection"
             @click.right.stop="openMenu" @mousedup="endSelection" @mousemove="updateSelection" @drop="handlerDrop"
             @dragover.prevent>
-            <assetsGridRbush @ready="创建回调并获取数据" ref="grid" :tableViewAttributes="displayAttributes" :assetsSource="数据缓存"
+            <assetsGridRbush @ready="handleGridReady" ref="grid" :tableViewAttributes="displayAttributes" :assetsSource="数据缓存"
                 :cardDisplayMode="卡片显示模式" :showHeader="size >= 表格视图阈值" @palletAdded="palletAdded" :globSetting="$realGlob"
                 v-if="showPanel && globSetting" @layoutCountTotal="(e) => { layoutCountTotal = e }"
                 @layoutChange="handlerLayoutChange" @scrollTopChange="handlerScrollTopChange" :sorter="sorter"
@@ -243,7 +243,11 @@ let controller = new AbortController();
 let signal = controller.signal;
 const everthingEnabled = ref(false)
 const filListProvided = ref(null)
-const 创建回调并获取数据 = async () => {
+const isGridComponentReady = ref(false);
+const isContainerWidthStable = ref(false);
+const hasFetchedData = ref(false);
+
+const fetchData = async () => {
     数据缓存.value.clear()
     extensions.value = []
     if (appData.value.localPath) {
@@ -267,25 +271,34 @@ const 创建回调并获取数据 = async () => {
             console.log('[AssetGalleryPanel] 开始解析数据模型, glob:', $realGlob.value);
             const dataModel = 解析数据模型(appData.value, 数据缓存.value, $realGlob.value, everthingEnabled);
             console.log('[AssetGalleryPanel] 数据模型解析完成:', dataModel);
-            // 注意：callBack 不应该传给 fetcher，fetcher 只负责获取数据填充 数据缓存
             const fetcher = 根据数据配置获取数据到缓存(dataModel, signal);
             await fetcher();
             fetcherCompleted = true; // 标记完成
-            // --- 添加日志 ---
             console.log('[AssetGalleryPanel] 数据获取完成。数据缓存长度:', 数据缓存.value.data.length);
-            console.log('[AssetGalleryPanel] 当前选中扩展名:', selectedExtensions.value);
-            // console.log('[AssetGalleryPanel] 数据缓存内容:', JSON.stringify(数据缓存.value.data)); // 内容可能过多，暂时注释
-            // --- 添加日志结束 ---
         }
-        // 确保 fetcher 完成后才调用 callBack
         if (fetcherCompleted) {
-            nextTick(callBack);
+            nextTick(callBack); // 确保数据更新后通知 grid
         }
     } catch (e) {
         console.error('[AssetGalleryPanel] 数据获取错误:', e);
     }
 };
 
+const tryFetchData = () => {
+    if (isGridComponentReady.value && isContainerWidthStable.value && !hasFetchedData.value && grid.value && grid.value.dataCallBack) {
+        console.log("[AssetGalleryPanel] Conditions met, fetching data.");
+        hasFetchedData.value = true;
+        fetchData(); // 执行实际的数据获取
+    } else {
+        console.log(`[AssetGalleryPanel] Conditions not met for fetching: isGridReady=${isGridComponentReady.value}, isWidthStable=${isContainerWidthStable.value}, hasFetched=${hasFetchedData.value}`);
+    }
+};
+
+const handleGridReady = () => {
+    console.log("[AssetGalleryPanel] Grid component ready.");
+    isGridComponentReady.value = true;
+    tryFetchData(); // 尝试触发数据获取
+};
 
 const initializeSize = () => {
     if (appData.value && appData.value.ui && appData.value.ui.size) {
@@ -305,8 +318,20 @@ function refreshPanel() {
     layoutCount.found = 0
     layoutCount.loaded = 0
     layoutCountTotal.value = 0
+
+    // 重置状态标记
+    isGridComponentReady.value = false;
+    isContainerWidthStable.value = false;
+    hasFetchedData.value = false;
+    // 重置数据缓存和其他需要重置的状态
+    数据缓存.value.clear();
+    pallet.value = [];
+    // ... (其他可能需要重置的状态)
+
     nextTick(() => {
         showPanel.value = true
+        // 注意：showPanel 设为 true 后，assetsGridRbush 会重新渲染并触发 @ready
+        // 无需在这里手动调用 tryFetchData，让 @ready 和 ResizeObserver 重新协调
     })
 }
 
@@ -361,14 +386,24 @@ const palletAdded = (data) => {
 const size = ref(250)
 const $max = ref(1024);
 onMounted(() => {
-    const resizeObserver = new ResizeObserver(() => {
-        let result = root.value?.getBoundingClientRect().width
-        if (result) {
-            result = result / 2 - result / 6 + 32
-        }
-        $max.value = result || 1024;
-        if (parseInt(size.value) > $max.value) {
-            size.value = $max.value
+    const resizeObserver = new ResizeObserver((entries) => {
+        if (entries && entries[0]) {
+            let newWidth = entries[0].contentRect.width;
+            if (newWidth > 0) { 
+                let result = newWidth / 2 - newWidth / 6 + 32
+                $max.value = result || 1024;
+                if (parseInt(size.value) > $max.value) {
+                    size.value = $max.value
+                }
+                // 标记宽度已稳定
+                if (!isContainerWidthStable.value) {
+                    console.log(`[AssetGalleryPanel] Container width stable: ${newWidth}`);
+                    isContainerWidthStable.value = true;
+                    tryFetchData(); // 尝试触发数据获取
+                }
+            } else {
+                 console.log(`[AssetGalleryPanel] ResizeObserver reported invalid width: ${newWidth}`);
+            }
         }
     });
     if (root.value) {
@@ -377,6 +412,8 @@ onMounted(() => {
     onUnmounted(() => {
         resizeObserver.disconnect();
     });
+    // 初始化时聚焦输入框
+    nextTick(() => searchInputter.value?.focus());
 });
 
 const $size = computed(

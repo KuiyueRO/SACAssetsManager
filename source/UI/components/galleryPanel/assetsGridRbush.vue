@@ -153,12 +153,15 @@ let isUpdating
 let oldScrollTop
 const 是否更新 = (flag) => {
     if (!scrollContainer.value) {
+        console.error(3)
         return
     }
     if (!布局对象.value) {
+        console.error(2)
         return false
     }
     if (oldScrollTop === scrollContainer.value.scrollTop && scrollContainer.value.scrollTop !== 0 && !flag) {
+        console.error(1)
         return false;
     }
     if (isUpdating && !flag) {
@@ -221,6 +224,7 @@ const 获取可见区域尺寸 = () => {
     }
 }
 const 更新可见卡片 = (可见框) => {
+    console.error('更新可见卡片')
     let result;
     if (布局对象.value.layout.length < 20) {
         // 如果元素数量少于20个，显示所有元素

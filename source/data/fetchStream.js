@@ -30,6 +30,7 @@ function createReadableStream(response) {
 
 // 处理单个数据块
 function processChunk(chunk, splitedChunk, 回调函数, total, _step, 回调步长) {
+  let pushedData = false;
   if (splitedChunk) {
     chunk = splitedChunk + chunk;
     splitedChunk = '';
@@ -45,6 +46,7 @@ function processChunk(chunk, splitedChunk, 回调函数, total, _step, 回调步
         }
       } else {
         回调函数('pushData', json);
+        pushedData = true;
         _step += 1;
       }
       if (_step >= 回调步长) {
@@ -57,26 +59,45 @@ function processChunk(chunk, splitedChunk, 回调函数, total, _step, 回调步
   } else {
     splitedChunk = chunk;
   }
-  return { splitedChunk, total, _step };
+  return { splitedChunk, total, _step, pushedData };
 }
 
 // 读取流数据
-function readStream(reader, 回调函数, 回调步长) {
+function readStream(reader, 回调函数, 回调步长, resolvePromise, rejectPromise) {
   let splitedChunk = '';
   let total = 0;
   let _step = 0;
+  let firstDataPushed = false;
+
   function read() {
     reader.read().then(({ value, done }) => {
       if (done) {
         回调函数('complete');
         console.log('Stream complete');
+        if (!firstDataPushed) {
+          resolvePromise();
+        }
         return;
       }
-      value.split('\n').forEach(chunk => {
-        ({ splitedChunk, total, _step } = processChunk(chunk, splitedChunk, 回调函数, total, _step, 回调步长));
+      const textChunk = new TextDecoder('utf-8').decode(value);
+      textChunk.split('\n').forEach(chunk => {
+        if (chunk.trim()) {
+          const result = processChunk(chunk, splitedChunk, 回调函数, total, _step, 回调步长);
+          splitedChunk = result.splitedChunk;
+          total = result.total;
+          _step = result._step;
+          if (result.pushedData && !firstDataPushed) {
+            resolvePromise();
+            firstDataPushed = true;
+          }
+        }
       });
-      
+
       read();
+    }).catch(error => {
+        console.error("Stream reading error:", error);
+        回调函数('error', error);
+        rejectPromise(error);
     });
   }
   read();
@@ -84,18 +105,52 @@ function readStream(reader, 回调函数, 回调步长) {
 
 // 主函数
 export async function applyURIStreamJson(数据接口地址, 回调函数, 回调步长, signal, options = {}) {
+  let resolvePromise, rejectPromise;
+  const promise = new Promise((resolve, reject) => {
+    resolvePromise = resolve;
+    rejectPromise = reject;
+  });
+
+  const wrappedCallback = (action, data) => {
+      try {
+          回调函数(action, data);
+          if (action === 'error') {
+              rejectPromise(data);
+          }
+      } catch (e) {
+          console.error("Error in callback function:", e);
+          rejectPromise(e);
+      }
+  };
+
   fetch(数据接口地址, { signal, ...options })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok.');
+          const error = new Error(`Network response was not ok. Status: ${response.status}`);
+          wrappedCallback('error', error);
+          return null;
       }
-      return createReadableStream(response);
+       if (!response.body) {
+        const error = new Error('Response body is missing.');
+        wrappedCallback('error', error);
+        return null;
+      }
+      return response.body.getReader();
     })
-    .then(stream => {
-      const reader = stream.getReader();
-      readStream(reader, 回调函数, 回调步长);
+    .then(reader => {
+      if (reader) {
+        readStream(reader, wrappedCallback, 回调步长, resolvePromise, rejectPromise);
+      }
     })
-    .catch(error => { 回调函数('error', error); });
+    .catch(error => {
+        if (typeof wrappedCallback === 'function') {
+            wrappedCallback('error', error);
+        } else {
+            rejectPromise(error);
+        }
+    });
+
+  return promise;
 }
 
 
