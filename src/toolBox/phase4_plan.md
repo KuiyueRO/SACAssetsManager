@@ -121,4 +121,74 @@
 | 接口变更影响现有代码 | 功能失效或错误 | 保持兼容层，提供平滑迁移路径 |
 | 性能优化引发新问题 | 稳定性下降 | 增加测试覆盖，渐进式部署优化 |
 | 重构过程中的代码回归 | 功能损失 | 建立完整的自动化测试，确保功能完整性 |
-| 文档更新不及时 | 开发效率降低 | 将文档更新作为重构流程的强制部分 | 
+| 文档更新不及时 | 开发效率降低 | 将文档更新作为重构流程的强制部分 |
+
+## 5. 目录结构整理计划 (来自 AInote)
+
+**目标:** 将 `src/toolBox` 下所有目录和文件严格按照 `base/`, `feature/`, `useAge/` 三层架构进行组织，确保职责清晰和依赖关系正确。
+
+**待处理目录:**
+
+以下顶层目录目前不符合预期的三层结构，需要进行整理：
+
+1.  **`electron/`**:
+    *   **分析:** 包含 Electron 平台相关的功能。
+    *   **计划:** 分析其具体内容。如果是底层平台 API 封装，迁移至 `base/usePlatform/forElectron/`；如果是特定的 UI 或功能，迁移至 `feature/forElectronFeature/` 或相应的 `feature` 子目录。
+    *   **下一步:** 分析 `electron/` 目录内容。
+2.  **`useNode/`**:
+    *   **分析:** 包含 Node.js 环境相关的功能。
+    *   **计划:** 迁移至 `base/usePlatform/forNode/`。
+    *   **下一步:** 执行迁移。
+3.  **`debug/`**:
+    *   **分析:** 包含调试相关的工具。
+    *   **计划:** 分析其内容。通用调试工具迁移至 `base/forDebugging/`；与特定功能相关的调试辅助移至对应 `feature/` 或 `useAge/` 目录。
+    *   **下一步:** 分析 `debug/` 目录内容。
+4.  **`legacy/`**:
+    *   **分析:** 存放待重构或废弃的旧代码。
+    *   **计划:** 逐一分析内部文件，将其重构并迁移到 `base/`, `feature/`, `useAge/` 的合适位置，或者确认废弃后删除。最终目标是清空并删除 `legacy/` 目录。
+    *   **下一步:** 分析 `legacy/` 目录内容。
+5.  **`framework/`**:
+    *   **分析:** 命名宽泛，可能包含框架集成或通用框架工具。
+    *   **计划:** 分析其内容。根据具体功能判断归属：底层框架支持放入 `base/`，特定框架 (如 Vue) 集成放入 `feature/useFramework/` 或 `feature/useVue/`。
+    *   **下一步:** 分析 `framework/` 目录内容。
+6.  **`web/`**:
+    *   **分析:** Web 相关功能。
+    *   **计划:** 分析其内容。区分底层 Web API (应在 `base/useBrowser/` 或 `base/forNetwork/`) 和更高级的 Web 特定功能 (可放入 `feature/forWeb/`)。
+    *   **下一步:** 分析 `web/` 目录内容。
+7.  **`app/`**:
+    *   **分析:** 可能包含应用层级的工具或逻辑，与 `useAge/` 定位重叠。
+    *   **计划:** 分析其内容，将其功能迁移到 `useAge/` 下对应的场景子目录中。
+    *   **下一步:** 分析 `app/` 目录内容。
+8.  **`thirdParty/`**:
+    *   **分析:** 包含第三方库的封装或直接引用，违反了依赖管理原则。
+    *   **计划:** **必须** 将其所有内容按照依赖类型，迁移到 `base/useDeps/` 下相应的封装模块中。完成后删除 `thirdParty/` 目录。
+    *   **下一步:** 分析 `thirdParty/` 内容并执行迁移。
+9.  **`message/`**:
+    *   **分析:** 消息传递或通信相关。
+    *   **计划:** 分析其内容。底层通信机制放入 `base/forCommunication/` 或 `base/forEvent/`；特定场景的消息处理放入 `feature/` 或 `useAge/`。
+    *   **下一步:** 分析 `message/` 目录内容。
+
+**通用操作:**
+
+*   在所有目标目录（包括新建的）中，将创建或更新 `AInote.md` 和 `README.md` 文件，说明其职责和内容。
+*   迁移过程中，遵循"最小改动"原则，优先创建兼容导出，逐步替换引用。
+
+**下一步重点:**
+
+*   完成此计划更新后，将开始逐一**分析**上述标记为需要分析的目录内容，以确定最合适的迁移目标位置，然后再进行实际的文件移动和重构。
+
+## 6. 迁移遗留任务 (来自 AInote / src/utils)
+
+*   **`src/utils/css/`**:
+    *   `border.js`
+    *   `cssVarGenerator.js`
+    *   `inherentValues.js`
+    *   `unitedStrings.js`
+*   **`src/utils/draw/`**:
+    *   着色器文件 (`constants.wgsl`, `colors.wgsl`, `mixer.wgsl`): 迁移至 `src/toolBox/feature/forCanvas/useGPUMixing/`。
+    *   `brushes.js`
+    *   `index.js`
+    *   `brushSampleProcessor.js`
+    *   `gpuMix.js`
+    *   `simpleDraw/` (目录)
+    *   `brushes/` (目录) 

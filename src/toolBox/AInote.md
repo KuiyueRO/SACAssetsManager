@@ -9,7 +9,7 @@
     *   独立 JS 文件: 放置在根目录 `static/` 下 (如 `rbush.js`)。
 2.  **内部模块:**
     *   **核心/底层 (`src/toolBox/`):** 通用、独立工具，不反向依赖 `source/`，配置项通过参数传入。
-    *   **应用/UI (`source/`):
+    *   **应用/UI (`source/`):**
         *   通用 UI 工具 (`source/UI/utils/`): UI 层复用工具、常量 (如 `layoutConstants.js`)。
         *   UI 组件 (`source/UI/components/`): Vue 组件等。
         *   其他按功能划分 (server, data, polyfills)。
@@ -38,421 +38,45 @@
 
 ---
 *2024-07-27 织: 已阅读并理解 `toolBox` 目录的整体结构、主要内容以及 `AInote.md` 和 `README.md` 中的开发要求与重构计划。*
+*2024-07-28 织: 将详细的重构原则、文件夹规范、架构说明、导入导出规范、依赖管理原则、历史记录和未来计划拆分到独立文件，使 `AInote.md` 保持精简。*
 ---
 
 # 工具箱重构笔记
 
-## 工具箱结构概览
+## 当前状态与核心链接
 
-工具箱**继续采用**三层分类模块化设计，但**更侧重于职责划分**：
-- `base/`: 存放最核心、通用的基础工具，按**技术或底层概念**组织（如ECMA标准增强、网络原语、核心工具链、依赖封装）。
-- `feature/`: 存放基于`base`构建的、具有**特定技术能力或独立功能**的模块（如图像处理能力、Vue集成能力）。
-- `useAge/`: **严格按照应用领域或任务类型**组织，解决具体场景问题（如思源笔记工具集、文件管理流程）。
+**阶段计数:** 3 (计数为零时总结到 `history.md` 并重置)
 
-```
-src/toolBox/
-├── base/           - 核心基础工具 (按技术基础分类)
-│   ├── useEcma/
-│   ├── forNetwork/
-│   ├── forChain/
-│   ├── useDeps/
-│   └── core/        # 新增：错误处理、日志、常量等
-├── feature/        - 特定功能模块 (按独立能力分类)
-│   ├── useImage/
-│   ├── useVue/
-│   └── forVectorEmbedding/
-├── useAge/         - 应用场景/任务工具 (按领域或任务分类)
-│   ├── forSiyuan/   # 示例：思源笔记相关
-│   ├── forFileManagement/ # 示例：文件管理任务
-│   └── ... (根据具体应用场景划分)
-├── toolBoxExports.js  - (**逐步废弃**) 统一导出接口，优先使用直接路径导入
-└── README.md       - 工具箱说明
-```
-
-*注意：`toolBoxExports.js` 和桶文件 (`*Exports.js`) 将逐步被直接路径导入取代。*
-
-## 已完成的重构(建议不要列举太多,隔一段时间总结一下,列出最近的动作就可以了)
-
-阶段计数:3
-
-当前正在进行重构工作：
+**当前重构焦点:** (根据实际情况更新)
 - 开始阶段5：专注于思源笔记工具函数的整合与优化，解决模块间功能重叠问题
 - 优化useSiyuanSlash、useSiyuanDialog、useSiyuanMenu等模块的接口规范化
 - 对冗余代码进行清理，提高代码质量和性能表现
 - 完善文档和示例，确保API的一致性和可用性
 
-详细历史记录请查看src/toolBox/history.md
 
-## 重构原则
-
-1. **最小改动**:
-   - 创建兼容层以保持现有代码可用
-   - 保留原函数名导出，添加中文命名版本
-
-2. **函数式风格** & **纯函数优先**:
-   - 尽可能使用纯函数设计
-   - 避免副作用和状态依赖
-   - 确保函数输出只依赖输入
-   - 避免使用类，除非必要
-   - 减少嵌套
-
-3. **单一职责**:
-   - 每个函数专注于单一任务
-   - 避免功能过于复杂
-   - 促进代码复用
-
-4. **合理抽象**:
-   - 提供适当抽象级别
-   - 封装复杂实现细节
-   - 提供简洁清晰的接口
-
-5. **命名规范 (修订)**:
-   - **核心原则:** 遵循项目根目录定义的 [**编码风格指南**](../../CODING_STYLE.md#命名规范-naming-conventions)。
-   - **强调:** 在 `toolBox` 模块内，尤其注意文件名的语义化，**禁止**使用 `index.js` 或 `main.js`。
-
-6. **模块化设计**:
-   - 按功能域组织工具
-   - 相关功能放在同一目录
-   - 文件过长时及时拆分
-
-7. **依赖管理规范** (`useDeps`):
-   - 外部依赖**必须**通过 `./base/useDeps` 统一引入和封装。
-   - 其他模块**禁止**直接引入外部依赖。
-   - 详情参见: [`base` 目录 AInote.md](./base/AInote.md#依赖管理)
-
-8. **错误处理**:
-   - 提供明确的错误处理机制
-   - 返回有意义的错误信息
-   - 支持错误恢复策略 (如果适用)
-
-## 文件夹规范 (2024-07-27 新增)
-
-**目标:** 确保 `toolBox` 内每个功能性文件夹都有明确的职责范围和代码准入标准。
-
-**要求:**
-- **强制性:** `toolBox` 下的**每一个**功能性子文件夹（无论位于 `base`, `feature`, `useAge`/`domain` 哪一层）都**必须**包含一个 `README.md` 或 `AInote.md` 文件。
-- **内容:** 该文件必须清晰地：
-    1.  **定义该文件夹的职责范围 (Scope):** 说明这个文件夹里的代码是用来做什么的。
-    2.  **明确代码准入标准 (Criteria):** 根据 `toolBox` 的整体三层架构（Base/Feature/Domain），说明什么样的代码**才被允许**放在这个文件夹里。例如，明确指出它属于哪一层，以及它应该（或不应该）依赖哪些其他模块。
-    3.  **链接总纲:** 必须包含指向 `toolBox` 根目录下架构说明文件 `[architecture_layers_explained.md](./architecture_layers_explained.md)` 的链接，作为统一的架构指导。
-- **示例:** （在具体文件夹的 `README.md` 或 `AInote.md` 中）
-    ```markdown
-    # 文件夹名称 (例如: base/lang/functions)
-
-    **所属层级:** Base
-
-    **职责范围:** 提供与 ECMAScript 函数相关的底层、通用工具，如函数组合、柯里化、节流、防抖等。
-
-    **准入标准:**
-    - 必须是纯粹的、与函数操作相关的底层工具。
-    - 必须无副作用（除非明确标记并隔离）。
-    - **禁止**依赖 `feature` 或 `domain` 层的任何模块。
-    - **禁止**包含特定应用的业务逻辑。
-    - 外部依赖必须通过 `base/deps` 引入。
-
-    **架构总纲:** [../../../architecture_layers_explained.md](../../../architecture_layers_explained.md) (根据实际层级调整路径)
-    ```
-- **维护:** 创建新文件夹或对文件夹职责进行重大调整时，必须同步创建或更新对应的说明文件。
-
-## 架构微调与导入导出规范 (2024-07-27 新增/修订)
-
-**核心目标:** 确保工具箱作为长期个人代码库的清晰性、可维护性和可扩展性。
-
-**架构微调:**
-- 维持 `base`, `feature`, `useAge`/`domain` 三层结构，但强化职责区分。
-- **详细的分层职责说明，特别是 `feature` 与 `domain` 的划分原则，请参阅：[./architecture_layers_explained.md](./architecture_layers_explained.md)**
-- `useAge` 层级命名可考虑调整为更贴切的名称，如 `domains/`, `tasks/`, `applications/` 等。
-
-**导入导出规范:**
-- **严格禁止** 使用 `import *` 和 `export *`。
-- **放弃** `*Exports.js` 等桶文件作为主要的模块导出方式。
-- **强制** 使用**命名导出** (`export const func = ...;`)，禁止默认导出 (`export default`)。
-- **强制** 使用**明确、直接的相对路径**进行模块导入：
-    - 层内导入: `import { util } from '../anotherModule/util.js';`
-    - 跨层导入: `import { baseFunc } from '../../base/someModule/file.js';`
-    - 外部导入: `import { tool } from '@toolBox/feature/someTool/index.js';` (推荐配置路径别名如 `@toolBox/`)
-- **优点:** 依赖清晰、利于 Tree Shaking、重构友好、避免循环依赖陷阱。
-- **接受:** 导入路径可能变长，可通过路径别名缓解。
-
-## 外部依赖管理原则 (`useDeps`)
-
-**核心原则:** 项目的所有外部依赖（来自 `node_modules` 或 `static`）**必须**通过 [`./base/useDeps`](./base/useDeps) 目录进行统一引入和封装。其他任何模块（包括 `feature` 和 `useAge`）**禁止**直接引入外部依赖。
-
-**目标:**
-*   集中管理依赖版本。
-*   提供稳定的内部接口，隔离外部变化。
-*   简化依赖追踪和维护。
-
-**详情参见:**
-*   [`base` 目录 AInote.md 中关于依赖管理的说明](./base/AInote.md#依赖管理)
-
-## 后续重构计划
-
-1. **整合与优化已实现功能**:
-   - 解决`useSiyuanSlash.js`和`useSiyuanDialog.js`之间的功能重叠
-   - 统一`useSiyuanMenu.js`和相关菜单构建工具的接口
-   - 优化`useSiyuanBlock.js`的块操作功能，增强批量处理能力
-   - 完善`useSiyuanAsset.js`的资源管理功能
-
-2. **性能优化**:
-   - 实现更高效的延迟加载和按需导入策略
-   - 为频繁调用的API添加缓存机制
-   - 优化批量操作的并发处理
-   - 减少启动时的资源占用
-
-3. **目录结构优化**:
-   - 调整`forSiyuan`目录结构，按功能更清晰划分
-   - 合并功能相似的模块，减少文件数量
-   - 移除过时或冗余的代码
-   - 规范化文件命名和路径组织
-
-4. **迁移遗留任务 (来自 src/utils)**:
-   -   **`src/utils/css/`**:
-       -   `border.js`
-       -   `cssVarGenerator.js`
-       -   `inherentValues.js`
-       -   `unitedStrings.js`
-   -   **`src/utils/draw/`**:
-       -   着色器文件 (`constants.wgsl`, `colors.wgsl`, `mixer.wgsl`): 迁移至 `src/toolBox/feature/forCanvas/useGPUMixing/`。
-       -   `brushes.js`
-       -   `index.js`
-       -   `brushSampleProcessor.js`
-       -   `gpuMix.js`
-       -   `simpleDraw/` (目录)
-       -   `brushes/` (目录)
-
-## 目录结构整理计划 (Directory Structure Cleanup Plan)
-
-**目标:** 将 `src/toolBox` 下所有目录和文件严格按照 `base/`, `feature/`, `useAge/` 三层架构进行组织，确保职责清晰和依赖关系正确。
-
-**待处理目录:**
-
-以下顶层目录目前不符合预期的三层结构，需要进行整理：
-
-1.  **`electron/`**:
-    *   **分析:** 包含 Electron 平台相关的功能。
-    *   **计划:** 分析其具体内容。如果是底层平台 API 封装，迁移至 `base/usePlatform/forElectron/`；如果是特定的 UI 或功能，迁移至 `feature/forElectronFeature/` 或相应的 `feature` 子目录。
-    *   **下一步:** 分析 `electron/` 目录内容。
-2.  **`useNode/`**:
-    *   **分析:** 包含 Node.js 环境相关的功能。
-    *   **计划:** 迁移至 `base/usePlatform/forNode/`。
-    *   **下一步:** 执行迁移。
-3.  **`debug/`**:
-    *   **分析:** 包含调试相关的工具。
-    *   **计划:** 分析其内容。通用调试工具迁移至 `base/forDebugging/`；与特定功能相关的调试辅助移至对应 `feature/` 或 `useAge/` 目录。
-    *   **下一步:** 分析 `debug/` 目录内容。
-4.  **`legacy/`**:
-    *   **分析:** 存放待重构或废弃的旧代码。
-    *   **计划:** 逐一分析内部文件，将其重构并迁移到 `base/`, `feature/`, `useAge/` 的合适位置，或者确认废弃后删除。最终目标是清空并删除 `legacy/` 目录。
-    *   **下一步:** 分析 `legacy/` 目录内容。
-5.  **`framework/`**:
-    *   **分析:** 命名宽泛，可能包含框架集成或通用框架工具。
-    *   **计划:** 分析其内容。根据具体功能判断归属：底层框架支持放入 `base/`，特定框架 (如 Vue) 集成放入 `feature/useFramework/` 或 `feature/useVue/`。
-    *   **下一步:** 分析 `framework/` 目录内容。
-6.  **`web/`**:
-    *   **分析:** Web 相关功能。
-    *   **计划:** 分析其内容。区分底层 Web API (应在 `base/useBrowser/` 或 `base/forNetwork/`) 和更高级的 Web 特定功能 (可放入 `feature/forWeb/`)。
-    *   **下一步:** 分析 `web/` 目录内容。
-7.  **`app/`**:
-    *   **分析:** 可能包含应用层级的工具或逻辑，与 `useAge/` 定位重叠。
-    *   **计划:** 分析其内容，将其功能迁移到 `useAge/` 下对应的场景子目录中。
-    *   **下一步:** 分析 `app/` 目录内容。
-8.  **`thirdParty/`**:
-    *   **分析:** 包含第三方库的封装或直接引用，违反了依赖管理原则。
-    *   **计划:** **必须** 将其所有内容按照依赖类型，迁移到 `base/useDeps/` 下相应的封装模块中。完成后删除 `thirdParty/` 目录。
-    *   **下一步:** 分析 `thirdParty/` 内容并执行迁移。
-9.  **`message/`**:
-    *   **分析:** 消息传递或通信相关。
-    *   **计划:** 分析其内容。底层通信机制放入 `base/forCommunication/` 或 `base/forEvent/`；特定场景的消息处理放入 `feature/` 或 `useAge/`。
-    *   **下一步:** 分析 `message/` 目录内容。
-
-**通用操作:**
-
-*   在所有目标目录（包括新建的）中，将创建或更新 `AInote.md` 和 `README.md` 文件，说明其职责和内容。
-*   迁移过程中，遵循"最小改动"原则，优先创建兼容导出，逐步替换引用。
-
-**下一步重点:**
-
-完成此计划更新后，将开始逐一**分析**上述标记为需要分析的目录内容，以确定最合适的迁移目标位置，然后再进行实际的文件移动和重构。
-
-## 注意事项
-
-1. 所有重构应遵循"兼容、增强、替换"的三步走策略:
-   - 先建立兼容层保证向后兼容
-   - 在新位置增强功能
-   - 最后逐步替换旧引用
-
-2. 文件重构应该遵循:
-   - 一次只处理少量文件
-   - 每次改动应该可测试
-   - 保留导入/导出兼容性
-
-3. 代码规范:
-   - 文件应尽可能精简，专注于单一职责
-   - 优先使用命名导出而非默认导出
-   - 同时提供中英文函数命名
-
-## 已完成重构文件的增强
-
-1. **文档增强**:
-   - 所有重构文件都添加了完整的JSDoc注释
-   - 为所有新文件添加了README.md说明文档
-
-2. **API增强**:
-   - 为所有函数添加了中英文双命名支持
-   - 优化了函数参数和返回值的类型
-
-3. **兼容性增强**:
-   - 为所有已迁移文件创建了兼容层
-   - 在原始位置添加了导入/重导出
-   - 设置了弃用警告以指导开发者
-
-## 最近完成的重构工作
-
-参见src/toolBox/history.md中的历史记录
-
-## 阶段5重构计划摘要
-
-阶段5将专注于：
-1. 思源笔记工具函数的整合与优化，解决模块间功能重叠
-2. 性能优化，包括延迟加载、缓存策略和批量操作优化
-3. 重构与解耦，优化目录结构和依赖关系
-4. 完善文档与示例，提高API的一致性和可用性
-
-详细计划请参考src/toolBox/phase4_plan.md (已更新为阶段5计划)
-
-## 前缀命名规范说明
-
-工具箱中使用的前缀具有明确的语义区分，这些前缀不是随意选择的，而是反映了工具函数的功能定位和使用场景：
-
-1. **for前缀**：针对特定目标领域的工具函数
-   - 表示该工具专为某个特定领域或功能设计
-   - 例如：`forEvent`（事件处理）、`forMime`（MIME类型处理）、`forNetwork`（网络请求）
-
-2. **use前缀**：基于特定技术或环境实现的工具函数
-   - 表示该工具基于某种技术栈或环境API构建
-   - 例如：`useEcma`（基于ECMAScript标准）、`useVue`（基于Vue框架）、`useBrowser`（使用浏览器API）
-
-3. **from前缀**：数据源或转换工具
-   - 表示从某种数据源获取或转换数据
-   - 例如：从Blob创建图像、从SVG创建图像等函数
-
-4. **with前缀**：表示与特定资源结合使用的工具
-   - 表示该工具需要与某种资源配合使用
-   - 通常用于增强或修饰某个操作
-
-### 嵌套目录的命名规范
-
-当出现嵌套目录时（如 `useEcma/forString/`），应理解为：
-- 外层目录（useEcma）表示技术基础
-- 内层目录（forString）表示针对的具体目标
-
-### 统一和调整计划
-
-在后续重构中，需要特别注意：
-1. 严格遵循前缀语义，不要混用
-2. 发现命名不符合规范的目录或文件应进行调整
-3. 消除功能重复的模块，遵循前缀规范重新组织
-
-现有的一些问题需要解决：
-- `forMime` 和 `useMime` 功能重叠，应明确区分或合并
-- `base/forUI` 和 `feature/useUI` 功能可能重叠，需要明确职责
-- `useAge/forImageAndCanvas` 与 `feature/useImage` 功能可能重叠
-
-## Static文件夹依赖分析
-
-经过对`static`文件夹的扫描，发现有多种依赖已经以ESM形式存在，可以通过`useDeps`模块进行更充分的封装和利用。以下是主要依赖分类和优化建议：
-
-### 已发现的依赖类别
-
-1. **网络与MIME相关**:
-   - accepts.js, type-is.js, content-type.js, content-disposition.js, cache-content-type.js
-   - mimeDb.js
-
-2. **数据处理与实用工具**:
-   - dayjs.js (及dayjsPlugins/)
-   - pinyin.js
-   - uuid.mjs
-   - buffer.mjs
-   - rbush.js
-   - mmcq.js (颜色量化)
-
-3. **视觉与UI相关**:
-   - vue.esm-browser.js
-   - konva.js, vue-konva.mjs
-   - pickr-esm2022.js (颜色选择器)
-   - dom-to-image.mjs
-
-4. **协作与同步工具**:
-   - yjs.js, y-websocket.js, y-webrtc.js, y-indexeddb.js
-   - @syncedstore/
-
-5. **多媒体处理**:
-   - mp4-muxer.mjs, webm-muxer.mjs
-   - opencv.js
-
-6. **语言与解析**:
-   - jieba_rs_wasm.js (中文分词)
-   - @babel/, @babel_parser.js
-
-7. **AI与机器学习**:
-   - tf.min.js
-   - @huggingface/
-
-### 优化建议
-
-根据工具箱重构原则，可以在`base/useDeps`目录下创建以下封装模块：
-
-1. **forMimeType**：
-   - 封装mimeDb.js和content-type.js等MIME相关依赖
-   - 提供统一的MIME类型判断和处理接口
-
-2. **forDateManagement**：
-   - 封装dayjs和相关插件
-   - 提供日期格式化、解析和操作功能
-
-3. **forUUID**：
-   - 封装uuid.mjs
-   - 提供UUID生成和解析功能
-
-4. **forPinyin**：
-   - 检查现有的pinyinTools.js是否已充分利用static/pinyin.js
-   - 可能需要增强拼音处理功能
-
-5. **forUI/useVue**：
-   - 封装vue.esm-browser.js的使用
-   - 提供Vue组件加载和管理工具
-
-6. **forVisualProcessing**：
-   - 封装konva.js, pickr-esm2022.js等
-   - 提供画布和颜色处理工具
-
-7. **forCollaboration**：
-   - 封装yjs和syncedstore相关库
-   - 提供实时协作功能接口
-
-8. **forMedia**：
-   - 封装媒体相关工具(mp4-muxer, webm-muxer)
-   - 提供统一的媒体处理接口
-
-9. **forAI**：
-   - 封装AI工具(@huggingface, tf.min.js)
-   - 提供简易的AI功能接口
-
-### 实施优先级
-
-1. 优先封装已有直接引用但未通过useDeps管理的依赖
-2. 优先处理核心功能使用的依赖(MIME, 日期, UI等)
-3. 为复杂依赖创建简化的接口，降低使用门槛
-
-### 注意事项
-
-1. 封装时保持API稳定，提供中英文双命名
-2. 避免将所有依赖捆绑导出，按需加载更为高效
-3. 为每个依赖模块创建清晰的文档和使用示例
-4. 处理版本冲突，确保使用正确的ESM版本
-
-通过系统性地封装static目录下的依赖，可以提高代码可维护性，减少重复引用，并确保依赖的一致性和可控性。
+**重要文档链接:**
+- **开发与重构指南:** [`./GUIDELINES.md`](./GUIDELINES.md) (包含重构原则、文件夹规范、导入导出规范等)
+- **架构分层详解:** [`./architecture_layers_explained.md`](./architecture_layers_explained.md)
+- **详细重构历史:** [`./history.md`](./history.md)
+- **未来重构计划:** [`./phase4_plan.md`](./phase4_plan.md) (包含目录整理计划)
+- **工具箱根说明:** [`./README.md`](./README.md)
+
+## 工具箱结构概览 (参考)
+
+```
+src/toolBox/
+├── base/           - 核心基础工具 (按技术基础分类)
+├── feature/        - 特定功能模块 (按独立能力分类)
+├── useAge/         - 应用场景/任务工具 (按领域或任务分类)
+├── GUIDELINES.md   - 开发与重构指南 (新)
+├── architecture_layers_explained.md - 架构分层详解
+├── history.md      - 详细重构历史
+├── phase4_plan.md  - 未来重构计划
+├── toolBoxExports.js - (**逐步废弃**) 统一导出接口
+└── README.md       - 工具箱说明
+```
+
+*注意：`toolBoxExports.js` 和桶文件 (`*Exports.js`) 将逐步被直接路径导入取代。*
 
 # 这个区段由开发者编写,未经允许禁止AI修改
 <开发者将会在这里提出要求,AI需要判断并满足这些要求>
