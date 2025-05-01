@@ -1,5 +1,5 @@
-import { loadCsharpFunc } from "../../../../../src/toolBox/base/useElectron/forCSharp/useCSharpLoader.js";
-import { 创建不可见Webview } from "../../../../../src/toolBox/base/useElectron/forWindow/useWebview.js";
+import { loadCsharpFunc } from "../../../../../src/toolBox/base/platform/electron/forCSharp/useCSharpLoader.js";
+import { 创建不可见Webview } from "../../../../../src/toolBox/base/platform/electron/forWindow/useWebview.js";
 
 export const getLargeIcon = loadCsharpFunc(
     `

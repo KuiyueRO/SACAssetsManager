@@ -1,7 +1,9 @@
+import { keyedDebounce } from '../../base/useEcma/forFunctions/forDebounce.js'; // 导入 keyedDebounce
+
 // 状态存储
 const observers = new Map();
 const throttleTimers = new Map();
-const debounceTimers = new Map();
+const debounceTimers = new Map(); // 用于 keyedDebounce
 
 // 工具函数
 const matchXPath = (element, xpath) => {
@@ -27,24 +29,30 @@ const createEventHandler = (callback, options) => (event) => {
 
   // 节流处理
   if (options.throttle) {
-    const throttleKey = `${event.type}-${event.target.id || 'anonymous'}`;
+    const throttleKey = `${event.type}-${event.target.id || 'anonymous'}-${options.throttle}`;
     if (throttleTimers.has(throttleKey)) return;
-    
+
     throttleTimers.set(throttleKey, true);
     setTimeout(() => throttleTimers.delete(throttleKey), options.throttle);
+    // 节流后仍然可以执行后续逻辑 (包括可能的防抖或直接回调)
   }
-  
-  // 防抖处理
+
+  // 防抖处理 - 使用 keyedDebounce
   if (options.debounce) {
-    const debounceKey = `${event.type}-${event.target.id || 'anonymous'}`;
-    clearTimeout(debounceTimers.get(debounceKey));
-    
-    debounceTimers.set(debounceKey, 
-      setTimeout(() => callback(event), options.debounce));
-    return;
+    // 为每个目标、事件类型和回调组合生成唯一的 key
+    // 注意：如果 callback 函数本身是动态生成的匿名函数，这个 key 可能不够稳定
+    // 更可靠的 key 可能需要基于 addListener 调用时的上下文
+    const debounceKey = `${event.type}-${event.target.id || 'anonymous'}-${callback.toString().slice(0, 50)}`;
+
+    // 调用 keyedDebounce，传入 timers Map 和当前事件
+    keyedDebounce(callback, options.debounce, debounceKey, debounceTimers, event);
+    return; // 防抖激活时，阻止后续的直接 callback 调用
   }
-  
-  callback(event);
+
+  // 如果没有防抖或节流阻止，直接调用回调
+  if (!options.throttle || !throttleTimers.has(`${event.type}-${event.target.id || 'anonymous'}-${options.throttle}`)) {
+      callback(event);
+  }
 };
 
 // 主要API函数
@@ -72,6 +80,8 @@ export const dispose = () => {
   
   observers.clear();
   throttleTimers.clear();
+  // 清理 debounceTimers 中的所有待执行计时器
+  debounceTimers.forEach(timeoutId => clearTimeout(timeoutId));
   debounceTimers.clear();
 };
 

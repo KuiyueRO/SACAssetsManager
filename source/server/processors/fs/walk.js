@@ -4,11 +4,14 @@ import { fdir } from './fdirModified/index.js'
 import { buildCache } from '../cache/cache.js'
 import { isMetaData, isThumbnail } from '../thumbnail/utils/regexs.js'
 import { globalTaskQueue, 添加带有优先级的全局任务,添加后进先出后台任务 } from '../queue/taskQueue.js'
-import { reportHeartbeat } from '../../../../src/toolBox/base/useElectron/useHeartBeat.js'
+import { reportHeartbeat } from '../../../../src/toolBox/base/platform/electron/useHeartBeat.js'
 import { 查找子文件夹, 删除缩略图缓存行, 计算哈希 } from '../thumbnail/indexer.js'
 import { getCachePath } from './cached/fs.js'
 import { 查找文件夹状态 } from '../../dataBase/mainDb.js'
 import { 判定路径排除 } from '../../../../src/toolBox/feature/forFileSystem/forPathFilter.js'
+
+let fs, path, crypto;
+
 /**
  * 使用修改后的fdir,遍历指定目录
  * @param {*} root 

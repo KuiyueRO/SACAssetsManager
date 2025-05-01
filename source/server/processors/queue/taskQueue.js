@@ -3,7 +3,7 @@
  */
 // HACK: 更新导入，使用 toolBox 中的新版 MinHeap
 import { createMinHeap } from '../../../../src/toolBox/feature/useDataStruct/useHeaps/useMinHeap.js' 
-import { reportHeartbeat } from '../../../../src/toolBox/base/useElectron/useHeartBeat.js'
+import { reportHeartbeat } from '../../../../src/toolBox/base/platform/electron/useHeartBeat.js'
 
 // 常量配置
 const CONFIG = {

@@ -29,10 +29,10 @@ console.log(jsDocConfig.outputTypes); // 输出类型
 
 ```js
 // 推荐：通过统一导出接口导入
-import { 解析JSDoc配置, 从URL解析JSDoc配置 } from '../../../toolBox/toolBoxExports.js';
+import { 解析JSDoc配置, 从URL解析JSDoc配置 } from './jsParser.js';
 
 // 或者直接从具体模块导入
-import { 解析JSDoc配置 } from '../../../toolBox/feature/forCodeAnalysis/jsParser.js';
+import { 解析JSDoc配置 } from './jsParser.js';
 ```
 
 ## 贡献指南

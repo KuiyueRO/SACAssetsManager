@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios'; // 移除 axios 依赖
 
 /**
  * 创建 HTTP 协议
@@ -21,8 +21,33 @@ function createHTTPProtocol(options = {}) {
    * @param {Object} message
    */
   async function send(target, message) {
-    const response = await axios.post(target, message);
-    return response.data;
+    // const response = await axios.post(target, message);
+    // return response.data;
+    try {
+      const response = await fetch(target, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json' // 假设发送的是 JSON
+        },
+        body: JSON.stringify(message)
+      });
+
+      if (!response.ok) {
+        // 尝试读取错误信息，如果可能的话
+        let errorBody = '';
+        try {
+          errorBody = await response.text();
+        } catch (e) { /* ignore */ }
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+      }
+
+      // 假设响应也是 JSON
+      return await response.json();
+    } catch (error) {
+      console.error(`Error sending message to ${target}:`, error);
+      // 根据需要决定是继续抛出错误还是返回特定值
+      throw error;
+    }
   }
 
   return {

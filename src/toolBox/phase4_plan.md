@@ -191,4 +191,55 @@
     *   `brushSampleProcessor.js`
     *   `gpuMix.js`
     *   `simpleDraw/` (目录)
-    *   `brushes/` (目录) 
+    *   `brushes/` (目录)
+
+## 7. 工具函数迁移计划 (来自 AInote)
+
+**目标:** 将 `source/utils` 等目录下散落的通用工具函数迁移到 `toolBox` 的合适位置。
+
+### 待迁移内容分析
+
+1.  **来自 `source/utils/functionTools.js`**
+    *   **内容:** 函数式编程工具：`顺序组合函数`, `管道函数`, `柯里化`, `等待参数达到长度后执行`, `组合函数`等。
+    *   **迁移目标:** `src/toolBox/base/forChain/`，作为基础层的函数链功能。
+    *   **优先级:** 高 (基础工具)。
+
+2.  **来自 `source/utils/functionAndClass/performanceRun.js`**
+    *   **内容:** 性能监测包装器：`withPerformanceLogging`。
+    *   **迁移目标:** `src/toolBox/base/useEcma/performance.js` 或创建新的 `base/forDebugging/` 相关目录。
+    *   **优先级:** 高 (用于优化和调试)。
+
+3.  **来自 `source/utils/vector/similarity.js`**
+    *   **内容:** 向量计算工具：`计算归一化向量余弦相似度`, `计算余弦相似度`, `计算欧氏距离相似度`, `计算Levenshtein距离`。
+    *   **迁移目标:** `src/toolBox/feature/forVectorEmbedding/similarity.js` (部分可能已存在于 `base/forMath/`)。
+    *   **优先级:** 中 (特定领域工具)。
+
+### 迁移步骤
+
+1.  **代码分析与清理:** 检查代码质量、依赖，移除冗余，标准化接口。
+2.  **功能迁移:** 遵循三层架构，创建目录和文件，优化实现。
+3.  **接口统一:** 提供中英文命名，统一错误处理，完善文档。
+4.  **测试与验证:** 添加单元测试，验证功能一致性，检查性能。
+5.  **更新引用:** 使用兼容层或别名，逐步更新调用代码，记录废弃 API。
+
+## 8. 全局依赖引用规范化计划
+
+**目标:** 确保项目中所有对外部依赖（npm 包、内置模块、静态资源等）的引用都通过 `src/toolBox/base/deps/` 目录下的转发模块进行，实现依赖来源的统一管理和解耦。
+
+**背景:** 通过 `scripts/scan-direct-dependencies.js` 脚本扫描，发现大量不符合规范的直接依赖引用。
+
+**执行步骤:**
+
+1.  **运行扫描脚本:** 定期（或在需要时）运行 `node scripts/scan-direct-dependencies.js | cat` 获取最新的直接依赖引用列表。
+2.  **分析结果:** 对脚本输出进行排序，优先处理被直接引用次数最少的依赖项。
+3.  **逐个处理依赖项:**
+    *   **定位引用:** 找到所有直接引用该依赖的文件。
+    *   **创建/确认转发模块:** 在 `src/toolBox/base/deps/` 目录下为该依赖创建（如果不存在）或确认已存在对应的转发模块（如 `src/toolBox/base/deps/npm/lodash.js` 或 `src/toolBox/base/deps/node/fs.js`）。确保转发模块导出了所有需要被引用的 API。
+    *   **修改引用:** 将步骤 a 中找到的文件里的直接引用修改为通过对应的 `deps/` 转发模块导入。
+    *   **更新文档:** 更新涉及到的文件所在目录的 `AInote.md`，记录依赖引用的修改。
+4.  **持续迭代:** 重复步骤 1-3，直到所有不合规的直接引用都被修复。
+
+**注意事项:**
+
+*   对于某些特殊情况（如构建脚本、配置文件等），如果确实无法或不适合通过 `deps/` 转发，需要特殊说明并记录在 `GUIDELINES.md` 的例外情况中。
+*   在创建新的转发模块时，要注意按依赖类型（npm, node, static 等）组织在 `deps/` 的子目录下。 

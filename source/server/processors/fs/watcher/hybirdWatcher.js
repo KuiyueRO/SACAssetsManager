@@ -1,6 +1,11 @@
-import * as parcelWatcher from '@parcel/watcher';
+//@AI 这里的依赖引入应该抽离到useDeps,当然这种也可以不处理,不过这样的话你就需要整理一下例外规则,
+//另外我们使用globalthis.require或者直接相对路径引入来引入node环境的依赖,所有使用了require的地方都要检查环境,没有node环境就报错
+//我们经常在electron环境下工作而且拒斥构建流程,所以import和require的引入方式可能都是必须的,视情况而定
+// import * as parcelWatcher from '@parcel/watcher'; // 直接导入，待移除
+import * as parcelWatcher from '../../../../../../src/toolBox/base/deps/npm/parcelWatcher.js'; // 通过 deps 导入
 import { listLocalDisks } from '../disk/diskInfo.js';
-import { debounce } from 'lodash';
+// import { debounce } from 'lodash'; // 移除 lodash 依赖
+import { debounce } from '../../../../../../src/toolBox/base/useEcma/forFunctions/forDebounce.js'; // 使用 toolBox 的 debounce
 
 export class HybridWatcher {
     constructor() {

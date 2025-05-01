@@ -1,11 +1,12 @@
-const { PDFDocument } = require('pdf-lib');
-const pdf2pic = require('pdf2pic')
+import { PDFDocument } from '../../../../../../src/toolBox/base/deps/npm/pdf-lib.js';
+import { pdf2pic } from '../../../../../../src/toolBox/base/deps/npm/pdf2pic.js';
+import { fsPromises } from '../../../../../../src/toolBox/base/deps/node/fs.js';
 
 async function handlePdfFile(imagePath, req, res) {
     const cacheKey = generateCacheKey(imagePath);
     if (await serveFromCache(cacheKey, res)) return;
     try {
-        const pdfBuffer = fs.readFileSync(imagePath.replace(/\\/g, '/'));
+        const pdfBuffer = await fsPromises.readFile(imagePath.replace(/\\/g, '/'));
         const pdfDoc = await PDFDocument.load(pdfBuffer);
         const [firstPage] = await pdfDoc.getPages();
         const { width, height } = await firstPage.getSize()

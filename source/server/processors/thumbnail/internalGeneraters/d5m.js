@@ -1,12 +1,13 @@
-const fs = require('fs')
-const JSZip= require('jszip')
+import { fsPromises } from '../../../../../src/toolBox/base/deps/node/fs.js';
+import { JSZip } from '../../../../../src/toolBox/base/deps/npm/jszip.js';
+
 export default class D5MLoader {
     constructor() {
     }
 
     async generateThumbnail(path) {
         try {
-            const data = fs.readFileSync(path);
+            const data = await fsPromises.readFile(path);
             const zip = await JSZip.loadAsync(data);
 
             const iconFile = zip.file('icon.png');

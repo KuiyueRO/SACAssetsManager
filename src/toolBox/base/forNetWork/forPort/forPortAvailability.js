@@ -4,6 +4,7 @@
 
 import { 校验端口号格式 } from './forPortValidation.js';
 import { 读取端口记录 } from './forPortRecord.js';
+import { http } from '../../deps/node/http.js';
 
 /**
  * 创建测试服务用于端口检查
@@ -11,7 +12,7 @@ import { 读取端口记录 } from './forPortRecord.js';
  * @private
  */
 function 创建测试服务() {
-    let http = window.require("http");
+    // let http = window.require("http"); // 旧的导入方式
     return http.createServer();
 }
 

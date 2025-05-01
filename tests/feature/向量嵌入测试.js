@@ -6,7 +6,11 @@
 import { 计算向量相似度 } from '../../src/toolBox/feature/forVectorEmbedding/forSimilarity.js';
 import { 查找最相似点 as 查找最相似向量 } from '../../src/toolBox/feature/forVectorEmbedding/forQuery.js';
 import { createHNSWIndex } from '../../src/toolBox/feature/forVectorEmbedding/useDeltaPQHNSW/useCustomedHNSW.js';
-import { computeCosineDistance } from '../../src/toolBox/base/forMath/forGeometry/forVectors/forDistance.js';
+import { calculateImageGridCells } from "../../src/toolBox/feature/forCanvas/useCanvasLayout.js";
+import { computeImageAverageColorLAB } from "../../src/toolBox/feature/forColor/useColorExtraction.js";
+import { computeCosineDistance } from '../../src/toolBox/base/math/forDistance.js';
+import { computeInnerProduct } from "../../src/toolBox/base/math/forDistance.js";
+import { computeMinkowskiDistance } from "../../src/toolBox/base/math/forDistance.js";
 
 /**
  * 向量相似度计算测试

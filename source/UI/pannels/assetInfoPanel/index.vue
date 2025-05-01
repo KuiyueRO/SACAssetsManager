@@ -3,6 +3,6 @@
   这个文件解决了面板自动化构建过程中的路径问题
 -->
 <script>
-import AssestInfoPanel from './assestInfoPanel.vue';
-export default AssestInfoPanel;
+import AssetInfoPanel from './assetInfoPanel.vue';
+export default AssetInfoPanel;
 </script> 

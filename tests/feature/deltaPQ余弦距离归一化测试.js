@@ -9,7 +9,7 @@
  */
 
 import { createDeltaPQ, DISTANCE_METRICS } from '../../src/toolBox/feature/forVectorEmbedding/useDeltaPQHNSW/useCustomedDeltaPQ.js';
-import { computeCosineDistance } from '../../src/toolBox/base/forMath/forGeometry/forVectors/forDistance.js';
+import { computeCosineDistance } from '../../src/toolBox/base/math/forDistance.js';
 
 /**
  * 生成随机向量（非归一化）

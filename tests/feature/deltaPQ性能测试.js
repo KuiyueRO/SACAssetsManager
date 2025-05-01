@@ -16,7 +16,11 @@
  */
 
 import { createDeltaPQ, createDeltaPQIndex, DISTANCE_METRICS } from '../../src/toolBox/feature/forVectorEmbedding/useDeltaPQHNSW/useCustomedDeltaPQ.js';
-import { computeCosineDistance, computeEuclideanDistance } from '../../src/toolBox/base/forMath/forGeometry/forVectors/forDistance.js';
+import { computeCosineDistance, computeEuclideanDistance } from '../../src/toolBox/base/math/forDistance.js';
+import { generateFloatVectors, measureExecutionTime, compareVectors, generateBinaryVectors } from "./utils.js";
+import { createHNSWIndex } from '../../src/toolBox/feature/forVectorEmbedding/useDeltaPQHNSW/useCustomedHNSW.js';
+
+const { DeltaPQ } = await import("../../src/toolBox/feature/forVectorEmbedding/useDeltaPQHNSW/useDeltaPQ.js");
 
 // 测试参数
 const TEST_PARAMS = {

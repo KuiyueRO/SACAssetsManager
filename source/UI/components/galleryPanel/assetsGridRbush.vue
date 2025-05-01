@@ -28,7 +28,7 @@
     </div>
 </template>
 <script setup>
-import { 表格视图阈值 } from "../../utils/layoutConstants.js";
+import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '../../utils/layoutConstants.js';
 import {
     ref,
     onMounted,
@@ -376,7 +376,7 @@ onUnmounted(() => {
 /**
  * 计算布局使用的列宽和边距
  */
-import { computeMasonryLayoutMetrics } from "../../../../src/toolBox/base/useMath/geometry/computeMasonryLayoutMetrics.js";
+import { computeMasonryLayoutMetrics } from "../../../../src/toolBox/base/math/computeMasonryLayoutMetrics.js";
 const 计算列数和边距 = (width) => {
     const result = computeMasonryLayoutMetrics(width, size.value, 表格视图阈值);
     columnCount.value = result.columnCount;

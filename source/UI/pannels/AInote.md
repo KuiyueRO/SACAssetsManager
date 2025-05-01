@@ -51,4 +51,24 @@
 
 1. 所有Tab通信都通过中央事件总线，避免直接引用
 2. 采用单向数据流，保持组件解耦
-3. 提供合理的错误处理和降级机制 
+3. 提供合理的错误处理和降级机制
+
+---
+
+# AI 笔记 - UI 面板 (pannels)
+
+## 历史记录与重要变更
+
+*   **2024-07-31 (织):**
+    *   开始审查 `assetInfoPanel` 面板。
+    *   修正了 `assetInfoPanel.vue` 和 `assetInfoPanel.js` 的文件名拼写错误。
+    *   移除了 `assetInfoPanel` 目录下已废弃的兼容层垫片 `assetLabelUtils.js` 和 `fileUtils.js`。
+    *   将 `assetInfoPanel.js` 中通用的数组去重函数 `清理重复元素` 迁移到 `src/toolBox/base/useEcma/forArray/computeArraySets.js`，并更新了 `assetInfoPanel.js` 的导入。
+    *   修复了 `assetInfoPanel/index.vue` 中对主组件 `assetInfoPanel.vue` 的导入路径错误 (因之前文件名修正导致)。
+    *   修复了 `assetInfoPanel.vue` 中对 Eagle 元数据搜集函数 (`搜集eagle元数据`) 的导入路径错误，改为引用 `src/toolBox/feature/forEagleFs/fromEagleFs.js` 中的 `fromEagleFs_findMetadataFiles` 函数。
+    *   修复了 `assetInfoPanel.vue` 中对获取素材笔记信息函数 (`获取数组中素材所在笔记`) 的导入路径错误，改为引用 `src/toolBox/useAge/forSiyuan/fromSiyuanData/fromSiyuanData.js` 中的 `fromSiyuan_getAssetNotesByPaths` 函数。
+
+## 面板列表与状态
+
+*   `assetInfoPanel`: 资产信息展示与编辑面板 (正在审查与重构中)
+*   ... 

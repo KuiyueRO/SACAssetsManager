@@ -113,4 +113,18 @@ const library = await iframeLoader(
   'libraryName',          // 库在window对象上的名称
   'globalSymbolName'      // 可选：用于全局存储的Symbol名
 );
-``` 
+```
+
+// 示例：使用基础工具
+import { 深拷贝 } from './useEcma/forObject/deepClone.js';
+import { 防抖 } from './useEcma/forFunctions/debounce.js';
+import { 节流 } from './useEcma/forFunctions/throttle.js';
+
+const originalObj = { a: 1, b: { c: 2 } };
+const copiedObj = 深拷贝(originalObj);
+
+const debouncedFunc = 防抖(() => console.log('Debounced!'), 300);
+document.addEventListener('scroll', debouncedFunc);
+
+const throttledFunc = 节流(() => console.log('Throttled!'), 100);
+window.addEventListener('resize', throttledFunc); 

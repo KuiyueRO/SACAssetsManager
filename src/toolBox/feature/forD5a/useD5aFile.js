@@ -3,8 +3,8 @@
  * 依赖 Node.js 环境 (fs, path) 和封装的 ZIP 工具。
  */
 
-// 从 base/usePlatform 导入 ZIP 和 FS 工具
-import { addFileToZip, saveBufferToFile, extractFileFromZip, hasEntryInZip } from '../../base/usePlatform/forNode/forZipUtils.js';
+// 从 base/platform 导入 ZIP 和 FS 工具
+import { addFileToZip, saveBufferToFile, extractFileFromZip, hasEntryInZip } from '../../base/platform/node/forZipUtils.js';
 // 不再需要直接导入 useJsZipDep 或 require('jszip')
 
 // 延迟加载 Node.js 模块 (仅保留 fs 和 path, 因为 forZipUtils 内部处理了 JSZip)

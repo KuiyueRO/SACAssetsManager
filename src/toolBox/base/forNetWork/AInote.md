@@ -34,4 +34,8 @@
 
 ### 2024-07-28 (织)
 - 创建 `forAuthHeaders.js` 文件，用于提供通用的创建认证请求头的函数 `createAuthHeaders`。
-- 该函数源自 `source/fromThirdParty/siyuanKernel/utils/fetchUtils.js` 中的 `getAuthHeaders`，并进行了通用化改造。 
+- 该函数源自 `source/fromThirdParty/siyuanKernel/utils/fetchUtils.js` 中的 `getAuthHeaders`，并进行了通用化改造。
+
+### 2024-07-29 (织)
+- 在 `base/deps/node/` 下创建 `http.js` 转发模块。
+- 修改 `forPort/forPortAvailability.js`，使其通过新创建的 `deps/node/http.js` 导入 `http` 模块，遵循全局依赖引用规范。 

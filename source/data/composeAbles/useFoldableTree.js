@@ -1,4 +1,4 @@
-import { ref } from "../../fromDeps/useVue/index.js"
+import { ref } from "../../../src/toolBox/base/deps/vue/vueReactivity.js"
 
 export function useFoldableTree(levels = []) {
     // 添加初始状态参数

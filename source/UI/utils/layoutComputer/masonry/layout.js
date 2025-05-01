@@ -1,4 +1,12 @@
-import Rbush from '../../../../../static/rbush.js';
+import {
+    Rbush,
+    createRbushTree,
+    insertIntoRbush,
+    removeFromRbush,
+    loadIntoRbush,
+    searchRbush,
+    clearRbush
+} from '../../../../../src/toolBox/base/useGeometry/forSpatialIndex/forRbush.js';
 import { 定长执行 } from '../../../../../src/toolBox/base/useEcma/forFunctions/forIteration.js';
 export function 二分查找可见素材(位置序列, 查找起点, 窗口高度) {
     let 当前起始索引 = 0;
@@ -48,6 +56,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
     // 设置定时器来处理更新
     let updateTimer = null;
     let timeStep = 30
+    const tree = createRbushTree();
     // 初始化列
     for (let i = 0; i < columnCount; i++) {
         columns.push({ x: i * (columnWidth + gutter), y: 0, items: [] });
@@ -87,7 +96,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
         layout.push(item);
         item.index = layout.length - 1
         // 插入到 Rbush
-        staticSize && tree.insert(item);
+        staticSize && insertIntoRbush(tree, item);
     }
     // 更新数据高度的方法
     function processUpdates() {
@@ -166,7 +175,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
             const oldHeight = item.height;
             const heightDifference = parseInt(request.newHeight) - oldHeight;
 
-            staticSize && tree.remove(item);
+            staticSize && removeFromRbush(tree, item);
             item.height = request.newHeight;
             item.maxY = item.y + item.height;
             let columnIndex = item.columnIndex;
@@ -191,7 +200,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
             });
 
             // 重新插入到 Rbush
-            staticSize && tree.insert(item);
+            staticSize && insertIntoRbush(tree, item);
         });
 
         updateRequests.clear(); // 清空更新请求
@@ -207,7 +216,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
         const heightDifference = parseInt(newHeight) - oldHeight;
         if (index >= 0 && index < layout.length) {
             const item = layout[index];
-            staticSize && tree.remove(item)
+            staticSize && removeFromRbush(tree, item)
             item.height = newHeight;
             item.maxY = item.y + item.height;
             let columnIndex = item.columnIndex;
@@ -230,7 +239,7 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
                 timestamp: Date.now() // 记录更新的时间戳
             });
             // 重新插入到 Rbush
-            staticSize && tree.insert(item)
+            staticSize && insertIntoRbush(tree, item)
 
             // 如果定时器未设置，设置一个定时器来处理更新
             if (layout.length <= 5000) {
@@ -252,9 +261,9 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
     function batchUpdateIndex() {
         const updates = Array.from(pendingUpdates);
         updates.forEach(
-            item => tree.remove(item)
+            item => removeFromRbush(tree, item)
         )
-        tree.load(updates)
+        loadIntoRbush(tree, updates)
         pendingUpdates.clear()
     }
     function sort(sorter) {
@@ -268,9 +277,10 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
     }
     function rebuild(columnCount, columnWidth, gutter, datas, reactive) {
         const newLayoutObj = 创建瀑布流布局(columnCount, columnWidth, gutter, [], reactive, staticSize)
+        // 清空现有布局和 R-tree
+        clearRbush(tree);
         layout.forEach(
             item => {
-
                 newLayoutObj.add(item.data, item.height, item.width, item.selected)
             }
         )
@@ -313,17 +323,14 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
         return result;
     }
 
-
-    let tree = new Rbush()
     function searchByRect(可见框) {
         if (updatedFromLastSearch) {
-            tree = new Rbush()
-            tree.load(layout)
-
+            clearRbush(tree);
+            loadIntoRbush(tree, layout);
             updatedFromLastSearch = false
         }
 
-        let result = tree.search(可见框)
+        let result = searchRbush(tree, 可见框)
         return result
     }
     return {
@@ -333,7 +340,6 @@ export function 创建瀑布流布局(columnCount, columnWidth, gutter, datas, r
         add: add,
         update: (...args) => update(...args),
         rebuild: rebuild,
-        //这里会有this指向问题
         search: (...args) => search(...args),
         searchByRect,
         timeStep,

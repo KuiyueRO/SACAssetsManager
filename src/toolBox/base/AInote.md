@@ -165,6 +165,10 @@ const myLibrary = await iframeLoader(
     *   将 `base/useVue` 移动/合并到 `feature/useVue`。
     *   检查 `base/forMime` 和 `base/useMime` 内容，合并功能到 `forMime`，删除 `useMime`。
     *   将 `base/forNetWork` 重命名为 `base/forNetwork`。
+    *   **[完成 @ 2024-07-29]** 合并 `base/useMath` 和 `base/forMath` 到新的 `base/math` 目录，并移除旧目录及内部的聚合导出文件。
+    *   **[完成 @ 2024-07-29]** 将 `base/forMime` 重命名为 `base/mime`。空的 `base/useMime` 已由用户删除。根据用户指示，暂时保留 `mime/mimeExports.js`。
+    *   **[完成 @ 2024-07-29]** 确认 `base/version` 目录功能覆盖 `base/forVersion` 后，删除 `base/forVersion` 目录（或确认已自动删除）并删除 `base/version/index.js`。
+    *   **[完成 @ 2024-07-29]** 整合平台相关目录：将 `base/platform/node`, `base/usePlatform/forNode`, `base/useNode` 合并到 `base/platform/node`；将 `base/usePlatform/forElectron`, `base/useElectron` 合并到新建的 `base/platform/electron`；删除 `base/usePlatform`, `base/useNode`, `base/useElectron` 及 `base/usePlatform/usePlatformExports.js`。
 2.  **后续探查:**
     *   `useUtils`, `useNative`, `useModules`, `forUI` 的具体内容和代码，明确其归属。
     *   评估上面列出的"潜在可移入 `base`"的模块，确认是否适合移入。 

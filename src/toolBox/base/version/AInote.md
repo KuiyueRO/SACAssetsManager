@@ -6,4 +6,8 @@
 
 此目录包含用于处理语义化版本（Semantic Versioning, SemVer）的函数。
 主要功能包括版本解析、比较、范围检查和操作。
-代码已从旧的 `utils/useAges/forVersionCompare/useIownSemver.js` 迁移并拆分。 
+代码已从旧的 `utils/useAges/forVersionCompare/useIownSemver.js` 迁移并拆分。
+
+**结构调整 (2024-07-29):**
+- 确认此目录功能已覆盖 `src/toolBox/base/forVersion` 目录。
+- 删除了本目录下的聚合导出文件 `index.js`，调用方应直接从各 `compute*.js` 或 `use*.js` 文件导入所需函数。 

@@ -17,6 +17,11 @@
 
 ## 历史记录
 
+### 2024-07-29 (织)
+- 删除了 `index.js` 文件。
+    - **原因:** 该文件仅作为桶文件重新导出其他模块，且使用了不规范的 `export *`，与提倡直接从源文件导入的原则相悖。
+    - **影响:** 所有对此目录功能的导入，**必须**直接指向 `fetchWorkerTools.js` 或 `fetchSyncTools.js`。
+
 ### 2024-07-28 (织)
 - 创建 `forFetchHelpers.js` 文件。
 - 从 `source/fromThirdParty/siyuanKernel/utils/fetchUtils.js` 迁移 `fetchWithTimeout` 函数至 `forFetchHelpers.js`，并重命名为 `forFetchWithTimeout`。 

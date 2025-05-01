@@ -193,24 +193,24 @@ export const joinPath = 组合路径;
 export const normalizePath = 标准化路径;
 export const validateFilePath = isValidFilePath;
 
-// 默认导出
-export default {
-  获取文件名,
-  获取文件扩展名,
-  获取无扩展名文件名,
-  获取文件目录,
-  获取文件格式描述,
-  生成文件列表描述,
-  组合路径,
-  标准化路径,
-  isValidFilePath,
-  getFileName,
-  getFileExtension,
-  getBaseName,
-  getDirName,
-  getFileFormats,
-  generateFileListLabel,
-  joinPath,
-  normalizePath,
-  validateFilePath
-}; 
+// 默认导出 - 已移除，请使用命名导出
+// export default {
+//   获取文件名,
+//   获取文件扩展名,
+//   获取无扩展名文件名,
+//   获取文件目录,
+//   获取文件格式描述,
+//   生成文件列表描述,
+//   组合路径,
+//   标准化路径,
+//   isValidFilePath,
+//   getFileName,
+//   getFileExtension,
+//   getBaseName,
+//   getDirName,
+//   getFileFormats,
+//   generateFileListLabel,
+//   joinPath,
+//   normalizePath,
+//   validateFilePath
+// }; 

@@ -2,7 +2,15 @@
  * @fileoverview 提供了创建和管理瀑布流布局的核心功能。
  * 使用 Rbush.js 进行空间索引优化查询。
  */
-import Rbush from '../../../base/useDeps/thirdParty/rbush.js'; // 更新导入路径
+import {
+    Rbush, // 暂时保留原始导入，也许可以移除？
+    createRbushTree,
+    insertIntoRbush,
+    removeFromRbush,
+    searchRbush,
+    clearRbush,
+    loadIntoRbush // layout.js 中用到，这里也需要
+} from '../../../base/useGeometry/forSpatialIndex/forRbush.js';
 import { forExecuteWithFixedLength } from '../../../base/useTool/useRunner.js';
 
 /**
@@ -40,7 +48,7 @@ import { forExecuteWithFixedLength } from '../../../base/useTool/useRunner.js';
  */
 export function createMasonryLayout({ columnCount, gap, reactive, initialItems = [] }) {
   const columns = reactive ? reactive(Array.from({ length: columnCount }, () => ({ height: 0, items: [] }))) : Array.from({ length: columnCount }, () => ({ height: 0, items: [] }));
-  const tree = new Rbush();
+  const tree = createRbushTree(); // 使用辅助函数创建
   let allItems = reactive ? reactive([]) : []; // Store all items for easier access by ID
 
   const getItemColumnIndex = (item) => {
@@ -80,14 +88,12 @@ export function createMasonryLayout({ columnCount, gap, reactive, initialItems =
     const shortestColumnIndex = findShortestColumnIndex();
     const column = columns[shortestColumnIndex];
     const position = calculateItemPosition(item, shortestColumnIndex);
-
     const layoutItem = reactive ? reactive({ ...item, ...position }) : { ...item, ...position };
-
     column.items.push(layoutItem);
     column.height += (item.height || 0) + gap; // Add gap after adding item height
     allItems.push(layoutItem);
     if (item.height) { // Only insert into Rbush if height is known
-        tree.insert(layoutItem);
+        insertIntoRbush(tree, layoutItem); // 使用辅助函数插入
     }
   };
 
@@ -111,30 +117,22 @@ export function createMasonryLayout({ columnCount, gap, reactive, initialItems =
          item.height = newHeight;
          item.maxY = item.minY + newHeight;
 
-
          // Update Rbush entry
-         try {
-           tree.remove(item, (a, b) => a.id === b.id); // Use predicate for removal
-         } catch (e) {
-             // console.warn(`Failed to remove item ${itemId} from tree, might not exist yet.`, e);
-             // It might not have been added if height was initially unknown
-         }
-         if(newHeight > 0) { // Only re-insert if height is valid
-             tree.insert(item);
-         }
+         // 使用辅助函数移除，注意 predicate
+         removeFromRbush(tree, item, (a, b) => a.id === b.id);
 
+         if(newHeight > 0) { // Only re-insert if height is valid
+             insertIntoRbush(tree, item); // 使用辅助函数插入
+         }
 
          // Update heights of subsequent items in the same column
          for (let j = itemIndex + 1; j < column.items.length; j++) {
            const subsequentItem = column.items[j];
            subsequentItem.minY += heightDifference;
            subsequentItem.maxY += heightDifference;
-           try {
-                tree.remove(subsequentItem, (a,b) => a.id === b.id);
-           } catch(e) {
-               // console.warn("Error removing subsequent item during height update", e)
-           }
-            if (subsequentItem.height > 0) tree.insert(subsequentItem); // Re-insert with updated position
+           // 使用辅助函数移除，注意 predicate
+           removeFromRbush(tree, subsequentItem, (a,b) => a.id === b.id);
+           if (subsequentItem.height > 0) insertIntoRbush(tree, subsequentItem); // 使用辅助函数插入
          }
 
          // Update column height
@@ -164,7 +162,7 @@ export function createMasonryLayout({ columnCount, gap, reactive, initialItems =
        // 提取所有项目，并根据 index 排序
        const sortedItems = [...allItems].sort((a, b) => (a.index ?? Infinity) - (b.index ?? Infinity));
        // 清空现有布局和 R-tree
-       tree.clear();
+       clearRbush(tree); // 使用辅助函数清空
        allItems.splice(0, allItems.length); // Clear the reactive array if applicable
        columns.forEach(col => {
            col.height = 0;
@@ -175,7 +173,8 @@ export function createMasonryLayout({ columnCount, gap, reactive, initialItems =
    };
 
   const search = (minX, minY, maxX, maxY) => {
-    return tree.search({ minX, minY, maxX, maxY });
+    // 使用辅助函数搜索
+    return searchRbush(tree, { minX, minY, maxX, maxY });
   };
 
   const rebuildLayout = (newColumnCount) => {
@@ -183,7 +182,7 @@ export function createMasonryLayout({ columnCount, gap, reactive, initialItems =
     columnCount = newColumnCount; // Update column count
 
     // Clear existing state
-    tree.clear();
+    clearRbush(tree); // 使用辅助函数清空
     allItems.splice(0, allItems.length);
     columns.splice(0, columns.length, ...Array.from({ length: columnCount }, () => ({ height: 0, items: [] })));
      if (reactive) {

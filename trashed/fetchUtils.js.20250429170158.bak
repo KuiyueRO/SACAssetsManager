@@ -1,3 +1,14 @@
+/**
+ * @deprecated 2024-07-30 (织)
+ * 原因：此文件中的 getAuthHeaders 函数包含具体应用逻辑（从 localStorage 获取 token，使用 "Token ..." 格式），
+ *      与 toolBox 的通用性、去耦合原则不符。
+ * 替代方案：
+ * 1. 设置请求头的基础能力由 `toolBox/base/forNetWork/forFetch/useFetch.js` 的 `options.headers` 参数提供。
+ * 2. 获取认证 token 并组装 Authorization 头的具体逻辑，应由调用 useFetch 的业务代码负责，
+ *    而不是封装在通用工具箱内。
+ * 此文件功能已由更优方式覆盖，保留备份仅供参考。
+ */
+
 const TIMEOUT = 30000;
 
 /**

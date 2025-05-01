@@ -548,7 +548,6 @@ const sorter = ref({
         return -(a.data.mtimeMs - b.data.mtimeMs)
     }
 })
-import { computeMasonryLayoutMetrics } from '../../../src/toolBox/base/useMath/geometry/computeMasonryLayoutMetrics.js';
 const openMenu = (event) => {
     let assets = currentLayout.value.layout.filter(item => item.selected).map(item => item.data).filter(item => item)
     打开附件组菜单(event, assets, {

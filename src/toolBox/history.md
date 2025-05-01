@@ -520,3 +520,37 @@ _此文件记录工具箱详细的重构历史和阶段性总结。关于当前�
    - 马氏距离计算
    - KL散度和JS散度
    - 地理距离计算函数
+
+---
+
+## 网络处理工具迁移状态 (来自 AInote)
+
+以下是 `source` 目录中网络处理相关通用代码的迁移状态总结：
+
+### 已完成迁移
+- `source/data/fetchStream.js` → `src/toolBox/feature/networkingUtils/streamProcessors.js`
+  - *说明:* 对流式JSON数据处理的功能已被现代化、规范化并移至工具箱。
+- `source/data/utils/streamHandler.js` → `src/toolBox/feature/networkingUtils/streamHandlers.js`
+  - *说明:* 将类转换为函数式风格，提供更灵活的数据流处理API。
+- `source/server/processors/streams/fileList2Stats.js` → `src/toolBox/feature/forFileSystem/forFileListProcessing.js`
+  - *说明:* 重构为纯函数风格，提供文件列表到状态转换的功能。
+- `source/server/processors/streams/withFilter.js` → `src/toolBox/feature/forStreamProcessing/streamFilters.js`
+  - *说明:* 重构为纯函数风格，提供通用的流过滤器构建功能。
+
+### 引用更新状态
+- 已更新 `source/server/handlers/stream-glob.js` 使用新的工具箱函数。
+- 已为原始位置的文件创建兼容层重定向，确保现有代码不会中断。
+
+### 清理计划 (兼容层移除)
+为了确保代码库整洁和易于维护，计划在以下时间节点逐步移除兼容层：
+
+1.  **第一阶段（当前）**：保留兼容层，但添加弃用警告。鼓励新代码直接使用工具箱中的函数。
+2.  **第二阶段（预计 2024年9月）**：扫描项目中所有直接引用旧路径的代码，更新为新路径。收集兼容层使用情况的数据（通过警告日志）。
+3.  **第三阶段（预计 2024年10月）**：完全移除兼容层。检查并修复任何引用错误。
+
+### 后续工作
+- 优化新创建的模块之间的互操作性。
+- 添加更多单元测试确保功能正确性。
+- 继续扫描项目中对旧文件路径的引用，主动更新。
+
+*注：所有迁移工作遵循 toolBox 的架构规范，保持清晰的代码组织结构和职责划分。*

@@ -80,4 +80,14 @@ import { Vue组件挂载 } from '../toolBox/feature/useVue/vueTools.js';
 - `useXXX/` - 提供特定技术栈或框架的集成工具
 - `forXXX/` - 提供针对特定领域的功能工具
 
-文件命名应该反映其功能，避免使用无语义的名称如index.js或main.js。 
+文件命名应该反映其功能，避免使用无语义的名称如index.js或main.js。
+
+```javascript
+// 示例：使用图像处理特性
+import { 图像缩放, 图像裁剪 } from './useImage/imageToolBox.js'; // 指向具体实现
+
+async function handleImage(imageBlob) {
+    const resizedImage = await 图像缩放(imageBlob, { width: 500 });
+    const croppedImage = await 图像裁剪(resizedImage, { x: 0, y: 0, width: 100, height: 100 });
+    return croppedImage;
+} 

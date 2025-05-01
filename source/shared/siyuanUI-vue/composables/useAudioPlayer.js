@@ -1,4 +1,5 @@
-import { ref, computed, watch, onBeforeUnmount, shallowRef } from '../../../fromDeps/useVue/index.js';
+import { ref, computed, watch, shallowRef } from '../../../src/toolBox/base/deps/vue/vueReactivity.js';
+import { onBeforeUnmount } from '../../../static/vue.esm-browser.js';
 import { createLogger } from './logger.js';
 
 /**

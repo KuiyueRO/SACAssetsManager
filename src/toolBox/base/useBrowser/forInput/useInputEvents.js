@@ -4,6 +4,8 @@
  * 包括键盘、输入法、触摸等事件的处理
  */
 
+import { debounce } from '../../useEcma/forFunctions/forDebounce.js'; // 导入标准 debounce
+
 // 物理事件分组
 export const PHYSICAL_EVENTS = {
     // 键盘物理事件
@@ -278,15 +280,8 @@ export const useInputWithIME = (callback) => {
  */
 export const useDebounceInput = (callback, delay = 300) => {
     if (typeof callback !== 'function') return () => {};
-    
-    let timeout = null;
-    
-    return (event) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            callback(event);
-        }, delay);
-    };
+    // 直接使用导入的标准 debounce 函数
+    return debounce(callback, delay);
 };
 
 /**

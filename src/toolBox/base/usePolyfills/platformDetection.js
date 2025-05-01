@@ -1,4 +1,4 @@
-import UAParser from 'ua-parser-js'
+import { UAParser } from '../deps/npm/ua-parser-js.js'
 
 /**
  * 统一的平台检测接口

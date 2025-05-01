@@ -1,6 +1,29 @@
 # 这个区段由开发者编写,未经允许禁止AI修改
 
-# AI 笔记
+**职责范围 (Scope):** 提供 UI 层通用的辅助函数，与具体业务逻辑解耦。
+
+**所属层级:** UI (`source/UI/utils`)
+
+**准入标准 (Criteria):
+- 必须是多个 UI 组件或面板可能复用的逻辑。
+- 优先封装纯函数或与 UI 框架无关的逻辑。
+- 可以依赖 `src/toolBox` 中的 `base` 层或 `feature` 层工具。
+- **禁止**包含特定面板或组件的业务逻辑。
+- **命名规范:** 必须遵循项目 `GUIDELINES.md` 中定义的函数命名规范和 "流畅优美的文式编程风格" 核心要求。
+
+**架构总纲:** [`../../../architecture_layers_explained.md`](../../../architecture_layers_explained.md)
+
+---
+
+# AI 笔记 - UI 通用工具 (utils)
+
+## 历史记录与重要变更
+
+*   **2024-07-31 (织):**
+    *   创建 `formatDisplayUtils.js` 文件，用于统一管理 UI 层的数据显示格式化函数。
+    *   将 `src/toolBox` 中的 `生成文件列表描述` 导入并重命名为 `formatFileListDescription` 导出，供 UI 组件使用，以降低耦合。
+    *   调整 `formatFileListDescription` 函数，使其在输入为空时返回 '无选择'，以匹配某些 UI 组件的期望行为。
+    *   在 `formatDisplayUtils.js` 中添加 TODO，提醒后续需要添加 `formatFileFormatDescription` 函数来处理文件格式显示。
 
 ## 文件依赖记录
 

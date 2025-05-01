@@ -249,6 +249,9 @@ DeltaPQ的召回率主要受以下因素影响：
 
 ## 性能调优指南
 
+**路径修复 (2024-07-29)**:
+- `向量嵌入测试.js`, `deltaPQ性能测试.js`, `deltaPQ召回率测试.js`, `deltaPQ余弦距离归一化测试.js` 中对 `forDistance.js` 的导入路径已从旧的 `src/toolBox/base/forMath/forGeometry/forVectors/` 更新为 `src/toolBox/base/math/`。
+
 ### 训练集优化
 
 - 训练集大小应不少于1000个向量

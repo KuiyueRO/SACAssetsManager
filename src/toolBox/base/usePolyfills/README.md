@@ -72,4 +72,21 @@ const parsedUA = 解析UA(customUA);
 - 用户代理检测应作为最后手段，优先使用特性检测
 - 考虑兼容性工具对整体包大小的影响，避免不必要的polyfill
 - 跟踪并更新对新平台和浏览器版本的支持
-- 兼容性工具应该设计为可选依赖，不应成为其他模块的硬依赖 
+- 兼容性工具应该设计为可选依赖，不应成为其他模块的硬依赖
+
+## 示例代码
+
+```javascript
+// 错误的做法：依赖全局状态或不易测试的函数
+// import { isMobile, osName } from './someGlobalStateModule';
+
+// 正确的做法：导入纯函数或明确依赖的工具
+import { 检测浏览器 } from './browserDetection.js'; // 直接从同目录导入
+import { 检测操作系统 } from './osDetection.js'; // 直接从同目录导入
+
+const browserInfo = 检测浏览器();
+const osInfo = 检测操作系统();
+
+console.log(`浏览器：${browserInfo.name} ${browserInfo.version}`);
+console.log(`操作系统：${osInfo.name} ${osInfo.version}`);
+```
