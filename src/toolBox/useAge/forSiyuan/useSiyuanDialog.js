@@ -7,6 +7,7 @@
 import { 检查思源环境 } from '../useSiyuan.js';
 import { confirmAsPromise, 创建输入对话框 as 基础创建输入对话框 } from '../../base/useEnv/siyuanDialog.js';
 import { clientApi } from '../../../../source/asyncModules.js';
+import { getDialogInterface } from '../../feature/interfaces/dialogInterfaces.js';
 
 // 检查环境
 if (!检查思源环境()) {
@@ -33,66 +34,66 @@ export const confirmPromise = confirmAsPromise;
  * @param {string} [选项.高度='auto'] - 对话框高度
  * @param {Function} [选项.确认回调] - 确认按钮回调函数
  * @param {Function} [选项.取消回调] - 取消按钮回调函数
- * @returns {Object} 对话框实例
+ * @returns {Promise<boolean>} 确认结果的Promise
  */
 export const 创建简单对话框 = ({ 标题, 内容, 宽度 = '520px', 高度 = 'auto', 确认回调, 取消回调 }) => {
-  if (!clientApi || !clientApi.Dialog) {
-    console.warn('思源API不可用，无法创建对话框');
-    return null;
-  }
+  const dialogInterface = getDialogInterface();
   
-  const dialog = new clientApi.Dialog({
+  return dialogInterface.custom({
+    type: 'confirm',
     title: 标题,
-    content: 内容,
+    message: 内容,
     width: 宽度,
-    height: 高度,
+    height: 高度
+  }).then(result => {
+    if (result) {
+      if (确认回调) 确认回调();
+    } else {
+      if (取消回调) 取消回调();
+    }
+    return result;
   });
-  
-  const btnsElement = document.createElement('div');
-  btnsElement.className = 'b3-dialog__action';
-  
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'b3-button b3-button--cancel';
-  cancelBtn.textContent = clientApi.languages?.cancel || '取消';
-  cancelBtn.addEventListener('click', () => {
-    if (取消回调) 取消回调();
-    dialog.destroy();
-  });
-  
-  const confirmBtn = document.createElement('button');
-  confirmBtn.className = 'b3-button';
-  confirmBtn.textContent = clientApi.languages?.confirm || '确认';
-  confirmBtn.addEventListener('click', () => {
-    if (确认回调) 确认回调();
-    dialog.destroy();
-  });
-  
-  btnsElement.appendChild(cancelBtn);
-  btnsElement.appendChild(confirmBtn);
-  dialog.element.querySelector('.b3-dialog__container').appendChild(btnsElement);
-  
-  return dialog;
 };
 
 /**
- * 以英文命名的版本
- * @param {Object} options
- * @param {string} options.title - 对话框标题
- * @param {string} options.content - 对话框HTML内容
- * @param {string} [options.width='520px'] - 对话框宽度
- * @param {string} [options.height='auto'] - 对话框高度
- * @param {Function} [options.confirmCallback] - 确认按钮回调函数
- * @param {Function} [options.cancelCallback] - 取消按钮回调函数
- * @returns {Object} 对话框实例
+ * 显示确认对话框
+ * @param {string} 标题 - 对话框标题
+ * @param {string} 内容 - 对话框内容
+ * @param {Function} [确认回调] - 确认按钮回调函数
+ * @param {Function} [取消回调] - 取消按钮回调函数
+ * @returns {Promise<boolean>} 确认结果的Promise
  */
-export const createSimpleDialog = ({ title, content, width = '520px', height = 'auto', confirmCallback, cancelCallback }) => {
-  return 创建简单对话框({
-    标题: title,
-    内容: content,
-    宽度: width,
-    高度: height,
-    确认回调: confirmCallback,
-    取消回调: cancelCallback
+export const 显示确认对话框 = (标题, 内容, 确认回调, 取消回调) => {
+  const dialogInterface = getDialogInterface();
+  
+  return dialogInterface.confirm(内容, 标题).then(result => {
+    if (result) {
+      if (确认回调) 确认回调();
+    } else {
+      if (取消回调) 取消回调();
+    }
+    return result;
+  });
+};
+
+/**
+ * 显示输入对话框
+ * @param {string} 标题 - 对话框标题
+ * @param {string} 提示文本 - 输入框提示
+ * @param {Function} 确认回调 - 确认回调，参数为输入内容
+ * @param {Function} [取消回调] - 取消回调
+ * @returns {Promise<string|null>} 输入内容的Promise
+ */
+export const 显示输入对话框 = (标题, 提示文本, 确认回调, 取消回调) => {
+  const dialogInterface = getDialogInterface();
+  
+  return dialogInterface.prompt(提示文本, '', 标题).then(result => {
+    if (result !== null) {
+      if (确认回调) 确认回调(result);
+    } else {
+      if (取消回调) 取消回调();
+    }
+    return result;
   });
 };
 

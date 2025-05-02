@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref, watch, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { clientApi } from "../../asyncModules.js";
+import { getDialogInterface } from '../../src/toolBox/feature/forUI/interfaces/baseDialogInterface.js';
 
 /**
  * VFloat组件是一个用于创建可浮动面板的通用组件
@@ -44,7 +44,10 @@ import { clientApi } from "../../asyncModules.js";
 // 组件属性定义
 const props = defineProps({
   // 是否处于浮动状态
-  isFloating: Boolean,
+  isFloating: {
+    type: Boolean,
+    default: false
+  },
   // 浮动窗口的标题
   title: {
     type: String,
@@ -63,12 +66,12 @@ const props = defineProps({
   // 浮动窗口的宽度
   width: {
     type: String,
-    default: '380px'
+    default: '500px'
   },
   // 浮动窗口的高度
   height: {
     type: String,
-    default: '520px'
+    default: 'auto'
   },
   // 是否使用透明背景（影响鼠标事件处理和关闭按钮样式）
   transparent: {
@@ -83,53 +86,41 @@ const emit = defineEmits(['close', 'update:isFloating']);
 // ===== 状态变量 =====
 
 // 浮动容器的唯一ID
-const floatContainerId = ref(`vfloat-container-${Date.now()}`);
+const floatContainerId = ref('');
 // Teleport的目标选择器，初始指向备用元素
-const teleportTarget = ref('#vfloat-dummy'); 
+const teleportTarget = ref('#vfloat-dummy');
 // 标记Teleport目标是否准备就绪
 const teleportReady = ref(false);
 // 对话框实例引用
 const dialog = ref(null);
 
 /**
- * 安全地设置Teleport目标
- * 确保选择器非空且在正确的Vue更新周期中设置
- * @param {string} selector - CSS选择器
+ * 设置Teleport的目标元素
+ * @param {string} target 目标选择器
  */
-const setTeleportTarget = (selector) => {
-  // 安全检查：如果选择器为空，使用备用目标
-  if (!selector || selector.trim() === '') {
-    teleportTarget.value = '#vfloat-dummy';
-    return;
-  }
-  
-  // 在下一个Vue更新周期中设置目标，确保DOM操作同步
-  nextTick(() => {
-    teleportTarget.value = selector;
-  });
+const setTeleportTarget = (target) => {
+  teleportTarget.value = target;
 };
 
 /**
  * 创建浮动对话框
- * 这是组件的核心函数，负责创建对话框并设置Teleport目标
+ * 使用思源API创建透明对话框并设置Teleport目标
  */
 const createFloatDialog = async () => {
-  // 首先禁用Teleport，防止在准备过程中出现错误
-  teleportReady.value = false;
-  
-  // 确保清理任何现有的对话框
-  await destroyDialog();
-  
   try {
     // 创建唯一ID以避免多个实例冲突
     const uniqueId = `vfloat-container-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     floatContainerId.value = uniqueId;
     
-    // 使用思源API创建对话框
-    const newDialog = new clientApi.Dialog({
+    // 获取对话框接口
+    const dialogInterface = getDialogInterface();
+    
+    // 使用接口创建对话框
+    const newDialog = await dialogInterface.custom({
+      type: 'custom',
       title: props.title,
       // 创建一个具有唯一ID的容器，作为Teleport的目标
-      content: `<div id="${uniqueId}" class="float-teleport-target" style="height: 100%; width: 100%;"></div>`,
+      message: `<div id="${uniqueId}" class="float-teleport-target" style="height: 100%; width: 100%;"></div>`,
       width: props.width,
       height: props.height,
       transparent: props.transparent,
@@ -256,7 +247,7 @@ const destroyDialog = async () => {
   // 步骤5: 最后销毁对话框
   if (dialog.value) {
     try {
-      dialog.value.destroy();
+      dialog.value.destroy && dialog.value.destroy();
     } catch (error) {
       console.error('销毁对话框失败:', error);
     }

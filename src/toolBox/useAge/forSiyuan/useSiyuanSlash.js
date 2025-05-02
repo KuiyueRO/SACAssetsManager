@@ -16,6 +16,7 @@
 import { 检查思源环境 } from '../useSiyuan.js';
 import { openDialog } from '../../../../source/UI/siyuanCommon/dialog/vueDialog.js';
 import { listLocalDisks, createDiskSelectionPanelHTML } from '../../feature/forFileSystem/diskTools.js';
+import { getDialogInterface } from '../../feature/interfaces/dialogInterfaces.js';
 
 /**
  * 处理对话框销毁后的操作
@@ -132,10 +133,7 @@ export const openDialogWithLocalPath = 使用本地路径打开对话框;
  * @param {Object} pluginInstance - 插件实例
  */
 export function 打开磁盘选择对话框(protyle, pluginInstance) {
-    检查思源环境();
-    
-    const clientApi = window.siyuan?.ws?.app?.plugins?.find(p => p.name === pluginInstance.name)?.data?.clientApi;
-    if (!clientApi) {
+    if (!window.siyuan?.clientApi) {
         console.error('无法获取客户端API');
         return;
     }
@@ -144,14 +142,16 @@ export function 打开磁盘选择对话框(protyle, pluginInstance) {
     listLocalDisks().then(disks => {
         const diskSelectionContent = createDiskSelectionPanelHTML(disks);
 
-        const dialog = new clientApi.Dialog({
+        // 使用对话框接口
+        const dialogInterface = getDialogInterface();
+        
+        const dialog = dialogInterface.custom({
+            type: 'custom',
             title: "选择磁盘",
-            content: diskSelectionContent,
+            message: diskSelectionContent,
             width: '320px',
             height: 'auto',
-            transparent: false,
-            disableClose: false,
-            disableAnimation: false,
+            transparent: false
         });
 
         // 设置磁盘点击事件
@@ -284,4 +284,61 @@ export function 设置插件斜杠菜单(pluginInstance) {
     });
 }
 
-export const setPluginSlashMenu = 设置插件斜杠菜单; 
+export const setPluginSlashMenu = 设置插件斜杠菜单;
+
+/**
+ * 显示人工智能配置对话框
+ * 
+ * @function 显示人工智能配置对话框
+ * @param {Object} clientApi - 客户端API
+ * @returns {Object} 对话框接口
+ */
+export function 显示人工智能配置对话框(clientApi) {
+  // 获取对话框接口
+  const dialogInterface = getDialogInterface();
+  
+  // 创建自定义对话框
+  return dialogInterface.custom({
+    type: 'custom',
+    title: '人工智能配置',
+    message: `
+      <div class="b3-dialog__content">
+        <div class="config-section">
+          <label class="config-label">AI 类型</label>
+          <select class="b3-select" id="ai-type-select">
+            <option value="openai">OpenAI (ChatGPT)</option>
+            <option value="deepai">DeepAI</option>
+            <option value="perplexity">Perplexity</option>
+            <option value="anthropic">Anthropic (Claude)</option>
+          </select>
+        </div>
+        <div class="config-section">
+          <label class="config-label">API密钥</label>
+          <input class="b3-text-field fn__block" id="ai-api-key" type="password" placeholder="输入API密钥">
+        </div>
+        <div class="config-section">
+          <label class="config-label">模型</label>
+          <select class="b3-select" id="ai-model-select">
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            <option value="gpt-4">GPT-4</option>
+            <option value="claude-instant-1">Claude Instant</option>
+            <option value="claude-2">Claude 2</option>
+          </select>
+        </div>
+        <div class="config-section">
+          <label class="config-label">温度 (0.0-2.0)</label>
+          <input class="b3-text-field fn__block" id="ai-temperature" type="number" min="0" max="2" step="0.1" value="0.7">
+        </div>
+        <div class="config-section">
+          <label class="config-label">上下文最大标记数</label>
+          <input class="b3-text-field fn__block" id="ai-max-tokens" type="number" min="100" max="8000" value="2000">
+        </div>
+      </div>
+      <div class="b3-dialog__action">
+        <button class="b3-button b3-button--cancel">取消</button>
+        <button class="b3-button b3-button--text">确认</button>
+      </div>
+    `,
+    width: '520px'
+  });
+} 

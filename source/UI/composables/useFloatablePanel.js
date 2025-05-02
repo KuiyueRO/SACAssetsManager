@@ -1,5 +1,5 @@
 import { ref, computed, watch, onMounted, onUnmounted } from '../../../static/vue.esm-browser.js';
-import { clientApi } from "../../asyncModules.js";
+import { getDialogInterface } from '../../../src/toolBox/feature/forUI/interfaces/baseDialogInterface.js';
 
 export function useFloatablePanel() {
   // 浮动状态
@@ -22,41 +22,43 @@ export function useFloatablePanel() {
   });
   
   // 创建浮动面板
-  const createFloatPanel = (content, title, componentURL, props = {}) => {
+  const createFloatPanel = async (content, title, componentURL, props = {}) => {
     if (isFloating.value && floatDialog.value) {
       closeFloatPanel();
     }
     
     floatingContent.value = content;
     
-    const dialog = new clientApi.Dialog({
+    // 获取对话框接口
+    const dialogInterface = getDialogInterface();
+    
+    // 创建唯一的容器ID
+    const containerId = `floatablePanel_${Date.now()}`;
+    
+    // 创建对话框
+    const dialog = await dialogInterface.custom({
+      type: 'custom',
       title: title || "SVG生成器",
-      content: `
-        <div id="floatablePanelContent" 
+      message: `
+        <div id="${containerId}" 
           class="floatable-content fn__flex-column" 
           style="pointer-events:auto;z-index:5;height:100%">
         </div>
       `,
       width: '380px',
-      height: '520px',
-      transparent: false,
-      disableClose: false,
-      disableAnimation: false,
+      height: '520px'
     });
     
-    // 对话框关闭时处理
-    dialog.element.querySelector(".b3-dialog__close").addEventListener('click', () => {
-      isFloating.value = false;
-      floatingContent.value = null;
-      floatDialog.value = null;
-      floatApp.value = null;
-    });
-    
-    // 设置样式
-    dialog.element.querySelector(".b3-dialog__header").style.padding = '8px 16px';
+    // 获取容器元素
+    const container = document.getElementById(containerId);
+    if (!container) {
+      console.error('找不到浮动面板容器元素');
+      return null;
+    }
     
     // 加载组件到浮动面板
-    import(componentURL).then(module => {
+    try {
+      const module = await import(componentURL);
       const app = Vue.createApp(module.default, {
         ...props,
         isFloating: true,
@@ -64,9 +66,11 @@ export function useFloatablePanel() {
           closeFloatPanel();
         }
       });
-      app.mount(dialog.element.querySelector(".floatable-content"));
+      app.mount(container);
       floatApp.value = app;
-    });
+    } catch (error) {
+      console.error('加载组件到浮动面板失败:', error);
+    }
     
     floatDialog.value = dialog;
     isFloating.value = true;
@@ -77,12 +81,19 @@ export function useFloatablePanel() {
   // 关闭浮动面板
   const closeFloatPanel = () => {
     if (floatDialog.value) {
-      floatDialog.value.destroy();
+      // 对于自定义对话框，可能需要调用特定的关闭方法
+      if (typeof floatDialog.value.destroy === 'function') {
+        floatDialog.value.destroy();
+      } else if (typeof floatDialog.value.close === 'function') {
+        floatDialog.value.close();
+      }
       floatDialog.value = null;
     }
     
     if (floatApp.value) {
-      floatApp.value.unmount();
+      if (typeof floatApp.value.unmount === 'function') {
+        floatApp.value.unmount();
+      }
       floatApp.value = null;
     }
     

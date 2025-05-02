@@ -1,5 +1,9 @@
 /**
  * 引入api等
+ * 这里的require使由思源的插件系统定制的require,跟项目中其它地方使用的require不同
+ * 它实际上在浏览器环境和思源的app环境(一个electron渲染进程)中都能使用
+ * 但是在app环境中,它混入了globalThis.require,所以可以用来引入其它依赖
+ * 在浏览器环境中它仅能用于引入思源的clientAPI
  */
 const { Plugin } = require("siyuan");
 const clientApi = require("siyuan");
@@ -197,6 +201,17 @@ module.exports = class SACAssetsManager extends Plugin {
       console.log('[SAC资源管理器] Yjs单一实例初始化完成');
     }).catch(err => {
       console.error('[SAC资源管理器] Yjs初始化失败:', err);
+    });
+    
+    // 注册思源笔记对话框接口
+    import(`${this.插件自身伺服地址}/source/UI/registerInterfaces.js`).then(module => {
+      // 初始化思源笔记客户端API
+      module.initSiyuanClientAPI(clientApi);
+      // 注册接口实现
+      module.registerAllInterfaces();
+      console.log('[SAC资源管理器] 已注册思源笔记对话框接口');
+    }).catch(err => {
+      console.error('[SAC资源管理器] 注册对话框接口失败:', err);
     });
     
     import(`${this.插件自身伺服地址}/source/index.js`)

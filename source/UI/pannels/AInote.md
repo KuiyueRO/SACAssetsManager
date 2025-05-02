@@ -59,6 +59,8 @@
 
 ## 历史记录与重要变更
 
+*   **YYYY-MM-DD (织):**
+    *   将 `source/UI/pannels/toolbox.vue` 迁移到 `source/UI/pannels/toolPanel/toolPanel.vue`，以符合面板组件的目录结构规范。
 *   **2024-07-31 (织):**
     *   开始审查 `assetInfoPanel` 面板。
     *   修正了 `assetInfoPanel.vue` 和 `assetInfoPanel.js` 的文件名拼写错误。

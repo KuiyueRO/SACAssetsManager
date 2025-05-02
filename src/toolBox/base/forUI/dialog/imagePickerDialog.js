@@ -4,9 +4,11 @@
  * 提供用于创建图像选择对话框的功能，支持键盘和鼠标选择图像。
  */
 
+import { getDialogInterface } from '../../../feature/forUI/interfaces/baseDialogInterface.js';
+
 /**
  * 打开图像选择对话框
- * @param {Object} clientApi 思源API客户端实例
+ * @param {Object} clientApi 思源API客户端实例（保留参数兼容性，实际不再使用）
  * @param {string} title 对话框标题
  * @param {Array<{src: string, label: string}>} images 图像列表，每项包含图像路径和标签
  * @param {string} tooltip 提示文本
@@ -15,52 +17,69 @@
  * @returns {Object} 对话框实例
  */
 export function openImagePickerDialog(clientApi, title, images, tooltip, confirm = () => {}, cancel = () => {}) {
-    if (!clientApi || !clientApi.Dialog) {
-        console.error('思源API未正确加载，无法创建对话框');
-        return null;
-    }
-
-    const dialog = new clientApi.Dialog({
-        title,
-        content: `<div class="b3-dialog__content">
-            <div class="image-selection fn__flex">
-                ${images.map((image, index) => `
-                    <div class="image-option fn__flex fn__flex-column">
-                        <div class="image-number">${index + 1}</div>
-                        <img src="${image.src}" alt="选项${index + 1}" class="selectable-image" data-index="${index}">
-                        <p>${image.label}</p>
-                    </div>
-                    <div class="fn__space"></div>
-                `).join('')}
-            </div>
-            <div class="fn__space"></div>
-            <div>${tooltip}</div>
+    // 获取对话框接口
+    const dialogInterface = getDialogInterface();
+    
+    // 构建HTML内容
+    const content = `<div class="b3-dialog__content">
+        <div class="image-selection fn__flex">
+            ${images.map((image, index) => `
+                <div class="image-option fn__flex fn__flex-column">
+                    <div class="image-number">${index + 1}</div>
+                    <img src="${image.src}" alt="选项${index + 1}" class="selectable-image" data-index="${index}">
+                    <p>${image.label}</p>
+                </div>
+                <div class="fn__space"></div>
+            `).join('')}
         </div>
-        <div class="b3-dialog__action">
-            <button class="b3-button b3-button--cancel">${window.siyuan?.languages?.cancel || '取消'}</button>
-        </div>`,
+        <div class="fn__space"></div>
+        <div>${tooltip}</div>
+    </div>
+    <div class="b3-dialog__action">
+        <button class="b3-button b3-button--cancel">${window.siyuan?.languages?.cancel || '取消'}</button>
+    </div>`;
+    
+    // 创建对话框
+    const dialog = dialogInterface.custom({
+        title,
+        message: content,
         width: "520px",
-        destroyCallback: () => { 
-            dialog.$result ? confirm(dialog.$result) : cancel(dialog);
-            document.removeEventListener('keydown', handleKeyPress);
-        }
+        type: 'custom'
     });
-
+    
+    // 创建一个包装器，模拟原来的对话框接口
+    const dialogWrapper = {
+        element: dialog.element,
+        $result: null,
+        destroy: () => {
+            if (dialogWrapper.$result) {
+                confirm(dialogWrapper.$result);
+            } else {
+                cancel(dialogWrapper);
+            }
+            // 移除事件监听器
+            document.removeEventListener('keydown', handleKeyPress);
+            
+            // 销毁对话框
+            dialog.destroy && dialog.destroy();
+        }
+    };
+    
     // 处理键盘事件
     function handleKeyPress(event) {
         const key = parseInt(event.key);
         if (!isNaN(key) && key > 0 && key <= images.length) {
             const selectedImage = dialog.element.querySelector(`.selectable-image[data-index="${key - 1}"]`);
             if (selectedImage) {
-                dialog.$result = {
+                dialogWrapper.$result = {
                     src: selectedImage.getAttribute('src'),
                     index: key - 1,
                     image: images[key - 1]
                 };
-                dialog.destroy();
+                dialogWrapper.destroy();
             }
         } else if (event.key === 'Escape') {
-            dialog.destroy();
+            dialogWrapper.destroy();
         }
     }
 
@@ -71,27 +90,27 @@ export function openImagePickerDialog(clientApi, title, images, tooltip, confirm
     imageElements.forEach(img => {
         img.addEventListener("click", () => {
             const index = parseInt(img.dataset.index);
-            dialog.$result = {
+            dialogWrapper.$result = {
                 src: img.getAttribute('src'),
                 index: index,
                 image: images[index]
             };
-            dialog.destroy();
+            dialogWrapper.destroy();
         });
     });
 
     // 处理取消按钮点击事件
     const cancelButton = dialog.element.querySelector(".b3-button--cancel");
     cancelButton.addEventListener("click", () => {
-        dialog.destroy();
+        dialogWrapper.destroy();
     });
 
-    return dialog;
+    return dialogWrapper;
 }
 
 /**
  * 以Promise方式打开图像选择对话框
- * @param {Object} clientApi 思源API客户端实例
+ * @param {Object} clientApi 思源API客户端实例（保留参数兼容性，实际不再使用）
  * @param {string} title 对话框标题
  * @param {Array<{src: string, label: string}>} images 图像列表，每项包含图像路径和标签
  * @param {string} tooltip 提示文本
