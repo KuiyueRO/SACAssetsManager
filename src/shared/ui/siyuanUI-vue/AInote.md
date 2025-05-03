@@ -68,4 +68,10 @@
 - 默认颜色设为 `--b3-theme-on-surface`，并使用 `currentColor` 继承父级颜色
 - 允许通过 `color` prop 直接设置图标颜色
 - 允许通过 `className` prop 添加自定义 CSS 类
-- 统一 Emoji 图标的大小与 SVG 图标 
+- 统一 Emoji 图标的大小与 SVG 图标
+
+*   **2025-05-03 (织):**
+    *   在 `components/SIcon.vue` 的 `.svg-icon--small` 样式中为 `--b3-icon-size-small` CSS 变量添加了 `1em` 作为备用值，以修复该变量未定义导致 `small` prop 失效的问题。
+
+*   **2024-04-27 (织):**
+    *   优化 `SIcon.vue` 组件，添加 `color` 和 `className` props。 

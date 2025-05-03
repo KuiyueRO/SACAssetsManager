@@ -32,12 +32,13 @@
 import { ref, computed, toRef, onMounted, onBeforeUnmount, defineEmits, nextTick, watch } from 'vue';
 import { thumbnail } from '../../../server/endPoints.js';
 import { fromRgbArrayToString } from '../../../../src/toolBox/base/forColor/formatColor.js';
-import { LAYOUT_COLUMN, LAYOUT_ROW } from '../../utils/layoutConstants.js';
+import { LAYOUT_COLUMN, LAYOUT_ROW } from '/plugins/SACAssetsManager/src/shared/utils/layoutConstants.js';
 import { 获取素材属性值, UNDEFINED_MARKER, 解析文件内部属性显示, 解析文件属性名标签 } from '../../../data/attributies/parseAttributies.js';
 import { findTagsByFilePath } from '../../../data/tags.js';
 import tagsCell from './assetCard/tagsCell.vue';
 import colorPalletCell from './assetCard/paletteCell.vue'
 import mainPreviewCell from './assetCard/mainPreviewCell.vue';
+import { 计算素材详情容器样式 } from '/plugins/SACAssetsManager/src/shared/assetStyles.js';
 const props = defineProps(['cardData', 'size',  'tableViewAttributes', 'displayMode'])
 const tableViewAttributes = toRef(props, 'tableViewAttributes')
 const displayMode = toRef(props, 'displayMode')
@@ -152,8 +153,6 @@ onBeforeUnmount(() => {
         }
     )
 });
-
-import { 计算素材详情容器样式 } from './assetStyles.js';
 
 const $计算素材详情容器样式 = computed(() => 计算素材详情容器样式(
     size.value, cardData

@@ -27,7 +27,7 @@
                         <div class="fn__flex disk-tiny" @dblclick="() => { openFolder(disk.name + '/') }"
                             @click.stop="toggleSUbFolders(disk.name + '/')">
                             <div>
-                                <SIcon class-name="block__logoicon" name="iconDatabase"></SIcon>
+                                <SIcon class-name="block__logoicon" name="iconDatabase" small></SIcon>
                             </div>
                             <DiskItem :disk="disk" />
                         </div>
@@ -49,7 +49,7 @@ import DiskItem from './DiskItem.vue';
 import FolderList from './FolderList.vue'
 import { listLocalDisks } from '../../../data/diskInfo.js';
 import { plugin } from 'runtime'
-import SIcon from '../../../../../../src/shared/ui/siyuanUI-vue/components/SIcon.vue';
+import SIcon from '/plugins/SACAssetsManager/src/shared/ui/siyuanUI-vue/components/SIcon.vue';
 const foldUp = ref(true)
 const diskInfos = ref([])
 const folderInfos = reactive([])

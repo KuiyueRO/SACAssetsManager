@@ -97,7 +97,7 @@ import { 过滤器中间件 } from './galleryPanel/middlewares/extensions.js';
 import { 创建带中间件的Push方法 } from "../../../src/toolBox/base/useEcma/forArray/push.js";
 import { 校验数据项扩展名, 解析数据模型, 根据数据配置获取数据到缓存, 构建遍历参数, useGlob, useExtensions } from "./galleryPanelData.js";
 import { 柯里化 } from "../../../src/toolBox/base/useEcma/forFunctions/forCurrying.js";
-import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '../utils/layoutConstants.js';
+import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '/plugins/SACAssetsManager/src/shared/utils/layoutConstants.js';
 import ColorPicker from './galleryPanel/colorPicker.vue'
 import Slider from './galleryPanel/toolbar/slider.vue'
 import { useAppData } from './galleryPanel/useAppData.js';

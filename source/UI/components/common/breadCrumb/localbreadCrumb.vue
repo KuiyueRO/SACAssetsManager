@@ -5,10 +5,10 @@
                 <breadCrumbItem icon="iconFolder" label="本地文件夹"></breadCrumbItem>
                 <span class="fn__space"></span>
                 <template v-for="(pathPttern, i) in localPathArray">
-                    <breadCrumbItem :icon="i === 0 ? '#iconDatabase' : '#iconFolder'" :label="pathPttern"
+                    <breadCrumbItem :icon="i === 0 ? 'iconDatabase' : 'iconFolder'" :label="pathPttern"
                         @click="() => { 打开本地资源视图(i) }"></breadCrumbItem>
                 </template>
-                <SIcon class="protyle-breadcrumb__arrow" name="iconRight"></SIcon>
+                <SIcon class-name="protyle-breadcrumb__arrow" name="iconRight" small></SIcon>
             </div>
             <span class="fn__space fn__flex-1 protyle-breadcrumb__space">
             </span>
@@ -43,7 +43,7 @@ import { plugin } from 'runtime'
 import { 打开文件夹图标菜单 } from '../../../siyuanCommon/menus/folderItem.js';
 import { fs } from '../../../../server/endPoints.js';
 import thumbnailGallery from '../thumbnailGalleryHori.vue'
-import SIcon from '../../../../../../src/shared/ui/siyuanUI-vue/components/SIcon.vue';
+import SIcon from '/plugins/SACAssetsManager/src/shared/ui/siyuanUI-vue/components/SIcon.vue';
 const IncludeSubfolders = ref(true)
 const emit = defineEmits(['globChange'])
 const 右键菜单 = (子文件夹信息, event) => {

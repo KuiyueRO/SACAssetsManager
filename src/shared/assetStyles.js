@@ -1,9 +1,10 @@
-import { px, per, em } from "../../../../src/toolBox/base/useCss/formatCssUnit.js"
-import { display, textOverflow, overflow, position, whiteSpace } from "../../../../src/toolBox/base/useCss/cssKeywords.js"
-import { cssVarProxy } from "../../../../src/toolBox/base/useCss/forCssVar.js"
-import { createChainableProxy } from "../../../../src/toolBox/base/useEcma/forObject/createChainableProxy.js"
-import { LAYOUT_ROW, getDisplayModeBySize, 表格视图阈值 } from "../../utils/layoutConstants.js"
-import { computeMaxWidthStyleBySize } from "../../utils/layoutConstants.js"
+import { px, per, em } from "../toolBox/base/useCss/formatCssUnit.js"
+import { display, textOverflow, overflow, position, whiteSpace } from "../toolBox/base/useCss/cssKeywords.js"
+import { cssVarProxy } from "../toolBox/base/useCss/forCssVar.js"
+import { createChainableProxy } from "../toolBox/base/useEcma/forObject/createChainableProxy.js"
+// TODO: 确认 layoutConstants.js 的最终位置并更新此路径
+import { LAYOUT_ROW, getDisplayModeBySize, 表格视图阈值 } from "./utils/layoutConstants.js" // 假设 layoutConstants 在 ./utils/ 下
+import { computeMaxWidthStyleBySize } from "./utils/layoutConstants.js" // 假设 layoutConstants 在 ./utils/ 下
 
 const 根据尺寸计算圆角 = (size) => {
     if (size > 表格视图阈值) {
@@ -111,4 +112,4 @@ export const 计算扩展名标签样式 = (displayMode, cardData, size) => {
 
 /**
  * 用于计算属性相关的一些数值
- */
+ */ 

@@ -47,7 +47,7 @@
 *   [ ] `assetCard.vue` (305行) -> **需要拆分?**
 *   [ ] `collectionPanel.vue` (197行) -> **面板, 暂缓**
 *   [ ] `NumberInput.vue` (20行) -> **已替换为 SNumberInput, 待删除/归档**
-*   [ ] `common/assetStyles.js` (115行) -> **样式脚本? 待分析**
+*   [x] `common/assetStyles.js` (115行) -> 已迁移至 `src/shared/assetStyles.js` (临时位置, 待移至 `ui/sacUI-vue/utils`)
 *   [ ] `common/assetsThumbnailCard.vue` (203行) -> **需要拆分?**
 *   [ ] `common/thumbnailGalleryHori.vue` (236行) -> **需要拆分?**
 *   [x] `common/echarts.vue` (107行) -> 已迁移至 `src/shared/ui/sacUI-vue/components/common/`
@@ -58,6 +58,16 @@
 
 *   [ ] `useFloatablePanel.js` (146行)
 
+**待处理列表 (来自 `source/UI/utils/`):**
+
+*   [x] `layoutConstants.js` (35行) -> 已迁移至 `src/shared/utils/`
+*   [ ] `formatDisplayUtils.js` (34行)
+*   [ ] `selection.js` (209行) -> **需要拆分?**
+*   [ ] `windowSetup.js` (71行)
+*   [ ] `drag.js` (89行)
+*   [ ] `scroll.js` (90行)
+*   [ ] `tumbnail.js` (8行)
+
 
 **路径映射 (旧 -> 新):**
 
@@ -67,6 +77,8 @@
 *   `source/UI/components/common/dropzone.vue` -> `src/shared/ui/sacUI-vue/components/common/dropzone.vue`
 *   `source/UI/components/common/dockSubPanelTitle.vue` -> `src/shared/ui/sacUI-vue/components/common/dockSubPanelTitle.vue`
 *   `source/UI/components/common/echarts.vue` -> `src/shared/ui/sacUI-vue/components/common/echarts.vue`
+*   `source/UI/components/common/assetStyles.js` -> `src/shared/assetStyles.js` (临时)
+*   `source/UI/utils/layoutConstants.js` -> `src/shared/utils/layoutConstants.js`
 
 ---
 

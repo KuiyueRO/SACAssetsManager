@@ -41,8 +41,8 @@
 import { computed, toRef, shallowRef, defineEmits, ref, onMounted, onBeforeUnmount } from 'vue';
 import { 文件系统工具 } from '../../componentUtils.js';
 const {格式化文件大小} =文件系统工具
-import { 计算素材缩略图样式, 计算扩展名标签样式 } from '../assetStyles.js';
-import { LAYOUT_COLUMN } from '../../../utils/layoutConstants.js';
+import { 计算素材缩略图样式, 计算扩展名标签样式 } from '/plugins/SACAssetsManager/src/shared/assetStyles.js';
+import { LAYOUT_COLUMN } from '/plugins/SACAssetsManager/src/shared/utils/layoutConstants.js';
 import { 获取素材属性值, 计算素材类型角标 } from '../../../../data/attributies/parseAttributies.js';
 import * as THREE from '../../../../../static/three/three.mjs';
 import { GLTFLoader } from '../../../../../static/three/addons/loaders/GLTFLoader.js'

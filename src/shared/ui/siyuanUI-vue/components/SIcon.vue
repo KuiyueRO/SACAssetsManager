@@ -56,8 +56,9 @@ const renderEmoji = computed(() => {
 }
 
 .svg-icon--small {
-  width: var(--b3-icon-size-small);
-  height: var(--b3-icon-size-small);
+  /* 如果 --b3-icon-size-small 未定义，则使用 1em 作为备用值 */
+  width: var(--b3-icon-size-small, 1em);
+  height: var(--b3-icon-size-small, 1em);
 }
 
 .svg-icon svg {

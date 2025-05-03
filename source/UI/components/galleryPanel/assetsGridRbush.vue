@@ -28,7 +28,7 @@
     </div>
 </template>
 <script setup>
-import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '../../utils/layoutConstants.js';
+import { LAYOUT_COLUMN, LAYOUT_ROW, getDisplayModeBySize as 根据尺寸获取显示模式, 表格视图阈值 } from '/plugins/SACAssetsManager/src/shared/utils/layoutConstants.js';
 import {
     ref,
     onMounted,
