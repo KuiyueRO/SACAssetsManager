@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { horizontalScroll } from '../../utils/scroll.js'
+import { horizontalScroll } from '../../utils/scroll.js' // 确认相对路径
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -201,35 +201,12 @@ const scrollToItem = (index) => {
 }
 
 .thumbnail-item--current {
-    border: 2px dashed var(--b3-theme-secondary, #666);
-    box-shadow: 0 0 3px var(--b3-theme-secondary, #666);
-}
-
-/* 当同时具有current和active状态时的样式 */
-.thumbnail-item--current.thumbnail-item--active {
-    border: 2px solid var(--b3-theme-primary);
-    outline: 2px dashed var(--b3-theme-secondary, #666);
+    /* 可以添加特定样式，例如不同的边框 */
+    outline: 2px solid var(--b3-theme-primary-light);
     outline-offset: 2px;
 }
 
-.thumbnail-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.thumbnail-item--bordered {
+    border: 1px ridge var(--b3-theme-primary);
 }
-
-.thumbnail-image--loading {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
-}
-
-/* 添加焦点样式 */
-.thumbnail-gallery:focus {
-    outline: 2px solid var(--b3-theme-primary);
-    outline-offset: 2px;
-}
-
-.thumbnail-item:focus {
-    outline: none; /* 移除默认的outline样式 */
-}
-</style>
+</style> 

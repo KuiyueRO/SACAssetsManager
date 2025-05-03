@@ -8,12 +8,12 @@
  * @author 织
  */
 
-import { registerDialogInterface } from '../../src/toolBox/feature/forUI/interfaces/baseDialogInterface.js';
-import { registerTaskControllerFactory } from '../../src/toolBox/feature/forUI/interfaces/taskControllerInterface.js';
+import { registerDialogInterface } from '../../../toolBox/feature/forUI/interfaces/baseDialogInterface.js';
+import { registerTaskControllerFactory } from '../../../toolBox/feature/forUI/interfaces/taskControllerInterface.js';
 import * as siyuanDialog from './dialog/siyuanDialog.js';
 import { validateDialogInterface } from './dialog/siyuanDialogValidator.js';
-import { clientApi } from '../asyncModules.js';
-import { registerSiyuanMenuImplementation } from '../../src/toolBox/feature/forUI/siyuanMenuImplementation.js';
+import { clientApi } from '/plugins/SACAssetsManager/source/asyncModules.js';
+import { registerSiyuanMenuImplementation } from '../../../toolBox/feature/forUI/siyuanMenuImplementation.js';
 
 /**
  * 注册各种接口实现

@@ -134,17 +134,19 @@ UI组件的渲染性能是重点关注领域：
 ## 重构日志
 
 *   **2025-05-03 (织):**
-    *   迁移 `common/dropzone.vue` (16行) 到 `src/shared/ui/sacUI-vue/components/common/`。
-    *   确认 `common/icons.js` 的 `commonIcon` 功能可被 `src/shared/ui/siyuanUI-vue/components/SIcon.vue` 完全替代。
-    *   将 `common/breadCrumb/localbreadCrumb.vue` 和 `fileSystem/diskInfosTiny.vue` 中对 `commonIcon` 的使用替换为 `SIcon`。
-    *   删除了 `common/icons.js` 文件。
+    *   迁移 `common/dropzone.vue` 到 `src/shared/ui/sacUI-vue/components/common/`。
+    *   确认 `common/icons.js` 功能可被 `SIcon.vue` 替代并完成替换。
+    *   删除了 `common/icons.js`。
     *   迁移 `utils/layoutConstants.js` 到 `src/shared/utils/`。
-    *   修正 `src/shared/assetStyles.js` 内部的 import 路径。
-    *   更新所有引用 `layoutConstants.js` 的组件路径为绝对插件 URL。
-    *   修复动态加载 `SIcon.vue` 时的路径问题，将引用路径改为绝对插件 URL。
-    *   修改 `breadCrumbItem.vue`，使用 `SIcon` 组件替代 `<img>` 标签来显示图标，使其能正确处理 SVG 图标引用。
-    *   修改 `localbreadCrumb.vue`，移除传递给 `breadCrumbItem` 的 `icon` prop 值中的 `#` 号，以适配 `SIcon` 的 `name` prop。
-    *   **修正:** 将 `breadCrumbItem.vue` 中用于显示文本的 prop 从 `name` 彻底改为 `label`，修复路径名称不显示的问题。
+    *   修正 `src/shared/assetStyles.js` 内部引用及所有外部引用路径。
+    *   修复动态加载 `SIcon.vue` 时的路径问题。
+    *   修复面包屑组件 (`breadCrumbItem.vue`, `localbreadCrumb.vue`) 图标和标签显示问题。
+    *   迁移 `utils/scroll.js` 到 `src/shared/ui/sacUI-vue/utils/`。
+    *   迁移 `components/common/thumbnailGalleryHori.vue` 到 `src/shared/ui/sacUI-vue/components/common/`。
+    *   更新引用 `thumbnailGalleryHori.vue` 的路径。
+    *   修正:** 更新 `pannels/assetInfoPanel/assetInfoPanel.vue` 和 `components/assetGalleryPanel.vue` 中对 `scroll.js` 的旧路径引用，解决 404 错误。
+    *   迁移 `components/common/selection/multiple.vue` 到 `src/shared/ui/sacUI-vue/components/common/selection/`。
+    *   更新引用 `multiple.vue` 的路径。
 *   **2024-05-03 (织):**
     *   迁移 `fileList.vue` (17行) 到 `src/shared/ui/sacUI-vue/components/`。
     *   迁移 `common/fileListItem.vue` (47行) 到 `src/shared/ui/sacUI-vue/components/common/`。
@@ -181,15 +183,5 @@ UI组件的渲染性能是重点关注领域：
 3.  **`source/UI/dialogs/`**: 
     - 现有的 `.js` 文件如果进行Vue化重构，或新增Vue对话框，应使用 `SDialog.vue`。
 4.  **`source/UI/siyuanCommon/`**: 
-    - 在与思源原生UI（菜单、Slash命令等）集成时，若涉及自定义渲染，可使用标准库中的原子组件（`SButton`, `SIcon`）保持风格统一。
-    - `tabs.js` 的逻辑可能与 `STab.vue` 重叠或可被其取代。
-
-**下一步**：在开发新功能或重构旧UI时，优先考虑使用 `src/shared/ui/siyuanUI-vue/components/` 中的标准组件。
-
-## 注意事项
-
-- 组件设计应符合Web Components标准，但不必强制使用Custom Elements
-- 新组件应优先使用函数式风格，避免类的继承结构
-- 考虑移动设备使用场景，确保触摸友好性
-- 组件接口应保持稳定，必要的破坏性变更需提前规划迁移路径
-- 定期清理废弃代码，避免维护负担 
+    - 在与思源原生UI（菜单、Slash命令等）集成时，若涉及自定义渲染，可使用标准库中的原子组件（`SButton`, `SIcon`)保持风格统一。
+    - `tabs.js` 的逻辑可能与 `STab.vue`

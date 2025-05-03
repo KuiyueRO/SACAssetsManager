@@ -90,4 +90,19 @@
 
 **新增/修改模块:**
 - `getSQLQueries.js`: 提供生成针对思源数据库的 SQL 查询语句的函数。
-- `apiUtils.js` (2024-07-28): 从 `source/fromThirdParty/siyuanKernel/utils/apiConfig.js` 迁移而来，包含 `getSiyuanApiUrl` 和 `handleSiyuanApiError`，用于处理 API URL 构建和基础错误处理。 
+- `apiUtils.js` (2024-07-28): 从 `source/fromThirdParty/siyuanKernel/utils/apiConfig.js` 迁移而来，包含 `getSiyuanApiUrl` 和 `handleSiyuanApiError`，用于处理 API URL 构建和基础错误处理。
+
+# 修改日志
+*   **2025-05-03 (织):**
+    *   重构 `useSiyuanSlash.js`:
+        *   将非斜杠菜单注册相关的函数移出，明确文件职责。
+        *   `处理对话框销毁` 移至 `protyleUtils.js` 并重命名为 `insertDialogSelectionIntoProtyle`。
+        *   对话框打开函数 (`使用API配置打开对话框`, `使用本地路径打开对话框` 等) 移至 `feature/forUI/dialogUtils.js`。
+        *   `显示人工智能配置对话框` 移至 `feature/forAI/ui/showAIConfigDialog.js`。
+        *   将 `注册斜杠菜单项` 改为异步函数 `computeSlashItems`。
+        *   将 `设置插件斜杠菜单` 重命名为 `enablePluginSlashMenu` 并改为使用异步 getter。
+        *   更新了内部的函数调用和导入。
+*   **2025-05-03 (织):**
+    *   创建 `protyleUtils.js`，用于存放与 Protyle 编辑器交互的工具函数。
+    *   从 `useSiyuanSlash.js` 移入 `insertDialogSelectionIntoProtyle` (原 `处理对话框销毁`)。
+    *   修复了 `insertDialogSelectionIntoProtyle` 中 `path.split('\').pop()` 的反斜杠转义错误。 

@@ -174,4 +174,14 @@ for (let i = 0; i <= 100; i += 10) {
 
 // 销毁控制器
 controller.destroy();
-``` 
+```
+
+# 修改日志
+*   **2025-05-03 (织):**
+    *   修复 `dialogUtils.js` 内部导入路径错误：
+        *   `useSiyuan.js` 的路径错误，修正为 `/plugins/SACAssetsManager/src/toolBox/useAge/useSiyuan.js`。
+        *   `dialogInterfaces.js` 的路径错误，修正为 `/plugins/SACAssetsManager/src/toolBox/feature/interfaces/dialogInterfaces.js`。
+*   **2025-05-03 (织):**
+    *   创建 `dialogUtils.js`，用于存放通用的对话框打开辅助函数。
+    *   从 `useAge/forSiyuan/useSiyuanSlash.js` 移入 `showApiAssetGallery` (原 `使用API配置打开对话框`), `showLocalAssetGallery` (原 `使用本地路径打开对话框`), `showDiskSelectionDialog` (原 `打开磁盘选择对话框`), `showEverythingDialog` (原 `打开Everything搜索对话框`), `showAnytxtDialog` (原 `打开Anytxt搜索对话框`)。
+    *   **注意:** 移入的函数目前仍有 TODO 项，如依赖旧的 `openDialog`、硬编码组件路径和 UI 参数等，需要在后续重构中解决。 

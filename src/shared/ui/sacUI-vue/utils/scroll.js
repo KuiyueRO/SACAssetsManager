@@ -87,4 +87,4 @@ export function 从滚轮事件计算(currentSize, event, max = 1024, min = 32) 
         return newSize;
     }
     return currentSize;
-}
+} 

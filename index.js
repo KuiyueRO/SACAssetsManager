@@ -203,15 +203,21 @@ module.exports = class SACAssetsManager extends Plugin {
       console.error('[SAC资源管理器] Yjs初始化失败:', err);
     });
     
-    // 注册思源笔记对话框接口
-    import(`${this.插件自身伺服地址}/source/UI/registerInterfaces.js`).then(module => {
-      // 初始化思源笔记客户端API
-      module.initSiyuanClientAPI(clientApi);
-      // 注册接口实现
-      module.registerAllInterfaces();
-      console.log('[SAC资源管理器] 已注册思源笔记对话框接口');
+    // 动态导入UI接口注册模块并初始化
+    console.log('[SACAssetsManager] 尝试加载并注册UI接口...');
+    import(`${this.插件自身伺服地址}/src/shared/ui/sacUI-vue/registerInterfaces.js`).then(module => {
+      if (module && typeof module.initSiyuanClientAPI === 'function' && typeof module.registerAllInterfaces === 'function') {
+        console.log('[SACAssetsManager] UI接口模块加载成功');
+        // 初始化思源笔记客户端API
+        module.initSiyuanClientAPI(clientApi);
+        // 注册接口实现
+        module.registerAllInterfaces();
+        console.log('[SAC资源管理器] 已注册思源笔记对话框接口');
+      } else {
+        console.error('[SACAssetsManager] 加载UI接口模块失败');
+      }
     }).catch(err => {
-      console.error('[SAC资源管理器] 注册对话框接口失败:', err);
+      console.error('[SACAssetsManager] 注册对话框接口失败:', err);
     });
     
     import(`${this.插件自身伺服地址}/source/index.js`)

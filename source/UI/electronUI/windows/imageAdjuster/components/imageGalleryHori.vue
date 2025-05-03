@@ -33,8 +33,10 @@
 </template>
 
 <script setup>
-import thumbnailGallery from '../../../../../UI/components/common/thumbnailGalleryHori.vue'
-import { ref, computed } from 'vue'
+import { ref, watch, onMounted, computed, defineProps, defineEmits, nextTick } from 'vue'
+// import thumbnailGallery from '../../../../../UI/components/common/thumbnailGalleryHori.vue'
+import thumbnailGallery from '/plugins/SACAssetsManager/src/shared/ui/sacUI-vue/components/common/thumbnailGalleryHori.vue'
+import { ImageItem } from '../../imageItem.js'
 
 const props = defineProps({
     historyQueue: {

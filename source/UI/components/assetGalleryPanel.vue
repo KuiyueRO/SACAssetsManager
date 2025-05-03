@@ -90,7 +90,7 @@ import { plugin } from 'runtime'
 import _path from '../../../polyfills/path.js'
 import * as endPoints from '../../server/endPoints.js'
 import { addUniquePalletColors } from '../../../src/toolBox/feature/forColor/useColorPaletteUtils.js';
-import multiple from "./common/selection/multiple.vue";
+import multiple from '/plugins/SACAssetsManager/src/shared/ui/sacUI-vue/components/common/selection/multiple.vue';
 import { 更新扩展名中间件 } from './galleryPanel/middlewares/extensions.js';
 import { 提取缩略图路径中间件, 提取NoteID中间件, 提取tags中间件 } from '../../data/attributies/attributeParsers.js';
 import { 过滤器中间件 } from './galleryPanel/middlewares/extensions.js';
@@ -348,10 +348,6 @@ watch(
 )
 
 
-/**
- * 缩放相关
- */
-import { 从滚轮事件计算 } from '../utils/scroll.js';
 const layoutCountTotal = ref(0)
 const rawSearch = ref('');
 const paddingLR = ref(100)

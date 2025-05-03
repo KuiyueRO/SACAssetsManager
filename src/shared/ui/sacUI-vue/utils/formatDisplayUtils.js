@@ -4,7 +4,7 @@
  * 目标是解耦 UI 组件与底层工具的具体实现。
  */
 
-import { 生成文件列表描述 as _生成文件列表描述 } from '../../../../src/toolBox/base/useEcma/forFile/forFilePath.js';
+import { 生成文件列表描述 as _生成文件列表描述 } from '../../../toolBox/base/useEcma/forFile/forFilePath.js';
 
 /**
  * 为一组文件路径生成适合在 UI 中显示的描述字符串。

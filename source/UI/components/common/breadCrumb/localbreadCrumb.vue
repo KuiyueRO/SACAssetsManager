@@ -42,7 +42,7 @@ import { 构建搜索模式 } from '../../../../../src/toolBox/base/useEcma/forF
 import { plugin } from 'runtime'
 import { 打开文件夹图标菜单 } from '../../../siyuanCommon/menus/folderItem.js';
 import { fs } from '../../../../server/endPoints.js';
-import thumbnailGallery from '../thumbnailGalleryHori.vue'
+import thumbnailGallery from '/plugins/SACAssetsManager/src/shared/ui/sacUI-vue/components/common/thumbnailGalleryHori.vue'
 import SIcon from '/plugins/SACAssetsManager/src/shared/ui/siyuanUI-vue/components/SIcon.vue';
 const IncludeSubfolders = ref(true)
 const emit = defineEmits(['globChange'])

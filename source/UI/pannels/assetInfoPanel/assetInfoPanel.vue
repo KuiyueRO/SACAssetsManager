@@ -38,12 +38,12 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch, computed, inject, defineAsyncComponent } from 'vue';
 import { getCommonThumbnailsFromAssets } from '../../utils/tumbnail.js'
 import _path from '../../../../polyfills/path.js'
 import tagsGrid from '../../components/assetInfoPanel/tags.vue';
 import { watchStatu, 状态注册表 } from '../../../globalStatus/index.js';
-import { verticalScrollFirst } from '../../utils/scroll.js';
+import { verticalScrollFirst } from '/plugins/SACAssetsManager/src/shared/ui/sacUI-vue/utils/scroll.js';
 import assetsImage from '../../components/assetInfoPanel/assetsImage.vue';
 import { 打开文件夹数组素材页签 } from './assetInfoPanel.js';
 import { fromEagleFs_findMetadataFiles } from '../../../../src/toolBox/feature/forEagleFs/fromEagleFs.js';
