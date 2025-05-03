@@ -655,62 +655,86 @@ export const SacTextarea = {
 
 // 输入框相关的CSS样式
 export const inputStyle = `
-.sac-input {
+.sac-input,
+.sac-textarea {
   position: relative;
-  font-size: 14px;
-  display: inline-block;
+  display: inline-block; /* input默认是inline-block, textarea默认是block，这里统一 */
+  width: 100%;
+  font-size: var(--b3-font-size);
+  color: var(--b3-theme-on-surface);
+}
+
+/* 通用内部输入/文本域元素样式 */
+.sac-input__inner,
+.sac-textarea__inner {
+  -webkit-appearance: none;
+  appearance: none; /* 标准写法 */
+  background-color: var(--b3-theme-background);
+  background-image: none;
+  border-radius: var(--b3-border-radius-s); /* 参考 .b3-text-field */
+  border: 1px solid var(--b3-border-color);
+  box-sizing: border-box;
+  color: var(--b3-theme-on-background);
+  display: block; /* 统一为块级 */
+  font-size: inherit;
+  outline: none;
+  padding: 5px 8px; /* 参考 .b3-text-field padding */
+  transition: var(--b3-transition); /* 使用统一过渡 */
   width: 100%;
 }
+
+/* 聚焦状态 */
+.sac-input__inner:focus,
+.sac-textarea__inner:focus {
+  border-color: var(--b3-theme-primary);
+  /* 思源原生输入框聚焦时似乎没有 box-shadow */
+}
+
+/* --- SacInput 特定样式 --- */
 
 .sac-input__inner {
-  -webkit-appearance: none;
-  background-color: #fff;
-  background-image: none;
-  border-radius: 4px;
-  border: 1px solid #dcdfe6;
-  box-sizing: border-box;
-  color: #606266;
-  display: inline-block;
-  font-size: inherit;
-  height: 40px;
-  line-height: 40px;
-  outline: none;
-  padding: 0 15px;
-  transition: border-color .2s;
-  width: 100%;
+  height: 30px; /* 参考 .b3-text-field 计算高度 = padding-top + padding-bottom + line-height (approx font-size) */
+  line-height: 1.42857; /* 保持与原生一致，控制垂直居中 */
 }
 
-.sac-input__inner:focus {
-  border-color: #409eff;
-}
-
+/* 不同尺寸调整 */
 .sac-input--small .sac-input__inner {
-  height: 32px;
-  line-height: 32px;
-  font-size: 13px;
+  height: 26px;
+  font-size: calc(var(--b3-font-size) * 0.9);
+  padding: 4px 6px;
 }
 
 .sac-input--large .sac-input__inner {
-  height: 48px;
-  line-height: 48px;
-  font-size: 15px;
+  height: 36px;
+  font-size: calc(var(--b3-font-size) * 1.1);
+  padding: 6px 10px;
 }
 
-.sac-input--disabled .sac-input__inner {
-  background-color: #f5f7fa;
-  border-color: #e4e7ed;
-  color: #c0c4cc;
+/* 禁用状态 */
+.sac-input--disabled .sac-input__inner,
+.sac-textarea--disabled .sac-textarea__inner {
+  background-color: var(--b3-theme-surface-lighter); /* 参考原生禁用背景 */
+  border-color: var(--b3-border-color);
+  color: var(--b3-theme-on-surface-light); /* 禁用文字颜色 */
   cursor: not-allowed;
 }
 
+/* 只读状态 (视觉上通常与普通状态一致，但不可编辑) */
+.sac-input--readonly .sac-input__inner,
+.sac-textarea--readonly .sac-textarea__inner {
+  background-color: var(--b3-theme-surface-lighter); /* 给只读一个稍微不同的背景 */
+}
+
+/* 带前缀/后缀图标时的内边距调整 */
 .sac-input--with-prefix .sac-input__inner {
-  padding-left: 30px;
+  padding-left: 30px; /* 需要与图标容器宽度协调 */
 }
 
 .sac-input--with-suffix .sac-input__inner {
-  padding-right: 30px;
+  padding-right: 30px; /* 需要与图标容器宽度协调 */
 }
 
+/* 图标容器 */
 .sac-input__prefix,
 .sac-input__suffix {
   position: absolute;
@@ -718,7 +742,8 @@ export const inputStyle = `
   bottom: 0;
   display: flex;
   align-items: center;
-  color: #c0c4cc;
+  color: var(--b3-theme-on-surface-light); /* 图标默认颜色 */
+  pointer-events: none; /* 默认不响应鼠标事件 */
 }
 
 .sac-input__prefix {
@@ -727,62 +752,72 @@ export const inputStyle = `
 
 .sac-input__suffix {
   right: 5px;
+  gap: 4px; /* 后缀区域可能有多个图标，增加间距 */
 }
 
-.sac-input__icon {
+/* 容器内的具体图标 */
+.sac-input__prefix .sac-input__prefix-icon,
+.sac-input__suffix .sac-input__suffix-icon,
+.sac-input__suffix .sac-input__clear,
+.sac-input__suffix .sac-icon-eye-open,
+.sac-input__suffix .sac-icon-eye-close {
   height: 100%;
-  width: 25px;
+  width: 20px; /* 稍微减小图标宽度 */
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: auto; /* 使图标可交互 */
+  cursor: default;
+  transition: var(--b3-transition);
 }
 
+/* 可交互图标（清除、密码切换） */
 .sac-input__clear,
-.sac-input__password {
+.sac-icon-eye-open,
+.sac-icon-eye-close {
   cursor: pointer;
 }
 
 .sac-input__clear:hover,
-.sac-input__password:hover {
-  color: #909399;
+.sac-icon-eye-open:hover,
+.sac-icon-eye-close:hover {
+  color: var(--b3-theme-on-surface); /* 悬停时颜色加深 */
 }
 
-.sac-textarea {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  vertical-align: bottom;
-  font-size: 14px;
+/* 字数统计 */
+.sac-input__suffix .sac-input__count {
+  font-size: 12px;
+  color: var(--b3-theme-on-surface-light);
+  padding: 0 5px;
+  user-select: none;
+  pointer-events: none;
 }
+
+/* 错误状态 */
+.sac-input--error .sac-input__inner,
+.sac-input--error .sac-textarea__inner {
+  border-color: var(--b3-theme-error);
+}
+
+/* 错误消息 */
+.sac-input__error {
+  color: var(--b3-theme-error);
+  font-size: 12px;
+  line-height: 1.2;
+  padding-top: 4px;
+}
+
+/* --- SacTextarea 特定样式 --- */
 
 .sac-textarea__inner {
-  display: block;
-  resize: vertical;
-  padding: 5px 15px;
-  line-height: 1.5;
-  box-sizing: border-box;
-  width: 100%;
-  font-size: inherit;
-  color: #606266;
-  background-color: #fff;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-  transition: border-color .2s;
-}
-
-.sac-textarea__inner:focus {
-  border-color: #409eff;
-}
-
-.sac-textarea--disabled .sac-textarea__inner {
-  background-color: #f5f7fa;
-  border-color: #e4e7ed;
-  color: #c0c4cc;
-  cursor: not-allowed;
+  line-height: 1.5; /* 文本域行高需要大一点 */
+  resize: vertical; /* 允许用户垂直调整，除非 autosize 启用 */
+  min-height: 60px; /* 默认最小高度 */
 }
 
 .sac-textarea--autosize .sac-textarea__inner {
-  transition: height 0.3s;
+  resize: none; /* 自动调整时禁用手动调整 */
+  overflow-y: hidden; /* 隐藏滚动条，靠 JS 计算高度 */
 }
 `;
 

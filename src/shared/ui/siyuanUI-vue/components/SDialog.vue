@@ -79,5 +79,95 @@ watch(() => props.visible, (newValue) => {
 </script>
 
 <style scoped>
-/* 基础样式会从思源的CSS中继承 */
+.b3-dialog-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--b3-mask-background);
+  z-index: 999;
+  overflow: auto;
+}
+
+.b3-dialog {
+  position: relative;
+  margin: var(--b3-margin);
+  background-color: var(--b3-theme-background);
+  border-radius: var(--b3-border-radius);
+  box-shadow: var(--b3-dialog-shadow);
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.15s ease-in-out;
+  animation: dialogFadeIn 0.15s ease-in-out;
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.b3-dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--b3-padding);
+  border-bottom: 1px solid var(--b3-border-color);
+}
+
+.b3-dialog__title {
+  font-size: var(--b3-font-size);
+  font-weight: var(--b3-font-weight-medium);
+  color: var(--b3-theme-on-background);
+}
+
+.b3-dialog__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--b3-theme-on-surface);
+  transition: color 0.15s ease-in-out;
+}
+
+.b3-dialog__close:hover {
+  color: var(--b3-theme-primary);
+}
+
+.b3-dialog__close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.b3-dialog__content {
+  padding: var(--b3-padding);
+  overflow-y: auto;
+  flex: 1;
+  color: var(--b3-theme-on-background);
+}
+
+.b3-dialog__action {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--b3-padding-half) var(--b3-padding);
+  border-top: 1px solid var(--b3-border-color);
+  gap: var(--b3-margin-half);
+}
 </style> 

@@ -2,7 +2,7 @@
 
 ## 重构状态
 
-UI组件库正在重构中，计划将组件逐步迁移到`/src/shared/components`目录。
+UI组件库正在重构中，计划将组件逐步迁移到`/src/shared/components`或`source/shared/siyuanUI-vue/components`目录。
 
 ## 职责范围
 
@@ -38,13 +38,13 @@ UI组件库正在重构中，计划将组件逐步迁移到`/src/shared/componen
 
 ### 第一阶段：基础组件（已开始）
 
-- 按钮、输入框、下拉菜单等基础控件
-- 对话框和提示组件
+- 按钮、输入框、下拉菜单等基础控件 (对应 `siyuanUI-vue`)
+- 对话框和提示组件 (对应 `siyuanUI-vue`)
 - 图标系统
 
 ### 第二阶段：复合组件（计划中）
 
-- 面板和标签页组件
+- 面板和标签页组件 (对应 `siyuanUI-vue`)
 - 表格和列表组件
 - 树形结构组件
 
@@ -64,15 +64,16 @@ UI组件库正在重构中，计划将组件逐步迁移到`/src/shared/componen
 
 | 现有目录/文件 | 目标位置 | 优先级 | 状态 | 备注 |
 |--------------|---------|-------|------|------|
-| components/ | src/components/base | 高 | 进行中 | 基础组件迁移中 |
-| dialogs/ | src/components/dialog | 高 | 待开始 | 对话框组件 |
-| dynamicCss/ | src/styles/dynamic | 中 | 待开始 | 动态样式系统 |
-| icons/ | src/assets/icons | 中 | 待开始 | 图标资源 |
-| pannels/ | src/components/panel | 中 | 待开始 | 面板组件 |
-| siyuanCommon/ | src/components/siyuan | 低 | 待开始 | 思源特定UI |
-| toolBox/ | src/utils/ui | 高 | 进行中 | UI工具函数 |
-| tab.js | src/components/tab | 中 | 待开始 | 标签页逻辑 |
-| dock.js | src/components/dock | 中 | 待开始 | 停靠面板逻辑 |
+| `source/shared/siyuanUI-vue/` | `src/shared/ui/siyuanUI-vue/` | 高 | 已完成 | 标准Vue UI库已迁移 |
+| components/ (旧 `source/UI/`) | src/components/base (或 `src/shared/ui/siyuanUI-vue/`) | 高 | 进行中 | 基础组件迁移中，逐步替换为标准库 |
+| dialogs/ (旧 `source/UI/`) | `src/shared/ui/siyuanUI-vue/` (或保留js实现) | 高 | 待开始 | 对话框组件，优先使用标准库 |
+| dynamicCss/ (旧 `source/UI/`) | src/styles/dynamic | 中 | 待开始 | 动态样式系统 |
+| icons/ (旧 `source/UI/`) | src/assets/icons | 中 | 待开始 | 图标资源 |
+| pannels/ (旧 `source/UI/`) | 各面板内部 (使用 `src/shared/ui/siyuanUI-vue/`) | 中 | 进行中 | 面板组件，逐步使用标准库 |
+| siyuanCommon/ (旧 `source/UI/`) | 各功能内部 (使用 `src/shared/ui/siyuanUI-vue/`) | 低 | 待开始 | 思源特定UI，考虑使用标准库原子组件 |
+| toolBox/ (旧 `source/UI/`) | src/utils/ui | 高 | 进行中 | UI工具函数 |
+| tab.js (旧 `source/UI/`) | `src/shared/ui/siyuanUI-vue/components/STab.vue` | 中 | 待开始 | 标签页逻辑，优先使用标准组件 |
+| dock.js (旧 `source/UI/`) | src/components/dock (?) | 中 | 待开始 | 停靠面板逻辑，待评估 |
 
 ## 特殊处理说明
 
@@ -88,9 +89,9 @@ UI组件库正在重构中，计划将组件逐步迁移到`/src/shared/componen
 
 所有迁移的组件必须支持思源的主题系统：
 
-1. 使用CSS变量而非硬编码颜色值
+1. 使用CSS变量而非硬编码颜色值 (`siyuanUI-vue` 已实现)
 2. 通过`dynamicTheme`API注册动态样式
-3. 支持明暗主题自动切换
+3. 支持明暗主题自动切换 (`siyuanUI-vue` 已实现)
 4. 尊重用户自定义主题设置
 
 ### 渲染性能优化
@@ -132,12 +133,51 @@ UI组件的渲染性能是重点关注领域：
 
 ## 重构日志
 
+*   **2025-05-03 (织):**
+    *   迁移 `common/dropzone.vue` (16行) 到 `src/shared/ui/sacUI-vue/components/common/`。
+    *   确认 `common/icons.js` 的 `commonIcon` 功能可被 `src/shared/ui/siyuanUI-vue/components/SIcon.vue` 完全替代。
+    *   将 `common/breadCrumb/localbreadCrumb.vue` 和 `fileSystem/diskInfosTiny.vue` 中对 `commonIcon` 的使用替换为 `SIcon`。
+    *   删除了 `common/icons.js` 文件。
+*   **2024-05-03 (织):**
+    *   迁移 `fileList.vue` (17行) 到 `src/shared/ui/sacUI-vue/components/`。
+    *   迁移 `common/fileListItem.vue` (47行) 到 `src/shared/ui/sacUI-vue/components/common/`。
+    *   更新了引用路径并确认无外部旧路径引用。
+*   **2024-04-29 (织):**
+    *   分析了 `source/UI/` 目录结构和 `README.md`, `AInote.md`。
+    *   添加了"标准组件应用点分析"章节。
+*   **2024-04-27 (织):**
+    *   将 `source/UI/components/NumberInput.vue` 的实现替换为使用标准库 `src/shared/ui/siyuanUI-vue/components/SNumberInput.vue`。
+    *   修复了替换过程中错误的 import 路径。
 | 日期 | 工作内容 | 状态 | 负责人 |
 |------|---------|------|-------|
 | 2023-12-01 | 初始化UI组件库重构计划 | 完成 | 团队 |
 | 2023-12-15 | 完成基础按钮组件迁移 | 完成 | AI助手 |
 | 2024-01-10 | 完成对话框组件设计 | 进行中 | AI助手 |
 | 2024-01-25 | 建立动态CSS系统 | 进行中 | 团队 |
+| 2024-04-27 | 完成`siyuanUI-vue`基础组件(Card, Dialog, Select, Toggle, Progress, Tab)的CSS变量化 | 完成 | AI助手 |
+| 2024-04-27 | 优化 `siyuanUI-vue` 中的 `SIcon.vue` 组件 | 完成 | AI助手 |
+| 2024-04-27 | 将 `source/UI/components/NumberInput.vue` 替换为使用标准的 `SNumberInput.vue` | 完成 | AI助手 |
+| 2024-05-03 | 迁移 `fileList.vue` 到 `src/shared/ui/sacUI-vue/components/` | 完成 | 团队 |
+| 2024-04-29 | 分析 `source/UI/` 目录结构和 `README.md`, `AInote.md` | 完成 | 团队 |
+
+## 标准组件应用点分析 (2024-04-28)
+
+根据对 `source/UI` 目录的分析，以下是可以使用 `src/shared/ui/siyuanUI-vue/components/` 中标准化Vue组件的潜在区域：
+
+1.  **`source/UI/components/`**: 
+    - 内部的 `.vue` 文件 (如 `assetGalleryPanel.vue`, `VWindow.vue`, `UrlInput.vue`, `logContent.vue`等) 包含大量可被标准组件替换的UI元素。
+    - `NumberInput.vue` 可被 `SNumberInput.vue` 替代。
+    - `CCDialog.vue` 可考虑使用 `SDialog.vue` 重构。
+2.  **`source/UI/pannels/`**: 
+    - 各面板子目录下的 `.vue` 文件是标准组件的主要应用场景。
+    - 面板内的表单、按钮、信息展示、布局等都应使用标准组件库（`SCard`, `SInput`, `SSelect`, `SToggle`, `SButton`, `STab` 等）。
+3.  **`source/UI/dialogs/`**: 
+    - 现有的 `.js` 文件如果进行Vue化重构，或新增Vue对话框，应使用 `SDialog.vue`。
+4.  **`source/UI/siyuanCommon/`**: 
+    - 在与思源原生UI（菜单、Slash命令等）集成时，若涉及自定义渲染，可使用标准库中的原子组件（`SButton`, `SIcon`）保持风格统一。
+    - `tabs.js` 的逻辑可能与 `STab.vue` 重叠或可被其取代。
+
+**下一步**：在开发新功能或重构旧UI时，优先考虑使用 `src/shared/ui/siyuanUI-vue/components/` 中的标准组件。
 
 ## 注意事项
 

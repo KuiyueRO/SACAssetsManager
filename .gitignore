@@ -1,3 +1,6 @@
 # Ignore Siyuan plugin diary folder
 diary/
 
+# 临时文件读取目录 (由 AI 请求)
+needRead/
+

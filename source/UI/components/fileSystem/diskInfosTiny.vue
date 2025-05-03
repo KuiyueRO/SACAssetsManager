@@ -26,7 +26,9 @@
                     <div class="fn__flex-column fn__flex-1">
                         <div class="fn__flex disk-tiny" @dblclick="() => { openFolder(disk.name + '/') }"
                             @click.stop="toggleSUbFolders(disk.name + '/')">
-                            <commonIcon class="block__logoicon" icon="iconDatabase"></commonIcon>
+                            <div>
+                                <SIcon class-name="block__logoicon" name="iconDatabase"></SIcon>
+                            </div>
                             <DiskItem :disk="disk" />
                         </div>
                         <FolderList 
@@ -42,12 +44,12 @@
     </div>
 </template>
 <script setup>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, computed } from 'vue'
 import DiskItem from './DiskItem.vue';
 import FolderList from './FolderList.vue'
 import { listLocalDisks } from '../../../data/diskInfo.js';
 import { plugin } from 'runtime'
-import { commonIcon } from '../common/icons.js'
+import SIcon from '../../../../../../src/shared/ui/siyuanUI-vue/components/SIcon.vue';
 const foldUp = ref(true)
 const diskInfos = ref([])
 const folderInfos = reactive([])

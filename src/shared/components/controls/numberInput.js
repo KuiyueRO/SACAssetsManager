@@ -291,85 +291,143 @@ export const SacEditableNumberInput = {
 // 数字输入控件的CSS样式，可以通过Vue插件安装时注入
 export const numberInputStyle = `
 .sac-number-input {
-  display: inline-flex;
+  display: inline-flex; /* Use flex to layout buttons and value */
   align-items: center;
-  user-select: none;
+  border: 0;
+  border-radius: var(--b3-border-radius, 4px);
+  box-shadow: inset 0 0 0 .6px var(--b3-theme-on-surface, #ccc);
+  padding: 0; /* Padding handled by internal elements */
+  line-height: 20px; /* Match .b3-text-field */
+  height: 28px; /* Match .b3-text-field */
+  box-sizing: border-box;
+  color: var(--b3-theme-on-background, #333);
+  transition: box-shadow var(--b3-transition, 120ms 0ms cubic-bezier(0, 0, .2, 1));
+  background-color: var(--b3-theme-background, #fff);
+  vertical-align: middle; /* Align with other inline elements */
 }
 
+.sac-number-input:hover {
+  box-shadow: inset 0 0 0 .6px var(--b3-theme-on-background, #666);
+}
+
+/* Use focus-within as focus might be on internal button or input */
+.sac-number-input:focus-within {
+  box-shadow: inset 0 0 0 1px var(--b3-theme-primary, #4285f4), 0 0 0 3px var(--b3-theme-primary-lightest, rgba(66,133,244,0.08));
+}
+
+.sac-number-input--disabled {
+  opacity: .38;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 .6px var(--b3-theme-on-surface, #ccc); /* Keep base shadow on disabled */
+}
+
+/* Button Styles */
 .sac-number-input__decrease,
 .sac-number-input__increase {
-  background-color: #f5f7fa;
-  color: #606266;
-  border: 1px solid #dcdfe6;
+  border: 0;
+  background-color: transparent;
+  color: var(--b3-theme-on-surface, #666);
   cursor: pointer;
   padding: 0;
-  text-align: center;
-  display: flex;
-  justify-content: center;
+  margin: 0;
+  height: 100%; /* Fill container height */
+  width: 24px; /* Fixed width for buttons */
+  display: inline-flex;
   align-items: center;
-  font-size: 13px;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color var(--b3-transition, .15s ease-in-out);
+  font-size: 16px; /* Make +/- bigger */
+  line-height: 1;
+}
+
+.sac-number-input__decrease {
+  border-top-left-radius: var(--b3-border-radius, 4px);
+  border-bottom-left-radius: var(--b3-border-radius, 4px);
+  /* TODO: Replace '-' with SVG icon (e.g., chevron-down or minus) */
+}
+
+.sac-number-input__increase {
+  border-top-right-radius: var(--b3-border-radius, 4px);
+  border-bottom-right-radius: var(--b3-border-radius, 4px);
+  /* TODO: Replace '+' with SVG icon (e.g., chevron-up or plus) */
 }
 
 .sac-number-input__decrease:hover,
 .sac-number-input__increase:hover {
-  color: #409eff;
+  background-color: var(--b3-list-icon-hover, rgba(0,0,0,0.08));
+  color: var(--b3-theme-on-background, #333);
+}
+
+.sac-number-input__decrease:active,
+.sac-number-input__increase:active {
+  background-color: var(--b3-list-hover, rgba(0,0,0,0.1)); /* Slightly darker active */
 }
 
 .sac-number-input__decrease:disabled,
 .sac-number-input__increase:disabled {
-  color: #c0c4cc;
+  opacity: .38;
   cursor: not-allowed;
+  background-color: transparent !important; /* Ensure no background on disabled */
 }
 
+/* Value Display Styles */
 .sac-number-input__value {
-  display: inline-block;
+  flex-grow: 1; /* Take remaining space */
   text-align: center;
-  font-size: 14px;
-  margin: 0 5px;
-  min-width: 40px;
-  outline: none;
+  padding: 0 4px;
+  font-size: var(--b3-font-size-base, 14px);
+  min-width: 30px; /* Ensure some minimum width */
+  cursor: default; /* Default cursor for non-editable */
+  user-select: none;
 }
 
-.sac-number-input__value:focus {
-  color: #409eff;
-}
-
+/* Input Styles for Editable version */
 .sac-number-input__input {
+  flex-grow: 1;
+  border: 0;
+  background: transparent;
+  padding: 0 4px;
   text-align: center;
-  font-size: 14px;
-  margin: 0 5px;
-  min-width: 40px;
+  font-size: var(--b3-font-size-base, 14px);
+  color: inherit;
+  width: 100%; /* Take full width within flex item */
+  min-width: 30px;
+  height: 100%; /* Match container height */
+  line-height: inherit; /* Inherit line-height */
+}
+.sac-number-input__input:focus {
   outline: none;
-  border: 1px solid #dcdfe6;
-  border-radius: 3px;
-  padding: 2px 5px;
 }
 
+/* Sizes */
+.sac-number-input--small {
+  height: 24px; /* Smaller height */
+  line-height: 16px;
+}
+.sac-number-input--small .sac-number-input__value,
+.sac-number-input--small .sac-number-input__input {
+  font-size: 12px;
+}
 .sac-number-input--small .sac-number-input__decrease,
 .sac-number-input--small .sac-number-input__increase {
-  width: 24px;
-  height: 24px;
+  width: 20px; /* Smaller buttons */
+  font-size: 14px;
 }
 
-.sac-number-input--medium .sac-number-input__decrease,
-.sac-number-input--medium .sac-number-input__increase {
-  width: 30px;
-  height: 30px;
+.sac-number-input--large {
+  height: 32px; /* Larger height */
+  line-height: 24px;
 }
-
+.sac-number-input--large .sac-number-input__value,
+.sac-number-input--large .sac-number-input__input {
+  font-size: 16px;
+}
 .sac-number-input--large .sac-number-input__decrease,
 .sac-number-input--large .sac-number-input__increase {
-  width: 36px;
-  height: 36px;
-}
-
-.sac-number-input--disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.sac-number-input--disabled .sac-number-input__value {
-  color: #c0c4cc;
+  width: 28px; /* Larger buttons */
+  font-size: 18px;
 }
 `;
 

@@ -373,10 +373,11 @@ export const checkboxStyle = `
   align-items: center;
   vertical-align: middle;
   position: relative;
-  font-size: 14px;
-  color: #606266;
-  margin-right: 30px;
+  font-size: var(--b3-font-size);
+  color: var(--b3-theme-on-surface);
+  margin-right: 16px; /* 稍微调整间距 */
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* 移动端点击效果 */
 }
 
 .sac-checkbox__wrapper {
@@ -396,165 +397,196 @@ export const checkboxStyle = `
   z-index: -1;
 }
 
+/* 复选框标记 (方框) */
 .sac-checkbox__marker {
   position: relative;
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 1px solid #dcdfe6;
-  border-radius: 2px;
-  background-color: #fff;
-  transition: all 0.3s;
+  border: 1px solid var(--b3-border-color);
+  border-radius: var(--b3-border-radius-s);
+  background-color: var(--b3-theme-background); /* 背景 */
+  transition: var(--b3-transition);
   box-sizing: border-box;
   vertical-align: middle;
+  flex-shrink: 0; /* 防止被压缩 */
 }
 
-.sac-checkbox__marker::after {
-  content: "";
-  position: absolute;
-  opacity: 0;
-  transform: rotate(45deg) scale(0);
-  border: 2px solid #fff;
-  border-top: 0;
-  border-left: 0;
-  width: 4px;
-  height: 8px;
-  left: 5px;
-  top: 1px;
-  transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
-  box-sizing: content-box;
-}
-
-.sac-checkbox__marker--indeterminate::after {
-  content: "";
-  position: absolute;
-  opacity: 1;
-  transform: scale(1);
-  border: none;
-  width: 8px;
-  height: 2px;
-  left: 3px;
-  top: 6px;
-  background-color: #fff;
-}
-
-.sac-checkbox--checked .sac-checkbox__marker {
-  background-color: var(--checkbox-active-color, #409eff);
-  border-color: var(--checkbox-active-color, #409eff);
-}
-
-.sac-checkbox--checked .sac-checkbox__marker::after {
-  opacity: 1;
-  transform: rotate(45deg) scale(1);
-}
-
-.sac-checkbox--indeterminate .sac-checkbox__marker {
-  background-color: var(--checkbox-active-color, #409eff);
-  border-color: var(--checkbox-active-color, #409eff);
-}
-
+/* 方形复选框 */
 .sac-checkbox--square .sac-checkbox__marker {
   border-radius: 0;
 }
 
-.sac-checkbox__label {
-  padding-left: 8px;
-  line-height: 1;
+/* 标记内的勾号/横线 */
+.sac-checkbox__marker::after {
+  content: "";
+  position: absolute;
+  opacity: 0;
+  transition: var(--b3-transition);
+  box-sizing: content-box; /* 保持原计算方式 */
+  border-style: solid;
+  border-color: var(--b3-theme-on-primary); /* 勾/横线颜色 */
 }
 
+/* 勾号样式 (模拟 √) */
+.sac-checkbox:not(.sac-checkbox--indeterminate) .sac-checkbox__marker::after {
+  transform: rotate(45deg) scale(0);
+  border-width: 0 2px 2px 0;
+  width: 4px;
+  height: 8px;
+  left: 5px;
+  top: 1px;
+}
+
+/* 半选横线样式 */
+.sac-checkbox--indeterminate .sac-checkbox__marker::after {
+  transform: scale(0);
+  border: none;
+  border-radius: 1px;
+  width: 8px;
+  height: 2px;
+  left: 3px;
+  top: 6px;
+  background-color: var(--b3-theme-on-primary); /* 横线颜色 */
+  opacity: 0;
+}
+
+/* 选中/半选状态下标记的样式 */
+.sac-checkbox--checked .sac-checkbox__marker,
+.sac-checkbox--indeterminate .sac-checkbox__marker {
+  background-color: var(--checkbox-active-color, var(--b3-theme-primary));
+  border-color: var(--checkbox-active-color, var(--b3-theme-primary));
+}
+
+/* 选中状态下勾号显示 */
+.sac-checkbox--checked:not(.sac-checkbox--indeterminate) .sac-checkbox__marker::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+/* 半选状态下横线显示 */
+.sac-checkbox--indeterminate .sac-checkbox__marker::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 标签文本 */
+.sac-checkbox__label {
+  padding-left: 8px;
+  line-height: 16px; /* 与标记高度对齐 */
+  user-select: none;
+  transition: var(--b3-transition);
+}
+
+/* 禁用状态 */
 .sac-checkbox--disabled {
   cursor: not-allowed;
-  color: #c0c4cc;
+  color: var(--b3-theme-on-surface-light);
 }
 
 .sac-checkbox--disabled .sac-checkbox__marker {
-  background-color: #f5f7fa;
-  border-color: #e4e7ed;
+  background-color: var(--b3-theme-surface-lighter);
+  border-color: var(--b3-border-color);
 }
 
+/* 禁用且选中/半选状态下标记的样式 */
 .sac-checkbox--disabled.sac-checkbox--checked .sac-checkbox__marker,
 .sac-checkbox--disabled.sac-checkbox--indeterminate .sac-checkbox__marker {
-  background-color: #e4e7ed;
-  border-color: #e4e7ed;
+  background-color: var(--b3-theme-surface-light); /* 使用更浅的背景 */
+  border-color: var(--b3-border-color);
 }
 
+/* 禁用且选中/半选状态下勾号/横线的颜色 */
+.sac-checkbox--disabled.sac-checkbox--checked .sac-checkbox__marker::after,
+.sac-checkbox--disabled.sac-checkbox--indeterminate .sac-checkbox__marker::after {
+  border-color: var(--b3-theme-on-surface-light); /* 勾号用边框色 */
+  background-color: var(--b3-theme-on-surface-light); /* 横线用背景色 */
+}
+
+
+/* 带边框样式 */
 .sac-checkbox--border {
-  padding: 8px 15px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
+  padding: 5px 10px; /* 调整内边距 */
+  border: 1px solid var(--b3-border-color);
+  border-radius: var(--b3-border-radius-s);
+  transition: var(--b3-transition);
+  margin-right: 10px;
+}
+
+.sac-checkbox--border:hover {
+  border-color: var(--b3-theme-primary-light); /* 悬停时边框变色 */
 }
 
 .sac-checkbox--border.sac-checkbox--checked {
-  border-color: var(--checkbox-active-color, #409eff);
+  border-color: var(--checkbox-active-color, var(--b3-theme-primary));
+  background-color: var(--b3-theme-primary-lightest); /* 选中时加浅色背景 */
 }
 
 .sac-checkbox--border.sac-checkbox--disabled {
-  border-color: #e4e7ed;
+  border-color: var(--b3-border-color);
+  background-color: var(--b3-theme-surface-lighter);
+}
+
+.sac-checkbox--border.sac-checkbox--disabled.sac-checkbox--checked {
+    border-color: var(--b3-border-color);
+    background-color: var(--b3-theme-surface-light); /* 禁用选中背景 */
 }
 
 /* 大小变体 */
 .sac-checkbox--small {
-  font-size: 12px;
+  font-size: calc(var(--b3-font-size) * 0.9);
 }
-
 .sac-checkbox--small .sac-checkbox__marker {
   width: 14px;
   height: 14px;
 }
-
-.sac-checkbox--small .sac-checkbox__marker::after {
+.sac-checkbox--small:not(.sac-checkbox--indeterminate) .sac-checkbox__marker::after {
   width: 3px;
   height: 6px;
   left: 4px;
-  top: 1px;
+  top: 2px;
+  border-width: 0 1.5px 1.5px 0;
 }
-
-.sac-checkbox--small .sac-checkbox__marker--indeterminate::after {
+.sac-checkbox--small.sac-checkbox--indeterminate .sac-checkbox__marker::after {
   width: 6px;
-  height: 2px;
+  height: 1.5px;
   left: 3px;
-  top: 5px;
+  top: 5.25px;
 }
-
-.sac-checkbox--small.sac-checkbox--border {
-  padding: 5px 12px;
+.sac-checkbox--small .sac-checkbox__label {
+  padding-left: 6px;
+  line-height: 14px;
 }
 
 .sac-checkbox--large {
-  font-size: 16px;
+  font-size: calc(var(--b3-font-size) * 1.1);
 }
-
 .sac-checkbox--large .sac-checkbox__marker {
   width: 18px;
   height: 18px;
 }
-
-.sac-checkbox--large .sac-checkbox__marker::after {
+.sac-checkbox--large:not(.sac-checkbox--indeterminate) .sac-checkbox__marker::after {
   width: 5px;
-  height: 9px;
-  left: 6px;
-  top: 2px;
+  height: 10px;
+  left: 5px;
+  top: 1px;
+  border-width: 0 2.5px 2.5px 0;
 }
-
-.sac-checkbox--large .sac-checkbox__marker--indeterminate::after {
+.sac-checkbox--large.sac-checkbox--indeterminate .sac-checkbox__marker::after {
   width: 10px;
-  height: 2px;
+  height: 2.5px;
   left: 3px;
-  top: 7px;
+  top: 6.75px;
 }
-
-.sac-checkbox--large.sac-checkbox--border {
-  padding: 10px 18px;
+.sac-checkbox--large .sac-checkbox__label {
+  padding-left: 10px;
+  line-height: 18px;
 }
 
 /* 复选框组 */
 .sac-checkbox-group {
-  display: inline-block;
-  line-height: 1;
-}
-
-.sac-checkbox-group--disabled {
-  cursor: not-allowed;
+  display: inline-block; /* 或 flex, grid 等，根据需要 */
+  font-size: var(--b3-font-size);
 }
 `;
 

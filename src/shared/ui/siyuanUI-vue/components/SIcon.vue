@@ -1,5 +1,5 @@
 <template>
-  <span class="svg-icon" :class="{ 'svg-icon--small': small }">
+  <span class="svg-icon" :class="[{ 'svg-icon--small': small }, className]" :style="{ color: color }">
     <svg v-if="name">
       <use :xlink:href="`#${name}`"></use>
     </svg>
@@ -22,6 +22,14 @@ const props = defineProps({
   small: {
     type: Boolean,
     default: false
+  },
+  color: {
+    type: String,
+    default: '' // 允许直接传入颜色值
+  },
+  className: {
+    type: String,
+    default: '' // 允许传入自定义class
   }
 });
 
@@ -40,13 +48,16 @@ const renderEmoji = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: var(--b3-icon-size);
+  height: var(--b3-icon-size);
+  fill: currentColor; /* 使用currentColor继承父级颜色 */
+  color: var(--b3-theme-on-surface); /* 默认颜色 */
+  flex-shrink: 0;
 }
 
 .svg-icon--small {
-  width: 14px;
-  height: 14px;
+  width: var(--b3-icon-size-small);
+  height: var(--b3-icon-size-small);
 }
 
 .svg-icon svg {
@@ -55,7 +66,11 @@ const renderEmoji = computed(() => {
 }
 
 .emoji-icon {
-  font-size: 16px;
+  font-size: var(--b3-icon-size); /* 表情符号大小与图标一致 */
   line-height: 1;
+}
+
+.svg-icon--small .emoji-icon {
+  font-size: var(--b3-icon-size-small);
 }
 </style> 

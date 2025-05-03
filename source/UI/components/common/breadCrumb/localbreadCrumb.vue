@@ -8,7 +8,7 @@
                     <breadCrumbItem :icon="i === 0 ? '#iconDatabase' : '#iconFolder'" :label="pathPttern"
                         @click="() => { 打开本地资源视图(i) }"></breadCrumbItem>
                 </template>
-                <commonIcon class="protyle-breadcrumb__arrow" icon="iconRight"></commonIcon>
+                <SIcon class="protyle-breadcrumb__arrow" name="iconRight"></SIcon>
             </div>
             <span class="fn__space fn__flex-1 protyle-breadcrumb__space">
             </span>
@@ -36,14 +36,14 @@
     </div>
 </template>
 <script setup>
-import { defineProps, defineEmits, ref, onMounted, watch } from 'vue'
+import { defineProps, defineEmits, ref, onMounted, watch, computed } from 'vue'
 import breadCrumbItem from './breadCrumbItem.vue'
 import { 构建搜索模式 } from '../../../../../src/toolBox/base/useEcma/forFile/globTools.js';
 import { plugin } from 'runtime'
-import { commonIcon } from '../icons.js'
 import { 打开文件夹图标菜单 } from '../../../siyuanCommon/menus/folderItem.js';
 import { fs } from '../../../../server/endPoints.js';
 import thumbnailGallery from '../thumbnailGalleryHori.vue'
+import SIcon from '../../../../../../src/shared/ui/siyuanUI-vue/components/SIcon.vue';
 const IncludeSubfolders = ref(true)
 const emit = defineEmits(['globChange'])
 const 右键菜单 = (子文件夹信息, event) => {

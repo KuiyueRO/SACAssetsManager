@@ -45,39 +45,45 @@ defineProps({
 
 <style scoped>
 .b3-card {
-  margin: 8px;
+  margin: var(--b3-margin-half);
   border-radius: var(--b3-border-radius);
   background-color: var(--b3-theme-background);
   box-shadow: var(--b3-card-shadow);
+  transition: all 150ms ease-in-out;
+  border: 1px solid var(--b3-theme-surface-lighter);
 }
 
 .b3-card--hoverable:hover {
   box-shadow: var(--b3-card-hover-shadow);
+  border-color: var(--b3-theme-primary-lightest);
 }
 
-.b3-card--selected {
+.b3-card--current {
   background-color: var(--b3-theme-primary-lightest);
-  border: 1px solid var(--b3-theme-primary-lighter);
+  border-color: var(--b3-theme-primary-lighter);
 }
 
-.b3-card__header {
-  padding: 16px;
-  border-bottom: 1px solid var(--b3-border-color);
+.b3-card--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--b3-theme-surface-lighter);
 }
 
-.b3-card__content {
-  padding: 16px;
+.b3-card__img {
+  width: 100%;
+  border-top-left-radius: var(--b3-border-radius);
+  border-top-right-radius: var(--b3-border-radius);
+  overflow: hidden;
 }
 
-.b3-card__footer {
-  padding: 16px;
-  border-top: 1px solid var(--b3-border-color);
+.b3-card__info {
+  padding: var(--b3-padding);
 }
 
-.b3-card__action {
+.b3-card__actions {
   display: flex;
   justify-content: flex-end;
-  padding: 8px;
+  padding: var(--b3-padding-half);
   border-top: 1px solid var(--b3-border-color);
 }
 </style> 

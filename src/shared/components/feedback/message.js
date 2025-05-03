@@ -345,44 +345,54 @@ export const messageStyle = `
 .sac-message {
   position: fixed;
   left: 50%;
-  top: 20px;
+  top: 20px; /* JS会动态调整 */
   transform: translateX(-50%);
-  min-width: 300px;
-  padding: 10px 15px;
-  border-radius: 4px;
+  min-width: 280px; /* 稍微减小宽度 */
+  max-width: 500px;
+  padding: 8px 12px; /* 调整内边距 */
+  border-radius: var(--b3-border-radius); /* 使用标准圆角 */
   box-sizing: border-box;
-  border: 1px solid #ebeef5;
-  background-color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  transition: opacity 0.3s, transform 0.3s, top 0.3s;
+  border: 1px solid var(--b3-border-color);
+  background-color: var(--b3-theme-surface); /* 使用表面色 */
+  box-shadow: var(--b3-dialog-shadow); /* 使用对话框阴影 */
+  transition: opacity 0.3s, transform 0.3s, top 0.3s; /* 保留动画 */
   overflow: hidden;
   display: flex;
   align-items: center;
+  color: var(--b3-theme-on-surface); /* 默认文字颜色 */
 }
 
 .sac-message__icon {
-  margin-right: 10px;
-  font-size: 16px;
+  margin-right: 8px; /* 调整间距 */
+  font-size: 18px; /* 稍微增大图标 */
+  flex-shrink: 0;
 }
 
 .sac-message__content {
   flex: 1;
   margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: var(--b3-font-size);
+  line-height: 1.5;
+  word-wrap: break-word; /* 允许长单词换行 */
 }
 
 .sac-message__closeBtn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px; /* 调整位置 */
+  right: 8px;
   cursor: pointer;
-  color: #c0c4cc;
-  font-size: 16px;
+  color: var(--b3-theme-on-surface-light); /* 关闭按钮颜色 */
+  font-size: 18px; /* 增大图标 */
+  padding: 2px; /* 增加点击区域 */
+  line-height: 1; /* 避免影响布局 */
+  transition: var(--b3-transition);
+  /* 考虑使用 SVG 图标替换 'x' */
+  font-family: sans-serif; /* 避免受特殊字体影响 */
+  font-weight: bold;
 }
 
 .sac-message__closeBtn:hover {
-  color: #909399;
+  color: var(--b3-theme-on-surface); /* 悬停颜色 */
 }
 
 .sac-message--center {
@@ -393,46 +403,52 @@ export const messageStyle = `
   text-align: center;
 }
 
-.sac-message--success {
-  background-color: #f0f9eb;
-  border-color: #e1f3d8;
-}
+/* --- 类型样式 (使用卡片背景/颜色变量) --- */
 
-.sac-message--success .sac-message__icon,
-.sac-message--success .sac-message__content {
-  color: #67c23a;
+.sac-message--success {
+  background-color: var(--b3-card-success-background);
+  border-color: var(--b3-card-success-background); /* 边框与背景同色 */
+  color: var(--b3-card-success-color);
 }
 
 .sac-message--warning {
-  background-color: #fdf6ec;
-  border-color: #faecd8;
+  background-color: var(--b3-card-warning-background);
+  border-color: var(--b3-card-warning-background);
+  color: var(--b3-card-warning-color);
 }
 
-.sac-message--warning .sac-message__icon,
-.sac-message--warning .sac-message__content {
-  color: #e6a23c;
-}
-
+/* Info 类型使用中性或 card-info 样式 */
 .sac-message--info {
-  background-color: #edf2fc;
-  border-color: #ebeef5;
-}
-
-.sac-message--info .sac-message__icon,
-.sac-message--info .sac-message__content {
-  color: #909399;
+  /* background-color: var(--b3-theme-surface-light); */ /* 方案一：中性背景 */
+  /* border-color: var(--b3-border-color); */
+  /* color: var(--b3-theme-on-surface); */
+  background-color: var(--b3-card-info-background); /* 方案二：使用 card-info */
+  border-color: var(--b3-card-info-background);
+  color: var(--b3-card-info-color);
 }
 
 .sac-message--error {
-  background-color: #fef0f0;
-  border-color: #fde2e2;
+  background-color: var(--b3-card-error-background);
+  border-color: var(--b3-card-error-background);
+  color: var(--b3-card-error-color);
 }
 
-.sac-message--error .sac-message__icon,
-.sac-message--error .sac-message__content {
-  color: #f56c6c;
+/* 不同类型下的关闭按钮颜色 (可选，如果背景色变化大) */
+.sac-message--success .sac-message__closeBtn,
+.sac-message--warning .sac-message__closeBtn,
+.sac-message--info .sac-message__closeBtn, /* 仅当使用 card-info 背景时需要 */
+.sac-message--error .sac-message__closeBtn {
+  color: var(--b3-theme-on-surface-light); /* 保持一致，或者根据背景调整 */
+}
+.sac-message--success .sac-message__closeBtn:hover,
+.sac-message--warning .sac-message__closeBtn:hover,
+.sac-message--info .sac-message__closeBtn:hover,
+.sac-message--error .sac-message__closeBtn:hover {
+  color: var(--b3-theme-on-surface); /* 保持一致 */
 }
 
+
+/* --- 过渡动画 --- */
 .sac-message-fade-enter,
 .sac-message-fade-leave-active {
   opacity: 0;
