@@ -10,7 +10,7 @@
 import { onMounted, ref,onUnmounted ,nextTick} from 'vue';
 import { kernelApi, plugin,clientApi } from '../../../asyncModules.js';
 import TagItem from './tagItem.vue'
-import DockSubPanelTitle from '../common/dockSubPanelTitle.vue'
+import DockSubPanelTitle from '../../../../src/shared/ui/sacUI-vue/components/common/dockSubPanelTitle.vue'
 import {getTagAssets,saveTags} from '../../../data/tags.js'
 const data = ref({
     title:'标签',

@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import echarts from '../common/echarts.vue';
+import echarts from '../../../../../src/shared/ui/sacUI-vue/components/common/echarts.vue';
 import { 生成文档数量趋势图 } from '@/utils/siyuanData/useKernel/analyzer.js';
 
 const chartOption = ref({});

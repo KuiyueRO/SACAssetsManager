@@ -43,14 +43,14 @@
 *   [x] `common/fileListItem.vue` (47行) -> 已迁移至 `src/shared/ui/sacUI-vue/components/common/`
 *   [x] `common/icons.js` (2行) -> **已使用 SIcon 替换并删除**
 *   [x] `common/dropzone.vue` (16行) -> 已迁移至 `src/shared/ui/sacUI-vue/components/common/`
-*   [ ] `common/dockSubPanelTitle.vue` (30行)
+*   [x] `common/dockSubPanelTitle.vue` (30行) -> 已迁移至 `src/shared/ui/sacUI-vue/components/common/`
 *   [ ] `assetCard.vue` (305行) -> **需要拆分?**
 *   [ ] `collectionPanel.vue` (197行) -> **面板, 暂缓**
 *   [ ] `NumberInput.vue` (20行) -> **已替换为 SNumberInput, 待删除/归档**
 *   [ ] `common/assetStyles.js` (115行) -> **样式脚本? 待分析**
 *   [ ] `common/assetsThumbnailCard.vue` (203行) -> **需要拆分?**
 *   [ ] `common/thumbnailGalleryHori.vue` (236行) -> **需要拆分?**
-*   [ ] `common/echarts.vue` (107行)
+*   [x] `common/echarts.vue` (107行) -> 已迁移至 `src/shared/ui/sacUI-vue/components/common/`
 *   [ ] `common/apiTester.vue` (214行) -> **需要拆分?**
 *   [ ] `common/multiSrcImage.vue` (136行)
 
@@ -65,6 +65,8 @@
 *   `source/UI/components/fileList.vue` -> `src/shared/ui/sacUI-vue/components/fileList.vue`
 *   `source/UI/components/common/fileListItem.vue` -> `src/shared/ui/sacUI-vue/components/common/fileListItem.vue`
 *   `source/UI/components/common/dropzone.vue` -> `src/shared/ui/sacUI-vue/components/common/dropzone.vue`
+*   `source/UI/components/common/dockSubPanelTitle.vue` -> `src/shared/ui/sacUI-vue/components/common/dockSubPanelTitle.vue`
+*   `source/UI/components/common/echarts.vue` -> `src/shared/ui/sacUI-vue/components/common/echarts.vue`
 
 ---
 
